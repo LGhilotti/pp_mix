@@ -1,0 +1,223 @@
+#include "strauss_pp.hpp"
+
+StraussPP::StraussPP(StraussParams::Priors priors) : priors(priors)
+{
+
+    beta = (priors.beta_u() + priors.beta_l()) / 2.0;
+    beta = (priors.gamma_u() + priors.gamma_l()) / 2.0;
+    beta = (priors.r_u() + priors.r_l()) / 2.0;
+    c_star = beta;
+    fixed_params = false;
+}
+
+StraussPP::StraussPP(
+        double beta, double gamma, double R):
+            beta(beta), gamma(gamma), R(R) {
+    c_star = beta;
+    fixed_params = true;
+}
+
+StraussPP::StraussPP(
+    StraussParams::Priors priors, double beta, double gamma, double R) : 
+        priors(priors), beta(beta), gamma(gamma), R(R)
+{
+    c_star = beta;
+    fixed_params = false;
+}
+
+double StraussPP::dens(const MatrixXd &x, bool log) {
+    double out;
+    // check if it's jut one point
+    if (x.rows() == 1 || x.cols() == 1)
+        out = std::log(beta);
+    else {
+        int npoints = x.rows();
+        double out = std::log(beta) * npoints;
+        MatrixXd pdist = pairwise_dist_sq(x);
+
+        out += std::log(gamma) * (pdist.array() < R*R).count();
+    }
+    if (! log)
+        out = std::exp(out);
+    return out;
+}
+
+double StraussPP::dens_from_pdist(const MatrixXd &dists, double beta_, double gamma_,
+                                  double R_, bool log)
+{
+    double out;
+    if (dists.rows() == 1)
+        out = beta_;
+    else  {
+        int npoints = dists.rows();
+        double out = std::log(beta_) * npoints;
+        out += std::log(gamma_) * (dists.array() < R_ * R_).count();
+    }
+    if (!log)
+        out = std::exp(out);
+    return out;
+}
+
+double StraussPP::papangelou(
+    MatrixXd xi, const MatrixXd &x, bool log)
+{   
+
+    // std::cout << "***papangelou***" << std::endl;
+    // std::cout << "xi: " << xi.transpose() << std::endl;
+    // std::cout << "x: \n" << x << std::endl;
+    // std::cout << "R: " << R << std::endl;
+    double out;
+    // if (x.rows() == 0)
+    //     out = std::log(beta);
+    // else {
+    //     if (xi.cols() == 1)
+    //         xi.transposeInPlace();
+    //     MatrixXd dists = pairwise_dist_sq(xi, x);
+    //     out = std::log(gamma) * (dists.array() < R * R).count();
+    // }
+
+    if (xi.cols() == 1)
+        xi.transposeInPlace();
+    MatrixXd dists = pairwise_dist_sq(xi, x);
+    // std::cout << "dists\n" << dists << std::endl;
+    // std::cout << "cnt: " << (dists.array() < R * R).count() << std::endl;
+    out = std::log(gamma) * (dists.array() < R * R).count();
+    if (!log)
+        out = std::exp(out);
+    return out;
+}
+
+VectorXd StraussPP::phi_star_rng() {
+    VectorXd out(dim);
+    for (int i=0; i < dim; i++) {
+        out(i) = uniform_rng(ranges(0, i), ranges(1, i), Rng::Instance().get());
+    }
+    return out;
+}
+
+double StraussPP::phi_star_dens(VectorXd xi, bool log)
+{
+    double out = beta;
+    if (log)
+        out = std::log(out);
+
+    return out;
+}
+
+void StraussPP::update_hypers(
+        const MatrixXd& active, const MatrixXd& non_active) {
+    if (fixed_params)
+        return;
+
+    if (active.cols() != 2)
+        return;
+
+    // std::cout << "StraussPP::update_hypers" << std::endl;
+    int Ma = active.rows();
+    int Mna = non_active.rows();
+    int dim = active.cols();
+    MatrixXd all_points(Ma + Mna, dim);
+    all_points.block(0, 0, Ma, dim) = active;
+    all_points.block(Ma, 0, Mna, dim) = non_active;
+
+    MatrixXd dists = pairwise_dist_sq(all_points);
+    MatrixXd aux_var, aux_dists;
+
+    double scale;
+    double prop, arate, lower, upper;
+    
+    // UPDATE BETA
+    upper = priors.beta_u();
+    lower = priors.beta_l();
+    scale = (upper - lower) / 3;
+
+    prop = trunc_normal_rng(beta, scale, lower, upper, Rng::Instance().get());
+
+    arate = trunc_normal_lpdf(prop, beta, scale, lower, upper) -
+            trunc_normal_lpdf(beta, prop, scale, lower, upper);
+
+    arate += dens_from_pdist(dists, prop, gamma, R) - 
+             dens_from_pdist(dists, beta, gamma, R);
+
+    aux_var = simulate_strauss_moller(ranges, prop, gamma, R);
+    aux_dists = pairwise_dist_sq(aux_var);
+
+    arate += dens_from_pdist(aux_dists, beta, gamma, R) -
+             dens_from_pdist(aux_dists, prop, gamma, R);
+
+    if (uniform_rng(0, 1, Rng::Instance().get()) < arate) {
+        beta = prop;
+        std::cout << "accepted beta" << std::endl;
+    }
+
+    // // UPDATE Gamma
+    // upper = priors.gamma_u();
+    // lower = priors.gamma_l();
+    // scale = (upper - lower) / 3;
+    // prop = trunc_normal_rng(gamma, scale, lower, upper, Rng::Instance().get());
+
+    // arate = trunc_normal_lpdf(prop, gamma, scale, lower, upper) -
+    //         trunc_normal_lpdf(gamma, prop, scale, lower, upper);
+
+    // arate += dens_from_pdist(dists, beta, prop, R) -
+    //          dens_from_pdist(dists, beta, gamma, R);
+
+    // aux_var = simulate_strauss_moller(ranges, beta, prop, R);
+    // aux_dists = pairwise_dist_sq(aux_var);
+
+    // arate += dens_from_pdist(aux_dists, beta, gamma, R) -
+    //          dens_from_pdist(aux_dists, beta, prop, R);
+
+    // if (uniform_rng(0, 1, Rng::Instance().get()) < arate) {
+    //     gamma = prop;
+    //     std::cout << "accepted gamma" << std::endl;
+    // }
+
+    // // UPDATE R
+    // upper = priors.r_u();
+    // lower = priors.r_l();
+    // scale = (upper - lower) / 3;
+    // prop = trunc_normal_rng(R, scale, lower, upper, Rng::Instance().get());
+
+    // arate = trunc_normal_lpdf(prop, R, scale, lower, upper) -
+    //         trunc_normal_lpdf(R, prop, scale, lower, upper);
+
+    // arate += dens_from_pdist(dists, beta, gamma, prop) -
+    //          dens_from_pdist(dists, beta, gamma, R);
+
+    // aux_var = simulate_strauss_moller(ranges, beta, gamma, prop);
+    // aux_dists = pairwise_dist_sq(aux_var);
+
+    // arate += dens_from_pdist(aux_dists, beta, gamma, R) -
+    //          dens_from_pdist(aux_dists, beta, gamma, prop);
+
+    // if (uniform_rng(0, 1, Rng::Instance().get()) < arate) {
+    //     R = prop;
+    //     std::cout << "accepted R" << std::endl;
+    // }
+}
+
+MatrixXd StraussPP::pairwise_dist_sq(const MatrixXd &x, const MatrixXd &y)
+{
+    MatrixXd D(x.rows(), y.rows());
+    int i = 0;
+    for (int i = 0; i < y.rows(); i++)
+        D.col(i) = (x.rowwise() - y.row(i)).rowwise().squaredNorm();
+
+    return D;
+}
+
+MatrixXd StraussPP::pairwise_dist_sq(const MatrixXd &x)
+{   
+    return pairwise_dist_sq(x, x);
+}
+
+void StraussPP::get_state_as_proto(google::protobuf::Message *out)
+{
+    using namespace google::protobuf::internal;
+    down_cast<StraussState*>(out)->set_beta(beta);
+    down_cast<StraussState*>(out)->set_gamma(gamma);
+    down_cast<StraussState*>(out)->set_r(R);
+    down_cast<StraussState *>(out)->set_birth_prob(birth_prob);
+    down_cast<StraussState *>(out)->set_birth_arate(birth_arate);
+}
