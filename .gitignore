@@ -1,3 +1,9 @@
+# PROTO GENERATE
+pp_mix/protos/cpp/*
+pp_mix/protos/py/*
+
+
+
 # History files
 .Rhistory
 .Rapp.history
