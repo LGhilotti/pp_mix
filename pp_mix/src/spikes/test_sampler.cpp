@@ -7,11 +7,12 @@
 
 #include "../conditional_mcmc.hpp"
 #include "../factory.hpp"
+#include "../precs/gamma.hpp"
 #include "../../protos/cpp/state.pb.h"
 #include "../../protos/cpp/params.pb.h"
 
 
-int main() {
+Eigen::MatrixXd simulate_multivariate() {
     int data_per_clus = 50;
     Eigen::MatrixXd data = Eigen::MatrixXd(data_per_clus * 2, 2);
     Eigen::VectorXd mean1(2);
@@ -35,11 +36,38 @@ int main() {
             mean2, cov, Rng::Instance().get());
     }
 
+    return data;
+} 
+
+
+Eigen::MatrixXd simulate_univariate() {
+    int data_per_clus = 50;
+    Eigen::MatrixXd data = Eigen::MatrixXd(data_per_clus * 2, 1);
+
+    for (int i = 0; i < data_per_clus; i++)
+    {
+        data(i) = stan::math::normal_rng(
+            3, 0.3, Rng::Instance().get());
+    }
+
+    for (int i = data_per_clus; i < 2 * data_per_clus; i++)
+    {
+        data(i) = stan::math::normal_rng(
+            -3, 0.3, Rng::Instance().get());
+    }
+
+    return data;
+}
+
+
+int main() {
+    // Eigen::MatrixXd data = simulate_univariate();
+    Eigen::MatrixXd data = simulate_multivariate();
+
     Eigen::MatrixXd ranges(2, data.cols());
     ranges.row(0) = data.colwise().minCoeff();
     ranges.row(1) = data.colwise().maxCoeff();
     ranges *= 2;
-    std::cout << "ranges: \n" << ranges << std::endl;
 
     std::string params_file = \
         "/home/mario/PhD/finiteDPP/pp_mix/pp_mix/resources/sampler_params.asciipb";
@@ -47,26 +75,29 @@ int main() {
 
     BasePP *pp_mix = make_pp(params);
     BaseJump *h = make_jump(params);
+
+    // GammaParams *prec_params = params.mutable_gamma_prec();
+    // prec_params->set_alpha(2);
+    // prec_params->set_beta(2);
+
     BasePrec *g = make_prec(params);
     pp_mix->set_ranges(ranges);
 
-    ConditionalMCMC sampler(pp_mix, h, g);
-    sampler.initialize(data);
+    // UnivariateConditionalMCMC sampler(pp_mix, h, g);
+    // std::vector<double> datavec(data.data(), data.data() + data.size());
 
-    std::deque<MixtureState> out;
-    
+    MultivariateConditionalMCMC sampler(pp_mix, h, g);
+    std::vector<Eigen::VectorXd> datavec = to_vector_of_vectors(data);
+
+    sampler.initialize(datavec);
+
     for (int i = 0; i < 10000; i++)
         sampler.run_one();
 
-    // sampler.set_verbose();
-    // int niter = 50000;
+    // int niter = 5000;
     // for (int i = 0; i < niter; i++) {
     //     sampler.run_one();
 
-    //     std::cout << "press key";
-    //     std::cin.get();
-
-    //     out.push_back(sampler.get_state_as_proto());
     //     if (i % 1000 == 0) {
     //         std::cout << "iter: " << i << " / " << niter << std::endl;
     //     }

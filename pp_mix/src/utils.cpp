@@ -59,39 +59,11 @@ MatrixXd vstack(const std::vector<VectorXd> &rows) {
     return out;
 }
 
-double multi_normal_lpdf(
-    const VectorXd &x, const VectorXd &mu, const CovMat &sigma)
-{
-    VectorXd x_min_mu = x - mu;
-    double out = - sigma.get_log_det();
-    out -= x_min_mu.transpose() * sigma.get_cho_factor().solve(x_min_mu);
-    return 0.5 * out;
-}
-
-double multi_normal_lpdf(
-    const std::vector<VectorXd> &x, const VectorXd &mu, const CovMat &sigma) 
-{   
-    int n = x.size();
-    double out = - sigma.get_log_det() * n;
-
-    Eigen::VectorXd x_min_mu;
-
-    std::vector<double> loglikes(n);
-    for (int i=0; i < n; i++) {
-        x_min_mu = x[i] - mu;
-        loglikes[i] = x_min_mu.transpose() * 
-                      sigma.get_cho_factor().solve(x_min_mu);
-    }
-    
-    out -= std::accumulate(loglikes.begin(), loglikes.end(), 0.0);
-
-    return 0.5*out;
-     
-}
 
 double o_multi_normal_prec_lpdf(
     const VectorXd &x, const VectorXd &mu, const PrecMat &sigma)
 {
+    // std::cout << "sigma.cho_factor:\n " << sigma.get_cho_factor_eval() << std::endl;
     double out = sigma.get_log_det();
     out -= (sigma.get_cho_factor_eval() * (x - mu)).squaredNorm();
     return 0.5 * out;
@@ -150,4 +122,13 @@ void to_proto(const VectorXd &vec, EigenVector* out)
 {
     out->set_size(vec.size());
     *out->mutable_data() = {vec.data(), vec.data() + vec.size()};
+}
+
+std::vector<VectorXd> to_vector_of_vectors(const MatrixXd &mat)
+{
+    std::vector<VectorXd> out(mat.rows());
+    for (int i = 0; i < mat.rows(); i++)
+        out[i] = mat.row(i).transpose();
+
+    return out;
 }

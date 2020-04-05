@@ -12,11 +12,11 @@ double GammaJump::sample_tilted(double u)
 }
 
 double GammaJump::sample_given_data(
-    const std::vector<VectorXd> &data, double curr, double u)
+    int ndata, double curr, double u)
 {
 
     double out;
-    int nh = data.size();
+    int nh = ndata;
     double prop = curr + uniform_rng(-0.1, 0.1, Rng::Instance().get());
 
     double num = std::log(prop) * nh - u * prop +

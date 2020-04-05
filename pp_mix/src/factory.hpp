@@ -3,9 +3,10 @@
 
 #include <memory>
 
-#include "covs/base_cov.hpp"
-#include "covs/fixed_cov.hpp"
-#include "covs/inv_wishart.hpp"
+#include "precs/base_prec.hpp"
+#include "precs/fixed_prec.hpp"
+#include "precs/wishart.hpp"
+#include "precs/gamma.hpp"
 
 #include "jumps/base_jump.hpp"
 #include "jumps/gamma.hpp"
@@ -19,7 +20,6 @@
 
 BasePP* make_pp(const Params& params);
 
-
 BasePP* make_strauss(const StraussParams& params);
 
 
@@ -30,8 +30,12 @@ BaseJump* make_gamma_jump(const GammaParams& params);
 
 BasePrec* make_prec(const Params& params);
 
-BasePrec* make_fixed_prec(const FixedPrecParams& params);
+BasePrec *make_fixed_prec(const FixedMultiPrecParams &params);
 
 BasePrec* make_wishart(const WishartParams& params);
+
+BasePrec* make_fixed_prec(const FixedUnivPrecParams& params);
+
+BasePrec* make_gamma_prec(const GammaParams& params);
 
 #endif

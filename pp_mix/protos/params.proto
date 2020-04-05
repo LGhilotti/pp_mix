@@ -7,9 +7,13 @@ message WishartParams {
     int32 dim = 4;
 }
 
-message FixedPrecParams {
+message FixedMultiPrecParams {
     double sigma = 1;
     int32 dim = 2;
+}
+
+message FixedUnivPrecParams {
+    double sigma = 1;
 }
 
 message GammaParams {
@@ -43,9 +47,11 @@ message Params {
     StraussParams strauss = 1;
 
     oneof prec_params {
-        FixedPrecParams fixed_prec = 2;
+        FixedMultiPrecParams fixed_multi_prec = 2;
         WishartParams wishart = 3;
+        FixedUnivPrecParams fixed_univ_prec = 4;
+        GammaParams gamma_prec = 5;
     }
 
-    GammaParams gamma_jump = 4;
+    GammaParams gamma_jump = 6;
 }

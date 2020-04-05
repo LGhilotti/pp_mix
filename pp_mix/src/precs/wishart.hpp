@@ -5,7 +5,7 @@
 #include <Eigen/Dense>
 #include <stan/math/prim/mat.hpp>
 
-#include "base_cov.hpp"
+#include "base_prec.hpp"
 #include "../rng.hpp"
 #include "../utils.hpp"
 
@@ -13,26 +13,7 @@ using namespace Eigen;
 using namespace stan::math;
 
 
-class InvWishart: public BaseCov {
- protected:
-    double df;
-    MatrixXd psi;
-
- public:
-     InvWishart(double df, int dim);
-
-     InvWishart(double df, const MatrixXd& psi);
-
-     ~InvWishart() {}
-
-     CovMat sample_prior() override;
-
-     CovMat sample_given_data(
-         const std::vector<VectorXd> &data, const CovMat &curr,
-         const VectorXd &mean) override;
-};
-
-class Wishart : public BasePrec
+class Wishart : public BaseMultiPrec
 {
 protected:
     double df;

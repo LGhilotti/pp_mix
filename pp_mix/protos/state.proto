@@ -23,7 +23,7 @@ message StraussState {
 }
 
 
-message MixtureState {
+message MultivariateMixtureState {
     int32 ma = 1;
     int32 mna = 2;
     int32 mtot = 3;
@@ -33,6 +33,27 @@ message MixtureState {
 
     repeated EigenMatrix a_precs = 6;
     repeated EigenMatrix na_precs = 7;
+
+    EigenVector a_jumps = 8;
+    EigenVector na_jumps = 9;
+
+    repeated int32 clus_alloc = 10; 
+    double u = 11;
+
+    StraussState pp_state = 12;
+}
+
+
+message UnivariateMixtureState {
+    int32 ma = 1;
+    int32 mna = 2;
+    int32 mtot = 3;
+
+    EigenVector a_means = 4;
+    EigenVector na_means = 5;
+
+    EigenVector a_precs = 6;
+    EigenVector na_precs = 7;
 
     EigenVector a_jumps = 8;
     EigenVector na_jumps = 9;

@@ -9,11 +9,12 @@ BasePP::BasePP(const MatrixXd &ranges): ranges(ranges) {
 void BasePP::set_ranges(const MatrixXd &ranges) {
     this->ranges = ranges;
     dim = ranges.cols();
+    std::cout << "ranges: \n" << ranges << std::endl;
     diff_range = (ranges.row(1) - ranges.row(0)).transpose();
     vol_range = diff_range.prod();
 }
 
-    MatrixXd BasePP::sample_uniform(int npoints)
+MatrixXd BasePP::sample_uniform(int npoints)
 {
     MatrixXd out(npoints, dim);
     for (int j=0; j < dim; j++) {
@@ -41,9 +42,9 @@ void BasePP::sample_given_active(
         MatrixXd aux(active.rows() + npoints, dim);
         aux << active, *non_active;
         // TODO @mario FIX THIS!!
-        birth_arate = papangelou(xi, aux) - phi_star_dens(xi) +
-          std::log(psi_u);
-        // double arate = papangelou(xi, aux) - phi_star_dens(xi);
+        // birth_arate = papangelou(xi, aux) - phi_star_dens(xi) +
+        //   std::log(psi_u);
+        double arate = papangelou(xi, aux) - phi_star_dens(xi);
 
 
         double rthird = uniform_rng(0, 1, Rng::Instance().get());
