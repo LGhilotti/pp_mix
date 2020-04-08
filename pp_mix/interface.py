@@ -11,7 +11,7 @@ from pp_mix.protos.py.state_pb2 import (
     UnivariateMixtureState, MultivariateMixtureState)
 from pp_mix.protos.py.params_pb2 import Params
 from pp_mix.utils import loadChains, writeChains, to_numpy, gen_even_slices
-from pp_mix.params_helper import make_params
+from pp_mix.params_helper import check_params, make_params
 from pp_mix.precision import PrecMat
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
@@ -39,6 +39,7 @@ class ConditionalMCMC(object):
         self.serialized_params = self.params.SerializeToString()
 
     def run(self, nburn, niter, thin, data):
+        check_params(self.params, data)
         self.dim = data.ndim
         self._serialized_chains = pp_mix_cpp._run_pp_mix(
             nburn, niter, thin, data, self.serialized_params)
