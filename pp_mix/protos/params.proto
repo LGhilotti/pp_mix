@@ -43,15 +43,24 @@ message StraussParams {
     bool fixed_params = 3;
 }
 
-message Params {
-    StraussParams strauss = 1;
 
-    oneof prec_params {
-        FixedMultiPrecParams fixed_multi_prec = 2;
-        WishartParams wishart = 3;
-        FixedUnivPrecParams fixed_univ_prec = 4;
-        GammaParams gamma_prec = 5;
+message NrepParams {
+    double u = 1;
+    double p = 2;
+}
+
+message Params {
+    oneof pp_params {
+        StraussParams strauss = 1;
+        NrepParams nrep = 2;
     }
 
-    GammaParams gamma_jump = 6;
+    oneof prec_params {
+        FixedMultiPrecParams fixed_multi_prec = 3;
+        WishartParams wishart = 4;
+        FixedUnivPrecParams fixed_univ_prec = 5;
+        GammaParams gamma_prec = 6;
+    }
+
+    GammaParams gamma_jump = 7;
 }
