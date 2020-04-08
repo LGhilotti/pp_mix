@@ -41,10 +41,8 @@ void BasePP::sample_given_active(
         VectorXd xi = phi_star_rng();
         MatrixXd aux(active.rows() + npoints, dim);
         aux << active, *non_active;
-        // TODO @mario FIX THIS!!
-        // birth_arate = papangelou(xi, aux) - phi_star_dens(xi) +
-        //   std::log(psi_u);
-        double arate = papangelou(xi, aux) - phi_star_dens(xi);
+        birth_arate = papangelou(xi, aux) - phi_star_dens(xi) +
+          std::log(psi_u);
 
 
         double rthird = uniform_rng(0, 1, Rng::Instance().get());

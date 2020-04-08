@@ -5,6 +5,7 @@
 #include "../simulate_straus.hpp"
 #include "../../protos/cpp/params.pb.h"
 #include <google/protobuf/stubs/casts.h>
+#include <boost/math/distributions/chi_squared.hpp>
 
 class StraussPP: public BasePP {
  protected:
@@ -39,11 +40,9 @@ class StraussPP: public BasePP {
 
     void update_hypers(const MatrixXd &active, const MatrixXd &non_active) override;
 
-    MatrixXd pairwise_dist_sq(const MatrixXd &x);
-
-    MatrixXd pairwise_dist_sq(const MatrixXd &x, const MatrixXd &y);
-
     void get_state_as_proto(google::protobuf::Message *out);
+
+    double estimate_mean_proposal_sigma();
 };
 
 #endif

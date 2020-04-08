@@ -28,11 +28,12 @@ StraussPP::StraussPP(
 double StraussPP::dens(const MatrixXd &x, bool log) {
     double out;
     // check if it's jut one point
-    if (x.rows() == 1 || x.cols() == 1)
+    if ((x.size() == 1 && dim == 1) || (x.rows() == 1 & dim > 1) ||
+        (x.cols() == 1 && dim > 1))
         out = std::log(beta);
     else {
         int npoints = x.rows();
-        double out = std::log(beta) * npoints;
+        out = std::log(beta) * npoints;
         MatrixXd pdist = pairwise_dist_sq(x);
 
         out += std::log(gamma) * (pdist.array() < R*R).count();
@@ -102,6 +103,12 @@ double StraussPP::phi_star_dens(VectorXd xi, bool log)
         out = std::log(out);
 
     return out;
+}
+
+
+double StraussPP::estimate_mean_proposal_sigma() {
+    boost::math::chi_squared chisq(dim);
+    return sqrt(R * R / quantile(complement(chisq, 0.1)));
 }
 
 void StraussPP::update_hypers(
@@ -197,27 +204,16 @@ void StraussPP::update_hypers(
     // }
 }
 
-MatrixXd StraussPP::pairwise_dist_sq(const MatrixXd &x, const MatrixXd &y)
-{
-    MatrixXd D(x.rows(), y.rows());
-    int i = 0;
-    for (int i = 0; i < y.rows(); i++)
-        D.col(i) = (x.rowwise() - y.row(i)).rowwise().squaredNorm();
-
-    return D;
-}
-
-MatrixXd StraussPP::pairwise_dist_sq(const MatrixXd &x)
-{   
-    return pairwise_dist_sq(x, x);
-}
-
 void StraussPP::get_state_as_proto(google::protobuf::Message *out)
 {
+    StraussState state;
+    state.set_beta(beta);
+    state.set_gamma(gamma);
+    state.set_r(R);
+    state.set_birth_prob(birth_prob);
+    state.set_birth_arate(birth_arate);
+
+
     using namespace google::protobuf::internal;
-    down_cast<StraussState*>(out)->set_beta(beta);
-    down_cast<StraussState*>(out)->set_gamma(gamma);
-    down_cast<StraussState*>(out)->set_r(R);
-    down_cast<StraussState *>(out)->set_birth_prob(birth_prob);
-    down_cast<StraussState *>(out)->set_birth_arate(birth_arate);
+    down_cast<PPState *>(out)->mutable_strauss_state()->CopyFrom(state);
 }

@@ -52,6 +52,14 @@ class BasePP {
 
     virtual void get_state_as_proto(google::protobuf::Message *out) = 0;
 
+    /*
+    * this method is called by ConditionalMCMC::sample_means()
+    * it should return a value for the standard deviation of the proposal
+    * density in such a way that it gives sufficient high probability
+    * to regions where the repulsion is lower.
+    */
+    virtual double estimate_mean_proposal_sigma() = 0;
+
     MatrixXd get_ranges() const {return ranges;}
 };
 
