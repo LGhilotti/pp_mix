@@ -5,6 +5,8 @@ BasePP *make_pp(const Params &params)
     BasePP *out;
     if (params.has_strauss())
         out = make_strauss(params.strauss());
+    else if (params.has_nrep())
+        out = make_nrep(params.nrep());
 
     return out;
 }
@@ -23,6 +25,11 @@ BasePP *make_strauss(const StraussParams &params) {
         out = new StraussPP(params.prior());
 
     return out;
+}
+
+BasePP *make_nrep(const NrepParams &params)
+{
+    return new NrepPP(params.u(), params.p());
 }
 
 BaseJump *make_jump(const Params &params)

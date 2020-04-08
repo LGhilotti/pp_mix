@@ -13,6 +13,7 @@
 
 #include "point_process/base_pp.hpp"
 #include "point_process/strauss_pp.hpp"
+#include "point_process/nrep_pp.hpp"
 
 #include "conditional_mcmc.hpp"
 
@@ -21,6 +22,8 @@
 BasePP* make_pp(const Params& params);
 
 BasePP* make_strauss(const StraussParams& params);
+
+BasePP* make_nrep(const NrepParams&params);
 
 
 BaseJump* make_jump(const Params& params);
