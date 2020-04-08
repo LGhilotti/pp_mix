@@ -57,6 +57,8 @@ void to_proto(const VectorXd &vec, EigenVector *out);
 
 std::vector<VectorXd> to_vector_of_vectors(const MatrixXd& mat);
 
+MatrixXd pairwise_dist_sq(const MatrixXd &x, const MatrixXd &y);
 
+MatrixXd pairwise_dist_sq(const MatrixXd &x);
 
 #endif 

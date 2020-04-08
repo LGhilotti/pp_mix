@@ -132,3 +132,18 @@ std::vector<VectorXd> to_vector_of_vectors(const MatrixXd &mat)
 
     return out;
 }
+
+MatrixXd pairwise_dist_sq(const MatrixXd &x, const MatrixXd &y)
+{
+    MatrixXd D(x.rows(), y.rows());
+    int i = 0;
+    for (int i = 0; i < y.rows(); i++)
+        D.col(i) = (x.rowwise() - y.row(i)).rowwise().squaredNorm();
+
+    return D;
+}
+
+MatrixXd pairwise_dist_sq(const MatrixXd &x)
+{
+    return pairwise_dist_sq(x, x);
+}
