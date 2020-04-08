@@ -64,7 +64,6 @@ std::deque<py::bytes> run_pp_mix_multi(
     Params params, const Eigen::MatrixXd &ranges)
 {
 
-    std::cout << "run_pp_mix_multi" << std::endl;
     int log_every = 200;
     std::deque<py::bytes> out;
     BasePP *pp_mix = make_pp(params);

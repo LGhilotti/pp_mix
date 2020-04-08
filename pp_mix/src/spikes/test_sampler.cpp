@@ -10,10 +10,11 @@
 #include "../precs/gamma.hpp"
 #include "../../protos/cpp/state.pb.h"
 #include "../../protos/cpp/params.pb.h"
+#include "../point_process/nrep_pp.hpp"
 
 
 Eigen::MatrixXd simulate_multivariate() {
-    int data_per_clus = 50;
+    int data_per_clus = 100;
     Eigen::MatrixXd data = Eigen::MatrixXd(data_per_clus * 2, 2);
     Eigen::VectorXd mean1(2);
     mean1 << 3.0, 3.0;
@@ -73,7 +74,9 @@ int main() {
         "/home/mario/PhD/finiteDPP/pp_mix/pp_mix/resources/sampler_params.asciipb";
     Params params = loadTextProto<Params>(params_file);
 
-    BasePP *pp_mix = make_pp(params);
+    // BasePP *pp_mix = make_pp(params);
+    BasePP* pp_mix = new NrepPP(0.1, 0.95);
+    pp_mix->set_ranges(ranges);
     BaseJump *h = make_jump(params);
 
     // GammaParams *prec_params = params.mutable_gamma_prec();
@@ -81,7 +84,7 @@ int main() {
     // prec_params->set_beta(2);
 
     BasePrec *g = make_prec(params);
-    pp_mix->set_ranges(ranges);
+
 
     // UnivariateConditionalMCMC sampler(pp_mix, h, g);
     // std::vector<double> datavec(data.data(), data.data() + data.size());
@@ -90,17 +93,22 @@ int main() {
     std::vector<Eigen::VectorXd> datavec = to_vector_of_vectors(data);
 
     sampler.initialize(datavec);
+    // std::deque<MultivariateMixtureState> chains;
 
+    // sampler.set_verbose();
     for (int i = 0; i < 10000; i++)
         sampler.run_one();
 
-    // int niter = 5000;
-    // for (int i = 0; i < niter; i++) {
-    //     sampler.run_one();
+    int niter = 10000;
+    for (int i = 0; i < niter; i++) {
+        sampler.run_one();
+        // MultivariateMixtureState state;
+        // sampler.get_state_as_proto(&state);
+        // chains.push_back(state);
 
-    //     if (i % 1000 == 0) {
-    //         std::cout << "iter: " << i << " / " << niter << std::endl;
-    //     }
-    // }
+        if (i % 1000 == 0) {
+            std::cout << "iter: " << i << " / " << niter << std::endl;
+        }
+    }
     sampler.print_debug_string();
 }
