@@ -40,8 +40,11 @@ void ConditionalMCMC<Prec, prec_t, data_t>::initialize(const std::vector<data_t>
     a_jumps = VectorXd::Ones(nclus) / (nclus + 1);
     na_jumps = VectorXd::Ones(1) / (nclus + 1);
 
-    a_means = pp_mix->sample_uniform(nclus);
+    // a_means = pp_mix->sample_uniform(nclus);
     na_means = pp_mix->sample_uniform(1);
+
+    std::cout << "na_means: " << na_means << std::endl;
+
 
     a_precs.resize(nclus);
     na_precs.resize(1);
@@ -248,10 +251,11 @@ void ConditionalMCMC<Prec, prec_t, data_t>::_relabel()
 template<class Prec, typename prec_t, typename data_t>
 void ConditionalMCMC<Prec, prec_t, data_t>::sample_means()
 {
-    // We update each mean separately, using the Papangelou as full conditional
+    // We update each mean separately
     for (int i=0; i < a_means.rows(); i++) {
         MatrixXd others;
-        const MatrixXd& proposal_var_chol = MatrixXd::Identity(dim, dim);
+        double sigma = pp_mix->estimate_mean_proposal_sigma();
+        const MatrixXd &proposal_var_chol = MatrixXd::Identity(dim, dim) * sigma;
         double currlik, proplik, prior_ratio, lik_ratio, arate;
 
         const VectorXd& currmean = a_means.row(i).transpose();
@@ -261,7 +265,6 @@ void ConditionalMCMC<Prec, prec_t, data_t>::sample_means()
             currmean, proposal_var_chol, Rng::Instance().get());
         proplik = normal_lpdf_single_multi(data_by_clus[i], prop, a_precs[i]);
 
-        
         lik_ratio = proplik - currlik;
         if (i==0) {
             prior_ratio = pp_mix->dens(prop) - pp_mix->dens(currmean);
