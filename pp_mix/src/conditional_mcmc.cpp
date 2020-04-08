@@ -47,7 +47,9 @@ void MultivariateConditionalMCMC::get_state_as_proto(
 
     *out->mutable_clus_alloc() = {clus_alloc.data(), clus_alloc.data() + ndata};
 
-    StraussState pp_params;
+    out->set_u(u);
+
+    PPState pp_params;
     pp_mix->get_state_as_proto(&pp_params);
     out->mutable_pp_state()->CopyFrom(pp_params);
 }
@@ -89,7 +91,9 @@ void UnivariateConditionalMCMC::get_state_as_proto(
 
     *out->mutable_clus_alloc() = {clus_alloc.data(), clus_alloc.data() + ndata};
 
-    StraussState pp_params;
+    out->set_u(u);
+
+    PPState pp_params;
     pp_mix->get_state_as_proto(&pp_params);
     out->mutable_pp_state()->CopyFrom(pp_params);
 }
