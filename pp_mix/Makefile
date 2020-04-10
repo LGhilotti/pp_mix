@@ -34,6 +34,7 @@ OUR_SRCS := $(filter-out ./src/python_exports.cpp, $(OUR_SRCS))
 
 SRCS = $(PROTO_SRCS) $(PG_SRCS) $(OUR_SRCS) $(PP_SRCS)
 OBJS = $(subst .cpp,.o, $(SRCS))
+DEPENDS := $(patsubst %.cpp,%.d,$(SRCS))
 
 SPIKES_EXECS = $(subst .cpp,.out, $(SPIKES_SRCS))
 SPIKES_OBJS =  $(subst .cpp,.o, $(SPIKES_SRCS))
@@ -63,10 +64,10 @@ $(SPIKES_EXECS): %.out: %.o $(OBJS)
 $(SPIKES_OBJS): %.o: %.cpp
 		$(CXX) $(CFLAGS) -c $< -o $@
 
-%.o : %.cpp
-	$(CXX) $(CFLAGS) -c $< -o $@
+%.o : %.cpp Makefile
+	$(CXX) $(CFLAGS) -MMD -MP -c $< -o $@
 
--include $(OBJS:%.o=%.d)
+-include $(DEPENDS)
 
 clean:
 	rm $(OBJS) $(SPIKES_OBJS) run_from_file.o
