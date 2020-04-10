@@ -5,12 +5,15 @@
 #include "../simulate_straus.hpp"
 #include "../../protos/cpp/params.pb.h"
 #include <google/protobuf/stubs/casts.h>
+#include <boost/math/distributions/chi_squared.hpp>
 
 class StraussPP: public BasePP {
  protected:
     double beta, gamma, R;
     bool fixed_params = false;
     StraussParams::Priors priors;
+
+    double sqrt_chisq_quantile;
 
  public:
 
@@ -24,6 +27,8 @@ class StraussPP: public BasePP {
         StraussParams::Priors priors, double beta, double gamma, double R);
 
     ~StraussPP() {}
+
+    void initialize() override;
 
     double dens(const MatrixXd &x, bool log = true) override;
 
@@ -39,11 +44,9 @@ class StraussPP: public BasePP {
 
     void update_hypers(const MatrixXd &active, const MatrixXd &non_active) override;
 
-    MatrixXd pairwise_dist_sq(const MatrixXd &x);
-
-    MatrixXd pairwise_dist_sq(const MatrixXd &x, const MatrixXd &y);
-
     void get_state_as_proto(google::protobuf::Message *out);
+
+    double estimate_mean_proposal_sigma();
 };
 
 #endif

@@ -18,7 +18,7 @@ class GammaJump: public BaseJump {
     double sample_tilted(double u) override;
 
     double sample_given_data(
-        const std::vector<VectorXd> &data, double curr, double u) override;
+        int ndata, double curr, double u) override;
 
     double laplace(double u) override;
 };

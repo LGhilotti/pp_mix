@@ -15,21 +15,21 @@ CFLAGS = \
 	-I$(STAN_ROOT_DIR)/lib/tbb_2019_U8/include  \
 	-I$(PROTO_DIR) \
 	-D_REENTRANT -fPIC \
-	-O3  -march=native -msse2 -funroll-loops -ftree-vectorize -fopenmp 
+	-g # -march=native -msse2 -funroll-loops -ftree-vectorize -fopenmp 
 LDLIBS = \
  	$(shell pkg-config --libs protobuf) -L$(STAN_ROOT_DIR)/lib/tbb \
 	-lgsl -lgslcblas -lpthread -ltbb -Wl,-rpath,"$(STAN_ROOT_DIR)/lib/tbb"
-LDFLAGS = -D_REENTRANT -O3 -fopenmp
+LDFLAGS = -D_REENTRANT -g # -fopenmp
 
 PROTO_SRCS = $(wildcard $(PROTO_DIR)/cpp/*.cpp)
 PG_SRCS = $(wildcard $(PG_DIR)/*.cpp) $(wildcard $(PG_DIR)/include/*.cpp)
 SPIKES_SRCS = $(wildcard $(SPIKES_DIR)/*.cpp)
-OUR_SRCS = $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/covs/*.cpp) \
+OUR_SRCS = $(wildcard $(SRC_DIR)/*.cpp) \
+		   $(wildcard $(SRC_DIR)/precs/*.cpp) \
 		   $(wildcard $(SRC_DIR)/jumps/*.cpp) \
 		   $(wildcard $(SRC_DIR)/point_process/*.cpp)
 
 PP_SRCS = $(wildcard $(SRC_DIR)/pointprocess/*.cpp)
-
 OUR_SRCS := $(filter-out ./src/python_exports.cpp, $(OUR_SRCS))
 
 SRCS = $(PROTO_SRCS) $(PG_SRCS) $(OUR_SRCS) $(PP_SRCS)

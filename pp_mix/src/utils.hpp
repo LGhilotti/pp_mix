@@ -10,7 +10,7 @@
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/util/delimited_message_util.h>
 #include <stan/math/prim/mat.hpp>
-#include "covs/covmat.hpp"
+#include "precs/precmat.hpp"
 #include "../protos/cpp/state.pb.h"
 
 using namespace Eigen;
@@ -38,12 +38,6 @@ T loadTextProto(std::string filename)
     return out;
 }
 
-double multi_normal_lpdf(
-    const VectorXd &x, const VectorXd &mu, const CovMat &sigma);
-
-double multi_normal_lpdf(
-    const std::vector<VectorXd> &x, const VectorXd &mu, const CovMat &sigma);
-
 double o_multi_normal_prec_lpdf(
     const VectorXd &x, const VectorXd &mu, const PrecMat &sigma);
 
@@ -60,5 +54,11 @@ double trunc_normal_lpdf(
 void to_proto(const MatrixXd &mat, EigenMatrix *out);
 
 void to_proto(const VectorXd &vec, EigenVector *out);
+
+std::vector<VectorXd> to_vector_of_vectors(const MatrixXd& mat);
+
+MatrixXd pairwise_dist_sq(const MatrixXd &x, const MatrixXd &y);
+
+MatrixXd pairwise_dist_sq(const MatrixXd &x);
 
 #endif 

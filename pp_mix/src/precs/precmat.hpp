@@ -4,30 +4,6 @@
 #include <Eigen/Dense>
 using namespace Eigen;
 
-class CovMat {
- protected:
-    MatrixXd cov;
-    LLT<MatrixXd> cho_factor;
-    MatrixXd cho_factor_eval;
-    double log_det;
-
- public:
-    CovMat() {}
-    ~CovMat() {}
-
-    CovMat(MatrixXd cov);
-
-    CovMat(const CovMat &other);
-
-    MatrixXd get_cov() const;
-
-    LLT<MatrixXd> get_cho_factor() const;
-
-    MatrixXd get_cho_factor_eval() const;
-
-    double get_log_det() const;
-};
-
 
 class PrecMat {
  protected:
@@ -35,12 +11,18 @@ class PrecMat {
    LLT<MatrixXd> cho_factor;
    MatrixXd cho_factor_eval;
    double log_det;
+   double univariate_val;
+   bool is_univariate = false;
 
  public:
    PrecMat() {}
    ~PrecMat() {}
 
    PrecMat(const MatrixXd &prec);
+
+   PrecMat(const double &prec): univariate_val(prec) {
+      is_univariate = true;
+   }
 
    MatrixXd get_prec() const;
 

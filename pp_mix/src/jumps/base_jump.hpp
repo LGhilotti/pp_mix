@@ -13,7 +13,7 @@ class BaseJump {
     virtual double sample_tilted(double u) = 0;
 
     virtual double sample_given_data(
-        const std::vector<VectorXd> &data, double curr, double u) = 0;
+        int ndata, double curr, double u) = 0;
 
     virtual double laplace(double u) = 0;
 };

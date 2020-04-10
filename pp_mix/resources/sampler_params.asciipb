@@ -25,6 +25,6 @@ wishart {
 }
 
 gamma_jump {
-    alpha: 1
-    beta: 5
+    alpha: 2
+    beta: 2
 }
