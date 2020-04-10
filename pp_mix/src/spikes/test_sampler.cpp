@@ -111,4 +111,5 @@ int main() {
         }
     }
     sampler.print_debug_string();
+    std::cout << "ACCEPTANCE RATE: " << sampler.mean_acceptance_rate() << std::endl;
 }
