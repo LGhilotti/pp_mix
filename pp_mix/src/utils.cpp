@@ -104,6 +104,9 @@ double trunc_normal_rng(
 
 double trunc_normal_lpdf(double x, double mu, double sigma, double lower, double upper)
 {
+    if ((x < lower) || (x > upper))
+        return stan::math::NEGATIVE_INFTY;
+
     double out = stan::math::normal_lpdf(x, mu, sigma);
     out -= stan::math::log_diff_exp(
         stan::math::normal_lcdf(upper, mu, sigma),
