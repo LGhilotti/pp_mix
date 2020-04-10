@@ -48,6 +48,8 @@ class ConditionalMCMC {
 
      // FOR DEBUGGING
      bool verbose = false;
+     int acc_mean = 0;
+     int tot_mean = 0;
 
  public:
      ConditionalMCMC() {}
@@ -92,6 +94,10 @@ class ConditionalMCMC {
         const prec_t &sigma) = 0;
 
     virtual void set_dim(const data_t& datum) = 0;
+
+    double mean_acceptance_rate() {
+        return (1.0 * acc_mean) / (1.0 * tot_mean);
+    }
 };
 
 
