@@ -11,23 +11,23 @@ void ConditionalMCMC<Prec, prec_t, data_t>::initialize(const std::vector<data_t>
     ndata = data.size();
     set_dim(data[0]);
 
-    // MatrixXd ranges = pp_mix->get_ranges();
+    MatrixXd ranges = pp_mix->get_ranges();
 
-    // a_means = MatrixXd::Zero(std::pow(2, dim), dim);
-    // for (int i=0; i < dim; i++) {
-    //     int start = 0;
-    //     int step = a_means.rows() / (std::pow(2, i+1));
-    //     while(start < a_means.rows()) {
-    //         a_means.block(start, i, step, 1) = \
-    //             MatrixXd::Constant(step, 1, ranges(0, i) / 2.0);
-    //         start += step;
-    //         a_means.block(start, i, step, 1) = \
-    //             MatrixXd::Constant(step, 1, ranges(1, i) / 2.0);
-    //         start += step;
-    //     }
-    // }
+    a_means = MatrixXd::Zero(std::pow(2, dim), dim);
+    for (int i=0; i < dim; i++) {
+        int start = 0;
+        int step = a_means.rows() / (std::pow(2, i+1));
+        while(start < a_means.rows()) {
+            a_means.block(start, i, step, 1) = \
+                MatrixXd::Constant(step, 1, ranges(0, i) / 2.0);
+            start += step;
+            a_means.block(start, i, step, 1) = \
+                MatrixXd::Constant(step, 1, ranges(1, i) / 2.0);
+            start += step;
+        }
+    }
 
-    a_means = MatrixXd::Zero(1, 2);
+    // a_means = MatrixXd::Zero(1, 2);
     nclus = a_means.rows();
     clus_alloc = VectorXi::Zero(ndata);
     VectorXd probas = VectorXd::Ones(nclus) / nclus;
@@ -42,6 +42,7 @@ void ConditionalMCMC<Prec, prec_t, data_t>::initialize(const std::vector<data_t>
     // a_means = pp_mix->sample_uniform(nclus);
     na_means = pp_mix->sample_uniform(1);
 
+    std::cout << "a_means: \n" << a_means << std::endl;
     std::cout << "na_means: " << na_means << std::endl;
 
 
@@ -252,8 +253,15 @@ void ConditionalMCMC<Prec, prec_t, data_t>::sample_means()
 {
     // We update each mean separately
     for (int i=0; i < a_means.rows(); i++) {
+        tot_mean += 1;
         MatrixXd others;
-        double sigma = pp_mix->estimate_mean_proposal_sigma();
+        double sigma;
+        if (uniform_rng(0, 1, Rng::Instance().get()) < 0.1)
+            sigma = pp_mix->estimate_mean_proposal_sigma();
+        else
+            sigma = 0.1;
+            
+        //  sigma = pp_mix->estimate_mean_proposal_sigma();
         const MatrixXd &proposal_var_chol = MatrixXd::Identity(dim, dim) * sigma;
         double currlik, proplik, prior_ratio, lik_ratio, arate;
 
@@ -290,8 +298,10 @@ void ConditionalMCMC<Prec, prec_t, data_t>::sample_means()
         }
 
         arate = lik_ratio + prior_ratio;
-        if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < arate)
+        if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < arate) {
             a_means.row(i) = prop.transpose();
+            acc_mean += 1;
+        }
     }
 }
 
