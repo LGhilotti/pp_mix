@@ -23,6 +23,8 @@ StraussPP::StraussPP(
 }
 
 void StraussPP::initialize() {
+    am_beta = AdaptiveMetropolis<double, double>(1);
+    am_beta.init();
     c_star = beta;
     boost::math::chi_squared chisq(dim);
     sqrt_chisq_quantile = sqrt(quantile(complement(chisq, 0.1)));
@@ -122,27 +124,33 @@ void StraussPP::update_hypers(
     // UPDATE BETA
     upper = priors.beta_u();
     lower = priors.beta_l();
-    scale = (upper - lower) / 3;
+    scale = (upper - lower) / 5;
 
     prop = trunc_normal_rng(beta, scale, lower, upper, Rng::Instance().get());
 
-    arate = trunc_normal_lpdf(prop, beta, scale, lower, upper) -
-            trunc_normal_lpdf(beta, prop, scale, lower, upper);
+    double proprate = trunc_normal_lpdf(prop, beta, scale, lower, upper) -
+                      trunc_normal_lpdf(beta, prop, scale, lower, upper);
 
-    arate += dens_from_pdist(dists, prop, gamma, R) - 
-             dens_from_pdist(dists, beta, gamma, R);
+    arate = proprate;
+
+    double likrate = dens_from_pdist(dists, prop, gamma, R) -
+                     dens_from_pdist(dists, beta, gamma, R);
+    arate += likrate;
 
     aux_var = simulate_strauss_moller(ranges, prop, gamma, R);
     aux_dists = pairwise_dist_sq(aux_var);
 
-    arate += dens_from_pdist(aux_dists, beta, gamma, R) -
-             dens_from_pdist(aux_dists, prop, gamma, R);
-
-    if (uniform_rng(0, 1, Rng::Instance().get()) < arate) {
+    double aux_lik_rate = dens_from_pdist(aux_dists, beta, gamma, R) -
+                          dens_from_pdist(aux_dists, prop, gamma, R);
+    arate += aux_lik_rate;
+    
+    if (log(uniform_rng(0, 1, Rng::Instance().get())) < arate)
+    {
         beta = prop;
-        std::cout << "accepted beta" << std::endl;
     }
-
+    
+    // std::cout << "####################################\n"
+    //           << std::endl;
     // // UPDATE Gamma
     // upper = priors.gamma_u();
     // lower = priors.gamma_l();
