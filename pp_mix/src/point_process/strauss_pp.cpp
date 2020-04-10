@@ -6,14 +6,12 @@ StraussPP::StraussPP(StraussParams::Priors priors) : priors(priors)
     beta = (priors.beta_u() + priors.beta_l()) / 2.0;
     beta = (priors.gamma_u() + priors.gamma_l()) / 2.0;
     beta = (priors.r_u() + priors.r_l()) / 2.0;
-    c_star = beta;
     fixed_params = false;
 }
 
 StraussPP::StraussPP(
         double beta, double gamma, double R):
             beta(beta), gamma(gamma), R(R) {
-    c_star = beta;
     fixed_params = true;
 }
 
@@ -21,8 +19,13 @@ StraussPP::StraussPP(
     StraussParams::Priors priors, double beta, double gamma, double R) : 
         priors(priors), beta(beta), gamma(gamma), R(R)
 {
-    c_star = beta;
     fixed_params = false;
+}
+
+void StraussPP::initialize() {
+    c_star = beta;
+    boost::math::chi_squared chisq(dim);
+    sqrt_chisq_quantile = sqrt(quantile(complement(chisq, 0.1)));
 }
 
 double StraussPP::dens(const MatrixXd &x, bool log) {
@@ -62,26 +65,10 @@ double StraussPP::dens_from_pdist(const MatrixXd &dists, double beta_, double ga
 double StraussPP::papangelou(
     MatrixXd xi, const MatrixXd &x, bool log)
 {   
-
-    // std::cout << "***papangelou***" << std::endl;
-    // std::cout << "xi: " << xi.transpose() << std::endl;
-    // std::cout << "x: \n" << x << std::endl;
-    // std::cout << "R: " << R << std::endl;
     double out;
-    // if (x.rows() == 0)
-    //     out = std::log(beta);
-    // else {
-    //     if (xi.cols() == 1)
-    //         xi.transposeInPlace();
-    //     MatrixXd dists = pairwise_dist_sq(xi, x);
-    //     out = std::log(gamma) * (dists.array() < R * R).count();
-    // }
-
     if (xi.cols() == 1)
         xi.transposeInPlace();
     MatrixXd dists = pairwise_dist_sq(xi, x);
-    // std::cout << "dists\n" << dists << std::endl;
-    // std::cout << "cnt: " << (dists.array() < R * R).count() << std::endl;
     out = std::log(gamma) * (dists.array() < R * R).count();
     if (!log)
         out = std::exp(out);
@@ -107,8 +94,7 @@ double StraussPP::phi_star_dens(VectorXd xi, bool log)
 
 
 double StraussPP::estimate_mean_proposal_sigma() {
-    boost::math::chi_squared chisq(dim);
-    return sqrt(R * R / quantile(complement(chisq, 0.1)));
+    return R / sqrt_chisq_quantile;
 }
 
 void StraussPP::update_hypers(
@@ -212,7 +198,6 @@ void StraussPP::get_state_as_proto(google::protobuf::Message *out)
     state.set_r(R);
     state.set_birth_prob(birth_prob);
     state.set_birth_arate(birth_arate);
-
 
     using namespace google::protobuf::internal;
     down_cast<PPState *>(out)->mutable_strauss_state()->CopyFrom(state);

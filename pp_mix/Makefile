@@ -15,11 +15,11 @@ CFLAGS = \
 	-I$(STAN_ROOT_DIR)/lib/tbb_2019_U8/include  \
 	-I$(PROTO_DIR) \
 	-D_REENTRANT -fPIC \
-	-O3 -march=native -msse2 -funroll-loops -ftree-vectorize -fopenmp 
+	-g # -march=native -msse2 -funroll-loops -ftree-vectorize -fopenmp 
 LDLIBS = \
  	$(shell pkg-config --libs protobuf) -L$(STAN_ROOT_DIR)/lib/tbb \
 	-lgsl -lgslcblas -lpthread -ltbb -Wl,-rpath,"$(STAN_ROOT_DIR)/lib/tbb"
-LDFLAGS = -D_REENTRANT -O3 -fopenmp
+LDFLAGS = -D_REENTRANT -g # -fopenmp
 
 PROTO_SRCS = $(wildcard $(PROTO_DIR)/cpp/*.cpp)
 PG_SRCS = $(wildcard $(PG_DIR)/*.cpp) $(wildcard $(PG_DIR)/include/*.cpp)

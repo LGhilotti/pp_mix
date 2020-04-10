@@ -12,6 +12,8 @@ void BasePP::set_ranges(const MatrixXd &ranges) {
     std::cout << "ranges: \n" << ranges << std::endl;
     diff_range = (ranges.row(1) - ranges.row(0)).transpose();
     vol_range = diff_range.prod();
+
+    initialize();
 }
 
 MatrixXd BasePP::sample_uniform(int npoints)

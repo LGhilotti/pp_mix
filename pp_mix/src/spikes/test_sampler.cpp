@@ -74,8 +74,8 @@ int main() {
         "/home/mario/PhD/finiteDPP/pp_mix/pp_mix/resources/sampler_params.asciipb";
     Params params = loadTextProto<Params>(params_file);
 
-    // BasePP *pp_mix = make_pp(params);
-    BasePP* pp_mix = new NrepPP(0.1, 0.95);
+    BasePP *pp_mix = make_pp(params);
+    // BasePP* pp_mix = new NrepPP(0.1, 0.95);
     pp_mix->set_ranges(ranges);
     BaseJump *h = make_jump(params);
 
@@ -93,13 +93,13 @@ int main() {
     std::vector<Eigen::VectorXd> datavec = to_vector_of_vectors(data);
 
     sampler.initialize(datavec);
-    // std::deque<MultivariateMixtureState> chains;
+    std::deque<MultivariateMixtureState> chains;
 
     // sampler.set_verbose();
-    for (int i = 0; i < 10000; i++)
+    for (int i = 0; i < 1000; i++)
         sampler.run_one();
 
-    int niter = 10000;
+    int niter = 1000;
     for (int i = 0; i < niter; i++) {
         sampler.run_one();
         // MultivariateMixtureState state;

@@ -34,6 +34,8 @@ class BasePP {
 
     virtual ~BasePP() {}
 
+    virtual void initialize()  = 0;
+
     virtual double dens(const MatrixXd& x, bool log=true) = 0;
 
     virtual double papangelou(

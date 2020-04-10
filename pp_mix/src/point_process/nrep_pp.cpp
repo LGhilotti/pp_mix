@@ -1,24 +1,24 @@
 #include "nrep_pp.hpp"
 
 
-NrepPP::NrepPP(double u, double p): u(u), p(p) {
-    c_star = 1.0;
-}
+NrepPP::NrepPP(double u, double p): u(u), p(p) { }
 
+void NrepPP::initialize()
+{
+    c_star = 1.0;
+    calibrate();
+}
 
 void NrepPP::calibrate() 
 {
     boost::math::gamma_distribution<double> gamma((1.0 * dim) / 2, 0.5);
     double q = quantile(complement(gamma, 1.0 - p));
     tau = q / (-log(1.0 - u));
-    calibrated = true;
     std::cout << "tau: " << tau << std::endl;
 }
 
 double NrepPP::dens(const MatrixXd &x, bool log)
 {   
-    if (!calibrated)
-        calibrate();
 
     double out = 0.0;
     if ((x.size() == 1 && dim == 1) || (x.rows() == 1 & dim > 1) ||
@@ -47,9 +47,6 @@ double NrepPP::dens(const MatrixXd &x, bool log)
 
 double NrepPP::papangelou(MatrixXd xi, const MatrixXd &x, bool log) 
 {
-    if (!calibrated)
-        calibrate();
-
     double out = 0.0;
     if (xi.cols() == 1)
         xi.transposeInPlace();
@@ -68,8 +65,6 @@ double NrepPP::papangelou(MatrixXd xi, const MatrixXd &x, bool log)
 
 VectorXd NrepPP::phi_star_rng()
 {
-    if (!calibrated)
-        calibrate();
     VectorXd out(dim);
     for (int i=0; i < dim; i++) {
         out(i) = trunc_normal_rng(0.0, 1.0, ranges(0, i), ranges(1, i),
@@ -81,8 +76,6 @@ VectorXd NrepPP::phi_star_rng()
 
 double NrepPP::phi_star_dens(VectorXd xi, bool log) 
 {
-    if (!calibrated)
-        calibrate();
 
     double out = multi_trunc_normal_lpdf(xi);
     if (!log)
@@ -101,7 +94,7 @@ void NrepPP::get_state_as_proto(google::protobuf::Message *out)
 }
 
 double NrepPP::estimate_mean_proposal_sigma() {
-    return 0.5;
+    return 0.25;
 }
 
 double NrepPP::multi_trunc_normal_lpdf(const VectorXd &x) {

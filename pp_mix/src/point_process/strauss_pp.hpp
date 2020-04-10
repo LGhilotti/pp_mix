@@ -13,6 +13,8 @@ class StraussPP: public BasePP {
     bool fixed_params = false;
     StraussParams::Priors priors;
 
+    double sqrt_chisq_quantile;
+
  public:
 
     StraussPP() {}
@@ -25,6 +27,8 @@ class StraussPP: public BasePP {
         StraussParams::Priors priors, double beta, double gamma, double R);
 
     ~StraussPP() {}
+
+    void initialize() override;
 
     double dens(const MatrixXd &x, bool log = true) override;
 

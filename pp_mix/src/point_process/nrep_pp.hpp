@@ -9,13 +9,14 @@
 class NrepPP: public BasePP {
 protected:
     double tau, u, p;
-    bool calibrated = false;
 
 public:
     NrepPP() {}
     ~NrepPP() {}
 
     NrepPP(double u, double p);
+
+    void initialize() override;
 
     /*
     * This method performs the calibration of \tau proposed in

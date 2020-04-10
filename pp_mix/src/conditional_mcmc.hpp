@@ -47,13 +47,7 @@ class ConditionalMCMC {
      Prec *g;
 
      // FOR DEBUGGING
-     double  birth_prob, arate;
      bool verbose = false;
-
-     
-     // std::function<
-     //     double(const std::vector<VectorXd>, const VectorXd, const PrecMat)>
-     //     normal_lpdf_multi = o_multi_normal_prec_lpdf;
 
  public:
      ConditionalMCMC() {}
