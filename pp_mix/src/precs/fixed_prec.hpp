@@ -18,6 +18,8 @@ public:
    double sample_given_data(
        const std::vector<double> &data, const double &curr,
        const VectorXd &mean) override { return sigma; }
+
+   double mean() const override { return sigma; }
 };
 
 class FixedPrec : public BaseMultiPrec
@@ -36,6 +38,8 @@ public:
    PrecMat sample_given_data(
        const std::vector<VectorXd> &data, const PrecMat &curr,
        const VectorXd &mean) override;
+
+   PrecMat mean() const override;
 };
 
 

@@ -21,9 +21,9 @@ protected:
     MatrixXd inv_psi;
 
 public:
-    Wishart(double df, int dim, double sigma=1.0);
+    Wishart(double df, int dim, double sigma);
 
-    Wishart(double df, const MatrixXd &psi);
+    // Wishart(double df, const MatrixXd &psi);
 
     ~Wishart() {}
 
@@ -32,6 +32,12 @@ public:
     PrecMat sample_given_data(
         const std::vector<VectorXd> &data, const PrecMat &curr,
         const VectorXd &mean) override;
+
+    PrecMat mean() const override;
+
+    double get_df() const {return df;}
+
+    MatrixXd get_psi() const {return psi;}
 };
 
 #endif 

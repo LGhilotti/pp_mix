@@ -67,10 +67,11 @@ BasePrec *make_fixed_prec(const FixedMultiPrecParams &params)
 }
 
 BasePrec *make_wishart(const WishartParams &params) {
+    params.PrintDebugString();
     double sigma = 1.0;
-    if (!params.sigma__case())
+    if (params.sigma() > 0) {
         sigma = params.sigma();
-
+    }
     return new Wishart(params.nu(), params.dim(), sigma);
 }
 

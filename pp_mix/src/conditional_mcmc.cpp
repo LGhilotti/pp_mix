@@ -2,12 +2,25 @@
 #include "conditional_mcmc_imp.hpp"
 
 MultivariateConditionalMCMC::MultivariateConditionalMCMC(
-    BasePP *pp_mix, BaseJump *h, BasePrec *g) : 
+    BasePP *pp_mix, BaseJump *h, BasePrec *g, const Params& params) : 
         ConditionalMCMC<BaseMultiPrec, PrecMat, VectorXd>()
 {
     set_pp_mix(pp_mix);
     set_jump(h);
     set_prec(dynamic_cast<BaseMultiPrec*>(g));
+    this->params = params;
+}
+
+VectorXd MultivariateConditionalMCMC::compute_grad_for_clus(
+    int clus, VectorXd mean)
+{
+    VectorXd grad = VectorXd::Zero(dim);
+    for (const VectorXd datum : data_by_clus[clus])
+        grad += datum - mean;
+        // TODO FIXME
+        // grad += a_precs[clus].get_prec() * (datum - mean);
+
+    return grad;
 }
 
 void MultivariateConditionalMCMC::get_state_as_proto(
@@ -54,13 +67,32 @@ void MultivariateConditionalMCMC::get_state_as_proto(
     out->mutable_pp_state()->CopyFrom(pp_params);
 }
 
+void MultivariateConditionalMCMC::print_data_by_clus(int clus) 
+{
+    for (const VectorXd &d: data_by_clus[clus])
+        std::cout << d.transpose() << std::endl;
+}
+
 UnivariateConditionalMCMC::UnivariateConditionalMCMC(
-    BasePP *pp_mix, BaseJump *h, BasePrec *g) : 
-        ConditionalMCMC<BaseUnivPrec, double, double>()
+    BasePP *pp_mix, BaseJump *h, BasePrec *g, const Params &params) : ConditionalMCMC<BaseUnivPrec, double, double>()
 {
     set_pp_mix(pp_mix);
     set_jump(h);
     set_prec(dynamic_cast<BaseUnivPrec *>(g));
+    this->params = params;
+}
+
+VectorXd UnivariateConditionalMCMC::compute_grad_for_clus(
+    int clus, VectorXd mean)
+{
+    double grad = 0.0;
+    double mean_ = mean(0);
+    for (const double datum : data_by_clus[clus])
+        grad += (mean_ * (-1) + datum) * a_precs[clus];
+
+    VectorXd out(1);
+    out(0) = grad;
+    return out;
 }
 
 void UnivariateConditionalMCMC::get_state_as_proto(
@@ -96,4 +128,11 @@ void UnivariateConditionalMCMC::get_state_as_proto(
     PPState pp_params;
     pp_mix->get_state_as_proto(&pp_params);
     out->mutable_pp_state()->CopyFrom(pp_params);
+}
+
+void UnivariateConditionalMCMC::print_data_by_clus(int clus)
+{
+    for (const double &d : data_by_clus[clus])
+        std::cout << d << ", ";
+    std::cout << std::endl;
 }

@@ -11,19 +11,20 @@
 #include "../../protos/cpp/state.pb.h"
 #include "../../protos/cpp/params.pb.h"
 #include "../point_process/nrep_pp.hpp"
+#include "../precs/wishart.hpp"
 
 
 Eigen::MatrixXd simulate_multivariate() {
+    int dim = 50;
     int data_per_clus = 100;
-    Eigen::MatrixXd data = Eigen::MatrixXd(data_per_clus * 2, 2);
-    Eigen::VectorXd mean1(2);
-    mean1 << 3.0, 3.0;
+    Eigen::MatrixXd data = Eigen::MatrixXd(data_per_clus * 2, dim);
+    Eigen::VectorXd mean1 = Eigen::VectorXd::Ones(dim) * 5.0;
 
-    Eigen::VectorXd mean2(2);
-    mean2 << -3.0, -3.0;
+    Eigen::VectorXd mean2 = Eigen::VectorXd::Ones(dim) * (-5.0);
 
     double sigma = 0.3;
-    Eigen::MatrixXd cov = Eigen::MatrixXd::Identity(2, 2) * sigma;
+    Eigen::MatrixXd cov = Eigen::MatrixXd::Identity(dim, dim) * sigma;
+
 
     for (int i = 0; i < data_per_clus; i++)
     {
@@ -48,13 +49,13 @@ Eigen::MatrixXd simulate_univariate() {
     for (int i = 0; i < data_per_clus; i++)
     {
         data(i) = stan::math::normal_rng(
-            3, 0.3, Rng::Instance().get());
+            2, 0.8, Rng::Instance().get());
     }
 
     for (int i = data_per_clus; i < 2 * data_per_clus; i++)
     {
         data(i) = stan::math::normal_rng(
-            -3, 0.3, Rng::Instance().get());
+            -2, 0.8, Rng::Instance().get());
     }
 
     return data;
@@ -79,12 +80,14 @@ int main() {
     pp_mix->set_ranges(ranges);
     BaseJump *h = make_jump(params);
 
+    params.mutable_wishart()->set_dim(data.cols());
+    params.mutable_wishart()->set_nu(data.cols() + 2);
+
     // GammaParams *prec_params = params.mutable_gamma_prec();
-    // prec_params->set_alpha(2);
-    // prec_params->set_beta(2);
+    // prec_params->set_alpha(1);
+    // prec_params->set_beta(1);
 
     BasePrec *g = make_prec(params);
-
 
     // UnivariateConditionalMCMC sampler(pp_mix, h, g);
     // std::vector<double> datavec(data.data(), data.data() + data.size());
@@ -96,17 +99,21 @@ int main() {
     std::deque<MultivariateMixtureState> chains;
 
     // sampler.set_verbose();
-    for (int i = 0; i < 1000; i++)
-        sampler.run_one();
-
-    int niter = 1000;
+    // for (int i = 0; i < 100000; i++) {
+    //     sampler.run_one();
+    // }
+    sampler.print_debug_string();
+    // sampler.set_verbose();
+    int niter = 10000;
     for (int i = 0; i < niter; i++) {
         sampler.run_one();
         // MultivariateMixtureState state;
         // sampler.get_state_as_proto(&state);
         // chains.push_back(state);
+        // if (i % 1000 == 0)
+        //     sampler.print_debug_string();
 
-        if (i % 1000 == 0) {
+        if (i % 100 == 0) {
             std::cout << "iter: " << i << " / " << niter << std::endl;
         }
     }

@@ -63,9 +63,8 @@ MatrixXd vstack(const std::vector<VectorXd> &rows) {
 double o_multi_normal_prec_lpdf(
     const VectorXd &x, const VectorXd &mu, const PrecMat &sigma)
 {
-    // std::cout << "sigma.cho_factor:\n " << sigma.get_cho_factor_eval() << std::endl;
-    double out = sigma.get_log_det();
-    out -= (sigma.get_cho_factor_eval() * (x - mu)).squaredNorm();
+    double out = sigma.get_log_det() * x.size();
+    out -= ((x - mu).transpose() * sigma.get_cho_factor_eval()).squaredNorm();
     return 0.5 * out;
 }
 
@@ -80,7 +79,7 @@ double o_multi_normal_prec_lpdf(
     std::vector<double> loglikes(n);
     for (int i = 0; i < n; i++)
     {
-        loglikes[i] = (cho_sigma * (x[i] - mu)).squaredNorm();
+        loglikes[i] = ((x[i] - mu).transpose() cho_sigma).squaredNorm();
     }
 
     out -= std::accumulate(loglikes.begin(), loglikes.end(), 0.0);
@@ -127,6 +126,28 @@ void to_proto(const VectorXd &vec, EigenVector* out)
     *out->mutable_data() = {vec.data(), vec.data() + vec.size()};
 }
 
+VectorXd to_eigen(const EigenVector& vec)
+{
+    int size = vec.size();
+    Eigen::VectorXd out;
+    if (size > 0) {
+        const double *p = &(vec.data())[0];
+        out = Map<const VectorXd>(p, size);
+    }
+    return out;
+}
+
+MatrixXd to_eigen(const EigenMatrix &mat) {
+    int nrow = mat.rows();
+    int ncol = mat.cols();
+    Eigen::MatrixXd out;
+    if (nrow > 0 & ncol > 0) {
+        const double *p = &(mat.data())[0];
+        out = Map<const MatrixXd>(p, nrow, ncol);
+    }
+    return out;
+}
+
 std::vector<VectorXd> to_vector_of_vectors(const MatrixXd &mat)
 {
     std::vector<VectorXd> out(mat.rows());
@@ -149,4 +170,9 @@ MatrixXd pairwise_dist_sq(const MatrixXd &x, const MatrixXd &y)
 MatrixXd pairwise_dist_sq(const MatrixXd &x)
 {
     return pairwise_dist_sq(x, x);
+}
+
+VectorXd softmax(const VectorXd& logs) {
+    VectorXd num = (logs.array() - logs.maxCoeff()).exp();
+    return num / num.sum();
 }

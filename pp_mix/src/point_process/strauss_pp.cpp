@@ -66,12 +66,31 @@ double StraussPP::dens_from_pdist(const MatrixXd &dists, double beta_, double ga
 
 double StraussPP::papangelou(
     MatrixXd xi, const MatrixXd &x, bool log)
-{   
-    double out;
+{
+    std::cout << "*** PAPANGELOU *** " << std::endl;
+    double out = 0.0;
     if (xi.cols() == 1)
         xi.transposeInPlace();
+    
+    for (int i=0; i < xi.rows(); i++) {
+        for (int j=0; j < dim; j++) {
+            if ((xi(i, j) < ranges(0, j)) || (xi(i, j) > ranges(1, j))) {
+                std::cout << " SOMETHING WENT WRONG !!" << std::endl;
+                if (log)
+                    out = stan::math::NEGATIVE_INFTY;
+                else
+                    out = 0.0;
+
+                return out;
+            }
+        }
+    }
+    
     MatrixXd dists = pairwise_dist_sq(xi, x);
+    std::cout << "log_gamma: " << std::log(gamma) << std::endl;
+    std::cout << "num_neigh: " << (dists.array() < R * R).count() << std::endl;
     out = std::log(gamma) * (dists.array() < R * R).count();
+    std::cout << "PAPANGELOU out: " << out << std::endl;
     if (!log)
         out = std::exp(out);
     return out;
@@ -87,7 +106,9 @@ VectorXd StraussPP::phi_star_rng() {
 
 double StraussPP::phi_star_dens(VectorXd xi, bool log)
 {
-    double out = beta;
+
+    // TODO FIXME (?)
+    double out = 1.0;
     if (log)
         out = std::log(out);
 

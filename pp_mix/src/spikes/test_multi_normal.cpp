@@ -1,37 +1,18 @@
-#include "../covs/covmat.hpp"
+#include "../precs/precmat.hpp"
+#include "../precs/wishart.hpp"
 #include "../utils.hpp"
 
 #include <vector>
 #include <stan/math/prim/mat.hpp>
 
 int main() {
-    MatrixXd Sigma_(2,2);
-    Sigma_ << 1, 0.3, 0.3, 1; 
+    int dim = 2;
+    Wishart wishart_prec(dim + 3.0, dim, 1.0);
+    PrecMat prec = wishart_prec.sample_prior();
 
-    CovMat sigma(Sigma_);
+    Eigen::VectorXd x = Eigen::VectorXd::Ones(dim) * 2.5;
+    Eigen::VectorXd m = Eigen::VectorXd::Ones(dim);
 
-    VectorXd x(2);
-    x << 1, 5;
-
-    VectorXd mu(2);
-    mu << 0.5, 3;
-
-    std::cout << "ours: " << multi_normal_lpdf(x, mu, sigma) << std::endl;
-    std::cout << "stan: " << stan::math::multi_normal_lpdf(x, mu, Sigma_) << std::endl;
-
-    double out1 = 0;
-    double out2;
-
-    std::vector<VectorXd> x_vec;
-
-    for (int i=0; i < 20; i++) {
-        out1 += multi_normal_lpdf(x, mu, sigma);
-        x_vec.push_back(x);
-    }
-
-    out2 = multi_normal_lpdf(x_vec, mu, sigma);
-
-    std::cout << "out1: " << out1 << std::endl;
-    std::cout << "out2: " << out2 << std::endl;
-
+    std::cout << "our: " << o_multi_normal_prec_lpdf(x, m, prec) + NEG_LOG_SQRT_TWO_PI * dim << std::endl;
+    std::cout << "stan: " << stan::math::multi_normal_prec_lpdf(x, m, prec.get_prec()) << std::endl;
 }

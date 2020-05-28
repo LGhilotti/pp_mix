@@ -15,11 +15,11 @@ CFLAGS = \
 	-I$(STAN_ROOT_DIR)/lib/tbb_2019_U8/include  \
 	-I$(PROTO_DIR) \
 	-D_REENTRANT -fPIC \
-	-g # -march=native -msse2 -funroll-loops -ftree-vectorize -fopenmp 
+	-O3 -march=native -msse2 -funroll-loops -ftree-vectorize -fopenmp 
 LDLIBS = \
  	$(shell pkg-config --libs protobuf) -L$(STAN_ROOT_DIR)/lib/tbb \
 	-lgsl -lgslcblas -lpthread -ltbb -Wl,-rpath,"$(STAN_ROOT_DIR)/lib/tbb"
-LDFLAGS = -D_REENTRANT -g # -fopenmp
+LDFLAGS = -D_REENTRANT -O3 -fopenmp
 
 PROTO_SRCS = $(wildcard $(PROTO_DIR)/cpp/*.cpp)
 PG_SRCS = $(wildcard $(PG_DIR)/*.cpp) $(wildcard $(PG_DIR)/include/*.cpp)
@@ -49,6 +49,7 @@ info:
 	@echo " OBJECTS = $(OBJS)"
 	@echo " EXECS = $(SPIKES_EXECS)"
 	@echo " STAN_ROOT_DIR = $(STAN_ROOT_DIR)"
+	@echo " DEPENDS = $(DEPENDS)
 
 all: generate_pybind $(SPIKES_EXECS)
 
@@ -61,16 +62,13 @@ generate_pybind: $(OBJS)
 $(SPIKES_EXECS): %.out: %.o $(OBJS)
 	$(CXX) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJS) $< $(LDLIBS)
 
-$(SPIKES_OBJS): %.o: %.cpp
-		$(CXX) $(CFLAGS) -c $< -o $@
-
-%.o : %.cpp Makefile
-	$(CXX) $(CFLAGS) -MMD -MP -c $< -o $@
-
 -include $(DEPENDS)
 
+%.o : %.cpp
+	$(CXX) $(CFLAGS) -MMD -MP -c $< -o $@
+
 clean:
-	rm $(OBJS) $(SPIKES_OBJS) run_from_file.o
+	rm $(OBJS) $(SPIKES_OBJS) run_from_file.o $(DEPENDS)
 
 distclean: clean
 

@@ -3,7 +3,7 @@
 
 PrecMat::PrecMat(const MatrixXd &prec): prec(prec) {
     cho_factor = LLT<MatrixXd>(prec);
-    cho_factor_eval = cho_factor.matrixL();
+    cho_factor_eval = cho_factor.matrixL().transpose();
     const VectorXd& diag = cho_factor_eval.diagonal();
     log_det = 2 * log(diag.array()).sum();
 }
@@ -26,4 +26,9 @@ const MatrixXd& PrecMat::get_cho_factor_eval() const
 double PrecMat::get_log_det() const
 {
     return log_det;
+}
+
+std::ostream &operator << (std::ostream & output, const PrecMat &p) {
+    const Eigen::MatrixXd mat = p.get_prec();
+    output << mat << "\n";
 }

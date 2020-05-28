@@ -23,6 +23,8 @@ public:
     virtual double sample_given_data(
         const std::vector<double> &data, const double &curr,
         const VectorXd &mean) = 0;
+
+    virtual double mean() const = 0;
 };
 
 
@@ -35,6 +37,8 @@ public:
     virtual PrecMat sample_given_data(
         const std::vector<VectorXd> &data, const PrecMat &curr,
         const VectorXd &mean) = 0;
+
+    virtual PrecMat mean() const = 0;
 };
 
 #endif

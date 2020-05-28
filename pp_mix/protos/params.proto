@@ -63,4 +63,6 @@ message Params {
     }
 
     GammaParams gamma_jump = 7;
+
+    double mala_stepsize = 8;
 }

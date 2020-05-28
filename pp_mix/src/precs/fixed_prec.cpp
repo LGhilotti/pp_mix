@@ -13,3 +13,9 @@ PrecMat FixedPrec::sample_given_data(
 {
     return sample_prior();
 }
+
+PrecMat FixedPrec::mean() const
+{
+    Eigen::MatrixXd out = sigma * Eigen::MatrixXd::Identity(dim, dim);
+    return PrecMat(out);
+}
