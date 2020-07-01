@@ -11,6 +11,8 @@
 #include "utils.hpp"
 #include "../protos/cpp/params.pb.h"
 #include "../protos/cpp/state.pb.h"
+#include "point_process/strauss_pp.hpp"
+#include "simulate_straus.hpp"
 
 
 namespace py = pybind11;
@@ -31,11 +33,7 @@ std::deque<py::bytes> run_pp_mix_univ(
     const std::vector<double> datavec(data.data(), data.data() + data.size());
     sampler.initialize(datavec);
 
-    std::string s;
-    UnivariateMixtureState curr;
-    sampler.get_state_as_proto(&curr);
-    curr.SerializeToString(&s);
-    out.push_back((py::bytes)s);
+
 
     for (int i = 0; i < burnin; i++)
     {
@@ -138,6 +136,13 @@ Eigen::MatrixXd _simulate_strauss2D(
     return simulate_strauss_moller(ranges, beta, gamma, R);
 }
 
+Eigen::MatrixXd _simulate_strauss_our(const Eigen::MatrixXd &ranges, double beta,
+                                    double gamma, double R) {
+
+  StraussPP pp(beta, gamma, R);
+  pp.set_ranges(ranges);
+  return simulate_strauss_our(&pp);
+}
 
 Eigen::VectorXd _sample_predictive_univ(
     const std::vector<std::string> &serialized_chains) 
@@ -222,9 +227,11 @@ PYBIND11_MODULE(pp_mix_cpp, m)
 
     m.def("_run_pp_mix", &_run_pp_mix, "aaa");
 
-    m.def("_simulate_strauss2D", &_simulate_strauss2D, "aaa");
-
     m.def("_sample_predictive_univ", &_sample_predictive_univ, "aaa");
 
     m.def("_sample_predictive_multi", &_sample_predictive_multi, "aaa");
+
+    m.def("_simulate_strauss2D", &_simulate_strauss2D, "aaa");
+
+    m.def("_simulate_strauss_our", &_simulate_strauss_our, "aaa");
 }

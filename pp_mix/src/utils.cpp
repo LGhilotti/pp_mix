@@ -63,23 +63,26 @@ MatrixXd vstack(const std::vector<VectorXd> &rows) {
 double o_multi_normal_prec_lpdf(
     const VectorXd &x, const VectorXd &mu, const PrecMat &sigma)
 {
-    double out = sigma.get_log_det() * x.size();
-    out -= ((x - mu).transpose() * sigma.get_cho_factor_eval()).squaredNorm();
-    return 0.5 * out;
+  using stan::math::NEG_LOG_SQRT_TWO_PI;
+
+  double out = 0.5 * sigma.get_log_det() + NEG_LOG_SQRT_TWO_PI * x.size();
+  out -= 0.5 * (sigma.get_cho_factor_eval() * (x - mu)).squaredNorm();
+  return out;
 }
 
 double o_multi_normal_prec_lpdf(
     const std::vector<VectorXd> &x, const VectorXd &mu, const PrecMat &sigma)
 {
-    int n = x.size();
-    double out = sigma.get_log_det() * n;
+  using stan::math::NEG_LOG_SQRT_TWO_PI;
 
-    const MatrixXd& cho_sigma = sigma.get_cho_factor_eval();
+  int n = x.size();
+  double out = sigma.get_log_det() * n;
 
-    std::vector<double> loglikes(n);
-    for (int i = 0; i < n; i++)
-    {
-        loglikes[i] = ((x[i] - mu).transpose() cho_sigma).squaredNorm();
+  const MatrixXd &cho_sigma = sigma.get_cho_factor_eval();
+
+  std::vector<double> loglikes(n);
+  for (int i = 0; i < n; i++) {
+    loglikes[i] = ((x[i] - mu).transpose() * cho_sigma).squaredNorm();
     }
 
     out -= std::accumulate(loglikes.begin(), loglikes.end(), 0.0);
