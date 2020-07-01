@@ -29,6 +29,12 @@ public:
     double papangelou(
         MatrixXd xi, const MatrixXd &x, bool log = true);
 
+    double papangelou(const Point &xi, const std::list<Point> &x,
+                      bool log = true) override {
+        std::cout << "NOT IMPLEMENTED!!" << std::endl;
+        return -500;
+    }
+
     VectorXd phi_star_rng();
 
     double phi_star_dens(VectorXd xi, bool log = true);
