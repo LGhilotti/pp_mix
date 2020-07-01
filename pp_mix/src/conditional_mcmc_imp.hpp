@@ -2,7 +2,9 @@
 #define CONDITIONAL_MCMC_IMP_HPP
 
 template <class Prec, typename prec_t, typename data_t>
-ConditionalMCMC<Prec, prec_t, data_t>::ConditionalMCMC(BasePP *pp_mix, BaseJump *h, Prec *g) : pp_mix(pp_mix), h(h), g(g) {}
+ConditionalMCMC<Prec, prec_t, data_t>::ConditionalMCMC(
+    BasePP *pp_mix, BaseJump *h, Prec *g, const Params &params) : 
+        pp_mix(pp_mix), h(h), g(g), params(params) {}
 
 template<class Prec, typename prec_t, typename data_t>
 void ConditionalMCMC<Prec, prec_t, data_t>::initialize(const std::vector<data_t> &data)
@@ -11,23 +13,28 @@ void ConditionalMCMC<Prec, prec_t, data_t>::initialize(const std::vector<data_t>
     ndata = data.size();
     set_dim(data[0]);
 
-    // MatrixXd ranges = pp_mix->get_ranges();
+    MatrixXd ranges = pp_mix->get_ranges();
 
-    // a_means = MatrixXd::Zero(std::pow(2, dim), dim);
-    // for (int i=0; i < dim; i++) {
-    //     int start = 0;
-    //     int step = a_means.rows() / (std::pow(2, i+1));
-    //     while(start < a_means.rows()) {
-    //         a_means.block(start, i, step, 1) = \
-    //             MatrixXd::Constant(step, 1, ranges(0, i) / 2.0);
-    //         start += step;
-    //         a_means.block(start, i, step, 1) = \
-    //             MatrixXd::Constant(step, 1, ranges(1, i) / 2.0);
-    //         start += step;
-    //     }
-    // }
+    a_means = MatrixXd::Zero(std::pow(2, dim), dim);
+    for (int i=0; i < dim; i++) {
+        int start = 0;
+        int step = a_means.rows() / (std::pow(2, i+1));
+        while(start < a_means.rows()) {
+            a_means.block(start, i, step, 1) = \
+                MatrixXd::Constant(step, 1, ranges(0, i) / 2.0);
+            start += step;
+            a_means.block(start, i, step, 1) = \
+                MatrixXd::Constant(step, 1, ranges(1, i) / 2.0);
+            start += step;
+        }
+    }
 
-    a_means = MatrixXd::Zero(1, 2);
+    a_means = MatrixXd::Zero(2, dim);
+    a_means.row(0) = ranges.row(0);
+    a_means.row(1) = ranges.row(1);
+
+    // a_means = pp_mix->sample_uniform(20);
+
     nclus = a_means.rows();
     clus_alloc = VectorXi::Zero(ndata);
     VectorXd probas = VectorXd::Ones(nclus) / nclus;
@@ -37,21 +44,23 @@ void ConditionalMCMC<Prec, prec_t, data_t>::initialize(const std::vector<data_t>
     // std::cout << "clus_alloc: " << clus_alloc.transpose() << std::endl;
 
     a_jumps = VectorXd::Ones(nclus) / (nclus + 1);
-    na_jumps = VectorXd::Ones(1) / (nclus + 1);
-
-    // a_means = pp_mix->sample_uniform(nclus);
-    na_means = pp_mix->sample_uniform(1);
-
-    std::cout << "na_means: " << na_means << std::endl;
-
 
     a_precs.resize(nclus);
-    na_precs.resize(1);
-
     for (int i=0; i < nclus; i++) {
-        a_precs[i] = g->sample_prior();
+        std::cout << "i: " << i << std::endl;
+        a_precs[i] = g->mean();
+        // std::cout << "prec: \n" << a_precs[i] << std::endl;
     }
-    na_precs[0] = g->sample_prior();
+
+    na_means = pp_mix->sample_uniform(1);
+    na_jumps = VectorXd::Ones(na_means.rows()) / (nclus + na_means.rows());
+
+    na_precs.resize(na_means.rows());
+    for (int i=0; i < na_means.rows(); i++) {
+        na_precs[i] = g->mean();
+    }
+
+    u = 1.0;
 }
 
 template<class Prec, typename prec_t, typename data_t>
@@ -63,11 +72,9 @@ void ConditionalMCMC<Prec, prec_t, data_t>::run_one()
 
     sample_allocations_and_relabel();
 
-    // std::cout << "clus_alloc: " << clus_alloc.transpose() << std::endl;
-
     // UNALLOCATED PROCESS
-    for (int i=0; i < 10; i++)
-        pp_mix->sample_given_active(a_means, &na_means, psi_u);
+    // std::cout << "npoints * " << na_means.rows() << std::endl;
+    pp_mix->sample_given_active(a_means, &na_means, psi_u);
 
     na_precs.resize(na_means.rows());
     na_jumps.conservativeResize(na_means.rows(), 1);
@@ -77,6 +84,7 @@ void ConditionalMCMC<Prec, prec_t, data_t>::run_one()
     }
 
     // ALLOCATED PROCES
+    // for (int i = 0; i < 10; i++)
     sample_means();
     sample_vars();
     sample_jumps();
@@ -94,6 +102,8 @@ void ConditionalMCMC<Prec, prec_t, data_t>::sample_allocations_and_relabel()
     int Mna = na_means.rows();
     int Mtot = Ma + Mna;
 
+    // std::cout << "a_means: \n" << a_means << std::endl;
+
     const MatrixXd& curr_a_means = a_means;
     const MatrixXd& curr_na_means = na_means;
     const std::vector<prec_t>& curr_a_precs = a_precs;
@@ -101,7 +111,7 @@ void ConditionalMCMC<Prec, prec_t, data_t>::sample_allocations_and_relabel()
     const VectorXd& curr_a_jumps = a_jumps;
     const VectorXd &curr_na_jumps = na_jumps;
 
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (int i=0; i < ndata; i++) {
         VectorXd probas(Mtot);
         // VectorXd mean;
@@ -119,8 +129,9 @@ void ConditionalMCMC<Prec, prec_t, data_t>::sample_allocations_and_relabel()
             probas[k + Ma] += normal_lpdf_single(
                 datum, curr_na_means.row(k).transpose(), curr_na_precs[k]);
         }
-        probas = exp(probas);
-        probas /= probas.sum();
+        // std::cout << "unnormalized_probas: " << probas.transpose();
+        probas = softmax(probas);
+        // std::cout << ", normalized: " << probas.transpose() << std::endl;
         newalloc = categorical_rng(probas, Rng::Instance().get()) - 1;
         clus_alloc[i] = newalloc;
     }
@@ -252,46 +263,82 @@ void ConditionalMCMC<Prec, prec_t, data_t>::sample_means()
 {
     // We update each mean separately
     for (int i=0; i < a_means.rows(); i++) {
-        MatrixXd others;
-        double sigma = pp_mix->estimate_mean_proposal_sigma();
-        const MatrixXd &proposal_var_chol = MatrixXd::Identity(dim, dim) * sigma;
-        double currlik, proplik, prior_ratio, lik_ratio, arate;
+        tot_mean += 1;
+        MatrixXd others(a_means.rows() - 1, dim);
+        double sigma;
+        if (uniform_rng(0, 1, Rng::Instance().get()) < 0.1) {
+            sigma = 2.0;
+        }
+        else
+            sigma = 0.1;
 
-        const VectorXd& currmean = a_means.row(i).transpose();
-        currlik = normal_lpdf_single_multi(data_by_clus[i], currmean, a_precs[i]);
+
+        double stepsize = params.mala_stepsize();
+        const MatrixXd &proposal_var_chol = MatrixXd::Identity(dim, dim) * sigma;
+        double currlik, proplik, prior_ratio, lik_ratio, prop_ratio, arate;
+        const VectorXd &currmean = a_means.row(i).transpose();
+        
+
+        // SOMETHING LIKE MALA BUT USING ONLY THE LIKELIHOOD OF DATA
+        VectorXd grad_curr = compute_grad_for_clus(i, currmean);
+        VectorXd bias_curr = (proposal_var_chol * grad_curr).array() * stepsize;
+        VectorXd prop_mean = currmean + bias_curr;
 
         const VectorXd &prop = multi_normal_cholesky_rng(
-            currmean, proposal_var_chol, Rng::Instance().get());
+            prop_mean, proposal_var_chol, Rng::Instance().get());
+
+
+
+        VectorXd grad_prop = compute_grad_for_clus(i, prop);
+        VectorXd bias_prop = (proposal_var_chol * grad_prop).array() * stepsize;
+
+        currlik = normal_lpdf_single_multi(data_by_clus[i], currmean, a_precs[i]);
         proplik = normal_lpdf_single_multi(data_by_clus[i], prop, a_precs[i]);
 
         lik_ratio = proplik - currlik;
+        // others = delete_row(a_means, i);
         if (i==0) {
             prior_ratio = pp_mix->dens(prop) - pp_mix->dens(currmean);
         } else {
             others = a_means.block(0, 0, i, dim);
             prior_ratio = pp_mix->papangelou(prop, others) -
-                        pp_mix->papangelou(currmean, others);
+                          pp_mix->papangelou(currmean, others);
+        }
+        // prior_ratio = pp_mix->papangelou(prop, others) -
+        //               pp_mix->papangelou(currmean, others);
+
+        VectorXd mean_proposal_inverse = prop + bias_prop;
+        prop_ratio =
+            multi_normal_cholesky_lpdf(prop, prop_mean, proposal_var_chol) -
+            multi_normal_cholesky_lpdf(
+                currmean, mean_proposal_inverse, proposal_var_chol);
+        arate = lik_ratio + prior_ratio - prop_ratio;
+
+        bool accepted = false;
+        if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < arate) {
+            accepted = true;
+            a_means.row(i) = prop.transpose();
+            acc_mean += 1;
         }
 
-        if (verbose) {
-            std::cout << "Component: " << i <<  std::endl;
+        if (verbose)
+        {
+            std::cout << "Component: " << i << std::endl;
+            std::cout << "data:" << std::endl;
+            print_data_by_clus(i);
             std::cout << "currmean: " << currmean.transpose()
                       << ", currlik: " << currlik << std::endl;
             std::cout << "prop: " << prop.transpose()
                       << ", proplik: " << proplik << std::endl;
             std::cout << "prior_ratio: " << prior_ratio << std::endl;
-            if (i > 0) {
-                std::cout << "prop_papangelou: " << pp_mix->papangelou(prop, others)
-                          << ", curr_papangelou: " << pp_mix->papangelou(currmean, others)
-                          << std::endl;
-            }
+            std::cout << "prop_papangelou: " << pp_mix->papangelou(prop, others)
+                      << ", curr_papangelou: " << pp_mix->papangelou(currmean, others)
+                      << std::endl;
             std::cout << "lik_ratio: " << lik_ratio << std::endl;
+            std::cout << "prop_ratio: " << prop_ratio << std::endl;
+            std::cout << "ACCEPTED: " << accepted << std::endl;
             std::cout << "**********" << std::endl;
         }
-
-        arate = lik_ratio + prior_ratio;
-        if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < arate)
-            a_means.row(i) = prop.transpose();
     }
 }
 
@@ -323,11 +370,9 @@ void ConditionalMCMC<Prec, prec_t, data_t>::print_debug_string()
     for (int i=0; i < a_means.rows(); i++) {
         std::cout << "Component: " << i 
                   << ", weight: " << a_jumps(i)
-                  << ", mean: " << a_means.row(i)
-                  << std::endl;
-        // std::cout << "Data: ";
-        // for (int j=0; j < data_by_clus[i].size(); j++)
-        //     std::cout << "[" << data_by_clus[i][j].transpose() << "],    ";
+                  << ", mean: " << a_means.row(i) << std::endl;
+                //   << ", precision: " << a_precs[i]
+                //   << std::endl;
 
         std::cout << std::endl;
     }

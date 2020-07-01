@@ -10,11 +10,11 @@ strauss {
 
     init {
         beta: 0.000001
-        gamma: 0.0000000001
-        R: 4.5
+        gamma: 0.00000000000001
+        R: 3.0
     }
 
-    fixed_params: false
+    fixed_params: true
 }
 
 wishart {
@@ -25,6 +25,8 @@ wishart {
 }
 
 gamma_jump {
-    alpha: 2
-    beta: 2
+    alpha: 1
+    beta: 1
 }
+
+mala_stepsize: 0.1

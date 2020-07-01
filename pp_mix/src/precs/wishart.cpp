@@ -1,13 +1,14 @@
 #include "wishart.hpp"
 
 Wishart::Wishart(double df, int dim, double sigma): df(df) {
-    psi = Eigen::MatrixXd::Identity(dim, dim) * sigma;
-    inv_psi = psi = Eigen::MatrixXd::Identity(dim, dim);
+    this->psi = Eigen::MatrixXd::Identity(dim, dim) * sigma;
+    this->inv_psi = Eigen::MatrixXd::Identity(dim, dim) * 1.0 / sigma;
 }
 
-Wishart::Wishart(double df, const MatrixXd &psi): df(df), psi(psi) {
-    inv_psi = psi.inverse();
-}
+// Wishart::Wishart(double df, const MatrixXd &psi): df(df), psi(psi) {
+//     std::cout << "Wishart::Wishart strange" << std::endl;
+//     inv_psi = psi.inverse();
+// }
 
 PrecMat Wishart::sample_prior() {
     MatrixXd out = wishart_rng(df, psi, Rng::Instance().get());
@@ -27,4 +28,9 @@ PrecMat Wishart::sample_given_data(
         Rng::Instance().get());
 
     return PrecMat(out);
+}
+
+PrecMat Wishart::mean() const
+{
+    return PrecMat(psi * df);
 }

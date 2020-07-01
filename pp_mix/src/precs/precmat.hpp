@@ -1,6 +1,7 @@
 #ifndef COVMAT_HPP
 #define COVMAT_HPP
 
+#include <iostream>
 #include <Eigen/Dense>
 using namespace Eigen;
 
@@ -32,5 +33,7 @@ class PrecMat {
 
    double get_log_det() const;
 };
+
+std::ostream &operator<<(std::ostream &output, const PrecMat &p);
 
 #endif 

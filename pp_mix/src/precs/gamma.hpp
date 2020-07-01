@@ -23,6 +23,8 @@ public:
     double sample_given_data(
         const std::vector<double> &data, const double &curr,
         const VectorXd &mean) override;
+
+    double mean() const override;
 };
 
 

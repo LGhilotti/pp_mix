@@ -23,5 +23,10 @@ double GammaPrec::sample_given_data(
         alpha + (1.0 * data.size()) / 2,
         beta + 0.5 * sum_squares,
         Rng::Instance().get());
-    return 1;
+    // return 1;
+}
+
+double GammaPrec::mean() const
+{
+    return alpha / beta;
 }

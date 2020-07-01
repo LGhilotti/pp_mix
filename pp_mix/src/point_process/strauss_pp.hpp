@@ -2,7 +2,8 @@
 #define STRAUSS_PP
 
 #include "base_pp.hpp"
-#include "../simulate_straus.hpp"
+#include "perfect_sampler.hpp"
+#include "../adaptive_metropolis.hpp"
 #include "../../protos/cpp/params.pb.h"
 #include <google/protobuf/stubs/casts.h>
 #include <boost/math/distributions/chi_squared.hpp>
@@ -12,8 +13,10 @@ class StraussPP: public BasePP {
     double beta, gamma, R;
     bool fixed_params = false;
     StraussParams::Priors priors;
+    AdaptiveMetropolis<double, double> am_beta;
 
     double sqrt_chisq_quantile;
+
 
  public:
 
@@ -38,7 +41,10 @@ class StraussPP: public BasePP {
     double papangelou(
         MatrixXd xi, const MatrixXd &x, bool log = true) override;
 
-    VectorXd phi_star_rng() override;
+    double papangelou(const Point &xi, const std::list<Point> &x,
+                      bool log = true) override;
+
+        VectorXd phi_star_rng() override;
 
     double phi_star_dens(VectorXd xi, bool log = true) override;
 

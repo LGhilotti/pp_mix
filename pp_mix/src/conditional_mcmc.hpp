@@ -1,7 +1,7 @@
 #ifndef CONDITIONAL_MCMC
 #define CONDITIONAL_MCMC
 
-// #include <omp.h>
+#include <omp.h>
 #include <algorithm>
 #include <iostream>
 #include <map>
@@ -20,6 +20,7 @@
 #include "precs/precmat.hpp"
 #include "utils.hpp"
 #include "../protos/cpp/state.pb.h"
+#include "../protos/cpp/params.pb.h"
 
 using namespace Eigen;
 
@@ -48,6 +49,10 @@ class ConditionalMCMC {
 
      // FOR DEBUGGING
      bool verbose = false;
+     int acc_mean = 0;
+     int tot_mean = 0;
+
+     Params params;
 
  public:
      ConditionalMCMC() {}
@@ -58,7 +63,9 @@ class ConditionalMCMC {
          delete g;
     }
 
-    ConditionalMCMC(BasePP * pp_mix, BaseJump * h, Prec * g);
+    ConditionalMCMC(
+        BasePP * pp_mix, BaseJump * h, Prec * g, 
+        const Params& params);
 
     void set_pp_mix(BasePP* pp_mix) {this->pp_mix = pp_mix;}
     void set_jump(BaseJump* h) {this->h = h;}
@@ -80,6 +87,7 @@ class ConditionalMCMC {
 
     void print_debug_string();
 
+
     void _relabel();
 
     void set_verbose() { verbose = !verbose; }
@@ -92,6 +100,14 @@ class ConditionalMCMC {
         const prec_t &sigma) = 0;
 
     virtual void set_dim(const data_t& datum) = 0;
+
+    virtual VectorXd compute_grad_for_clus(int clus, VectorXd mean) = 0;
+
+    double mean_acceptance_rate() {
+        return (1.0 * acc_mean) / (1.0 * tot_mean);
+    }
+
+    virtual void print_data_by_clus(int clus) = 0;
 };
 
 
@@ -101,7 +117,8 @@ class MultivariateConditionalMCMC: public ConditionalMCMC<
 public:
     MultivariateConditionalMCMC() {}
 
-    MultivariateConditionalMCMC(BasePP *pp_mix, BaseJump *h, BasePrec *g);
+    MultivariateConditionalMCMC(BasePP *pp_mix, BaseJump *h, BasePrec *g,
+                                const Params &params);
 
     void get_state_as_proto(google::protobuf::Message *out_) override;
 
@@ -117,9 +134,13 @@ public:
         return o_multi_normal_prec_lpdf(x, mu, sigma);
     }
 
+    VectorXd compute_grad_for_clus(int clus, VectorXd mean) override;
+
     void set_dim(const VectorXd& datum) {
         dim = datum.size();
     }
+
+    void print_data_by_clus(int clus); 
 
 };
 
@@ -129,26 +150,31 @@ class UnivariateConditionalMCMC : public ConditionalMCMC<
 public:
     UnivariateConditionalMCMC() {}
 
-    UnivariateConditionalMCMC(BasePP *pp_mix, BaseJump *h, BasePrec *g);
+    UnivariateConditionalMCMC(BasePP *pp_mix, BaseJump *h, BasePrec *g,
+                              const Params &params);
 
     void get_state_as_proto(google::protobuf::Message *out_) override;
 
     double normal_lpdf_single(
         const double &x, const VectorXd &mu, const double &sigma)
     {
-        return stan::math::normal_lpdf(x, mu(0), 1.0 / sigma);
+        return stan::math::normal_lpdf(x, mu(0), 1.0 / sqrt(sigma));
     }
 
     double normal_lpdf_single_multi(
         const std::vector<double> &x, const VectorXd &mu, const double &sigma)
     {
-        return stan::math::normal_lpdf(x, mu(0), 1.0 / sigma);
+        return stan::math::normal_lpdf(x, mu(0), 1.0 / sqrt(sigma));
     }
 
     void set_dim(const double &datum)
     {
         dim = 1;
     }
+
+    VectorXd compute_grad_for_clus(int clus, VectorXd mean) override;
+
+    void print_data_by_clus(int clus);
 };
 
 #include "conditional_mcmc_imp.hpp"
