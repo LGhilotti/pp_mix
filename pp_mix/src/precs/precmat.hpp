@@ -9,11 +9,13 @@ using namespace Eigen;
 class PrecMat {
  protected:
    MatrixXd prec;
+   MatrixXd var;
    LLT<MatrixXd> cho_factor;
    MatrixXd cho_factor_eval;
    double log_det;
    double univariate_val;
    bool is_univariate = false;
+   bool compute_var = false;
 
  public:
    PrecMat() {}
@@ -25,7 +27,13 @@ class PrecMat {
       is_univariate = true;
    }
 
+   void set_compute_var() {
+     compute_var = true;
+   }
+
    MatrixXd get_prec() const;
+
+   MatrixXd get_var() const;
 
    LLT<MatrixXd> get_cho_factor() const;
 

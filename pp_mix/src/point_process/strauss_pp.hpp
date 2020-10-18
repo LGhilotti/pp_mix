@@ -14,9 +14,7 @@ class StraussPP: public BasePP {
     bool fixed_params = false;
     StraussParams::Priors priors;
     AdaptiveMetropolis<double, double> am_beta;
-
     double sqrt_chisq_quantile;
-
 
  public:
 
@@ -35,7 +33,7 @@ class StraussPP: public BasePP {
 
     double dens(const MatrixXd &x, bool log = true) override;
 
-    double dens_from_pdist(const MatrixXd& dists, double beta_, double gamma_,
+    double dens_from_pdist(MatrixXd& dists, double beta_, double gamma_,
                            double R_, bool log=true);
 
     double papangelou(
@@ -44,13 +42,20 @@ class StraussPP: public BasePP {
     double papangelou(const Point &xi, const std::list<Point> &x,
                       bool log = true) override;
 
-        VectorXd phi_star_rng() override;
+    VectorXd phi_star_rng() override;
 
     double phi_star_dens(VectorXd xi, bool log = true) override;
 
     void update_hypers(const MatrixXd &active, const MatrixXd &non_active) override;
 
     void get_state_as_proto(google::protobuf::Message *out);
+
+    double rejection_sampling_M(int npoints) override {
+        std::cout << "vol_range: " << vol_range << std::endl;
+        double logM = npoints * (std::log(beta) + std::log(vol_range));
+        std::cout << "logM: " << logM << std::endl;
+        return std::exp(logM);
+    }
 
     double estimate_mean_proposal_sigma();
 };

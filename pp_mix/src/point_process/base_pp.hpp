@@ -1,6 +1,7 @@
 #ifndef BASE_PP_HPP
 #define BASE_PP_HPP
 
+#include <stdexcept>
 #include <Eigen/Dense>
 #include <stan/math/prim/mat.hpp>
 #include <google/protobuf/message.h>
@@ -56,6 +57,8 @@ class BasePP {
 
     virtual void get_state_as_proto(google::protobuf::Message *out) = 0;
 
+    virtual double rejection_sampling_M(int npoints) = 0;
+
     /*
     * this method is called by ConditionalMCMC::sample_means()
     * it should return a value for the standard deviation of the proposal
@@ -71,6 +74,8 @@ class BasePP {
     int get_dim() const {return ranges.cols();}
 
     double get_cstar() const { return c_star; }
+
+    MatrixXd sample_n_points(int npoints);
 };
 
 #endif
