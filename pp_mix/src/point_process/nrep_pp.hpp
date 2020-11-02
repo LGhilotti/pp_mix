@@ -51,6 +51,9 @@ public:
     */
     double estimate_mean_proposal_sigma();
 
+    double rejection_sampling_M(int npoints) override {
+      return 1.0;
+    }
 
     double multi_trunc_normal_lpdf(const VectorXd& x);
 };

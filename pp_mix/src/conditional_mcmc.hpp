@@ -17,10 +17,12 @@
 #include "point_process/base_pp.hpp"
 #include "jumps/base_jump.hpp"
 #include "precs/base_prec.hpp"
+#include "precs/fake_prec.hpp"
 #include "precs/precmat.hpp"
 #include "utils.hpp"
 #include "../protos/cpp/state.pb.h"
 #include "../protos/cpp/params.pb.h"
+
 
 using namespace Eigen;
 
@@ -54,6 +56,8 @@ class ConditionalMCMC {
 
      Params params;
 
+     double min_proposal_sigma, max_proposal_sigma;
+
  public:
      ConditionalMCMC() {}
      ~ConditionalMCMC()
@@ -72,6 +76,8 @@ class ConditionalMCMC {
     void set_prec(Prec* g) {this->g = g;}
 
     void initialize(const std::vector<data_t> &data);
+
+    virtual void initialize_allocated_means() = 0;
 
     void run_one();
 
@@ -92,16 +98,16 @@ class ConditionalMCMC {
 
     void set_verbose() { verbose = !verbose; }
 
-    virtual double normal_lpdf_single(
+    virtual double lpdf_given_clus(
         const data_t &x, const VectorXd &mu, const prec_t &sigma)  = 0;
 
-    virtual double normal_lpdf_single_multi(
+    virtual double lpdf_given_clus_multi(
         const std::vector<data_t> &x, const VectorXd &mu, 
         const prec_t &sigma) = 0;
 
     virtual void set_dim(const data_t& datum) = 0;
 
-    virtual VectorXd compute_grad_for_clus(int clus, VectorXd mean) = 0;
+    virtual VectorXd compute_grad_for_clus(int clus, const VectorXd &mean) = 0;
 
     double mean_acceptance_rate() {
         return (1.0 * acc_mean) / (1.0 * tot_mean);
@@ -120,21 +126,23 @@ public:
     MultivariateConditionalMCMC(BasePP *pp_mix, BaseJump *h, BasePrec *g,
                                 const Params &params);
 
+    void initialize_allocated_means() override;
+
     void get_state_as_proto(google::protobuf::Message *out_) override;
 
-    double normal_lpdf_single(
+    double lpdf_given_clus(
         const VectorXd &x, const VectorXd &mu, const PrecMat &sigma)
     {
         return o_multi_normal_prec_lpdf(x, mu, sigma);
     }
 
-    double normal_lpdf_single_multi(
+    double lpdf_given_clus_multi(
         const std::vector<VectorXd> &x, const VectorXd &mu, const PrecMat &sigma)
     {
         return o_multi_normal_prec_lpdf(x, mu, sigma);
     }
 
-    VectorXd compute_grad_for_clus(int clus, VectorXd mean) override;
+    VectorXd compute_grad_for_clus(int clus, const VectorXd &mean) override;
 
     void set_dim(const VectorXd& datum) {
         dim = datum.size();
@@ -153,15 +161,17 @@ public:
     UnivariateConditionalMCMC(BasePP *pp_mix, BaseJump *h, BasePrec *g,
                               const Params &params);
 
+    void initialize_allocated_means() override;
+
     void get_state_as_proto(google::protobuf::Message *out_) override;
 
-    double normal_lpdf_single(
+    double lpdf_given_clus(
         const double &x, const VectorXd &mu, const double &sigma)
     {
         return stan::math::normal_lpdf(x, mu(0), 1.0 / sqrt(sigma));
     }
 
-    double normal_lpdf_single_multi(
+    double lpdf_given_clus_multi(
         const std::vector<double> &x, const VectorXd &mu, const double &sigma)
     {
         return stan::math::normal_lpdf(x, mu(0), 1.0 / sqrt(sigma));
@@ -169,12 +179,39 @@ public:
 
     void set_dim(const double &datum)
     {
+        std::cout << "set_dim" << std::endl;
         dim = 1;
+        std::cout << dim << std::endl;
     }
 
-    VectorXd compute_grad_for_clus(int clus, VectorXd mean) override;
+    VectorXd compute_grad_for_clus(int clus, const VectorXd& mean) override;
 
     void print_data_by_clus(int clus);
+};
+
+class BernoulliConditionalMCMC
+    : public ConditionalMCMC<FakePrec, PrecMat, VectorXd> {
+ public:
+  BernoulliConditionalMCMC() {}
+
+  BernoulliConditionalMCMC(BasePP *pp_mix, BaseJump *h, BasePrec *g,
+                           const Params &params);
+
+  void initialize_allocated_means() override;
+
+  void get_state_as_proto(google::protobuf::Message *out_) override;
+
+  double lpdf_given_clus(const VectorXd &x, const VectorXd &mu,
+                         const PrecMat &sigma);
+
+  double lpdf_given_clus_multi(const std::vector<VectorXd> &x,
+                               const VectorXd &mu, const PrecMat &sigma);
+
+  VectorXd compute_grad_for_clus(int clus, const VectorXd &mean) override;
+
+  void set_dim(const VectorXd &datum) { dim = datum.size(); }
+
+  void print_data_by_clus(int clus);
 };
 
 #include "conditional_mcmc_imp.hpp"

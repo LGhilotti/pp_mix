@@ -9,12 +9,14 @@ import pp_mix.protos.py.params_pb2 as params_pb2
 from pp_mix.protos.py.params_pb2 import Params
 
 
-def make_params(pp_params, prec_params, jump_params):
+def make_params(pp_params, prec_params, jump_params=None):
     params = Params()
     if isinstance(pp_params, params_pb2.StraussParams):
         params.strauss.CopyFrom(pp_params)
     elif isinstance(pp_params, params_pb2.NrepParams):
         params.nrep.CopyFrom(pp_params)
+    elif isinstance(pp_params, params_pb2.DPPParams):
+        params.dpp.CopyFrom(pp_params)
     else:
         logging.error("pp_params type not valid")
 
@@ -39,6 +41,9 @@ def make_params(pp_params, prec_params, jump_params):
 
 
 def make_default_strauss(data, nstar=10, m_max=30):
+    if data.ndim == 1:
+        data = data.reshape(-1, 1)
+        
     params = params_pb2.StraussParams()
     pdist = pairwise_distances(data).reshape((-1, ))
     grid = np.linspace(np.min(pdist), np.max(pdist), 200)
@@ -60,8 +65,10 @@ def make_default_strauss(data, nstar=10, m_max=30):
     return params
 
 
-def check_params(params, data):
-    if data.ndim == 1:
+def check_params(params, data, bernoulli):
+    if bernoulli:
+        _check_bernoulli_params(params, data)
+    elif data.ndim == 1:
         _check_prec_univariate_params(params, data)
     else:
         _check_prec_multivariate_params(params, data)
@@ -120,3 +127,7 @@ def _check_prec_multivariate_params(params, data):
             raise ValueError(
                 "Parameter wishart.sigma should be grater than 0, "
                 "found wishart.wigma={0} instead".format(params.wishart.sigma))
+
+
+def _check_bernoulli_params(params, data):
+    return True

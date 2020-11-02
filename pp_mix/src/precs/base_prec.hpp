@@ -25,6 +25,8 @@ public:
         const VectorXd &mean) = 0;
 
     virtual double mean() const = 0;
+
+    virtual double lpdf(double val) const = 0;
 };
 
 
@@ -39,6 +41,8 @@ public:
         const VectorXd &mean) = 0;
 
     virtual PrecMat mean() const = 0;
+
+    virtual double lpdf(const PrecMat &val) const = 0;
 };
 
 #endif

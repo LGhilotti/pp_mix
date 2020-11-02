@@ -28,6 +28,7 @@ void StraussPP::initialize() {
 }
 
 double StraussPP::dens(const MatrixXd &x, bool log) {
+  // std::cout << "R: " << R << std::endl;
   double out;
   // check if it's jut one point
   if ((x.size() == 1 && dim == 1) || (x.rows() == 1 & dim > 1) ||
@@ -37,14 +38,16 @@ double StraussPP::dens(const MatrixXd &x, bool log) {
     int npoints = x.rows();
     out = std::log(beta) * npoints;
     MatrixXd pdist = pairwise_dist_sq(x);
-
-    out += std::log(gamma) * (pdist.array() < R * R).count();
+    // std::cout << "pdist \n" << pdist << std::endl;
+    pdist.diagonal() = ArrayXd::Ones(npoints) * R * R * 10;
+    // std::cout << "count: " << (pdist.array() < R * R).count() / 2 << std::endl;;
+    out += std::log(gamma) * (pdist.array() < R * R).count() / 2;
   }
   if (!log) out = std::exp(out);
   return out;
 }
 
-double StraussPP::dens_from_pdist(const MatrixXd &dists, double beta_,
+double StraussPP::dens_from_pdist(MatrixXd &dists, double beta_,
                                   double gamma_, double R_, bool log) {
   double out;
   if (dists.rows() == 1)
@@ -52,7 +55,9 @@ double StraussPP::dens_from_pdist(const MatrixXd &dists, double beta_,
   else {
     int npoints = dists.rows();
     double out = std::log(beta_) * npoints;
-    out += std::log(gamma_) * (dists.array() < R_ * R_).count();
+    dists.diagonal() = ArrayXd::Ones(npoints) * R_ * R_ * 10.0;
+
+    out += std::log(gamma_) * (dists.array() < R_ * R_).count() / 2;
   }
   if (!log) out = std::exp(out);
   return out;
@@ -61,7 +66,7 @@ double StraussPP::dens_from_pdist(const MatrixXd &dists, double beta_,
 double StraussPP::papangelou(MatrixXd xi, const MatrixXd &x, bool log) {
   // std::cout << "*** PAPANGELOU *** " << std::endl;
   double out = 0.0;
-  if (xi.cols() == 1) xi.transposeInPlace();
+  if (xi.cols() != dim) xi.transposeInPlace();
 
   for (int i = 0; i < xi.rows(); i++) {
     for (int j = 0; j < dim; j++) {
@@ -109,8 +114,7 @@ VectorXd StraussPP::phi_star_rng() {
 }
 
 double StraussPP::phi_star_dens(VectorXd xi, bool log) {
-  // TODO FIXME (?)
-  double out = 1.0 / vol_range;
+  double out = beta;
   if (log) out = std::log(out);
 
   return out;
@@ -154,12 +158,15 @@ void StraussPP::update_hypers(const MatrixXd &active,
                    dens_from_pdist(dists, beta, gamma, R);
   arate += likrate;
 
-  if (active.cols() == 2)
-    aux_var = simulate_strauss_moller(ranges, prop, gamma, R);
-  else {
-    PerfectSampler sampler(this);
-    aux_var = sampler.simulate();
-  }
+  // if (active.cols() == 2)
+  //   aux_var = simulate_strauss_moller(ranges, prop, gamma, R);
+  // else {
+  //   PerfectSampler sampler(this);
+  //   aux_var = sampler.simulate();
+  // }
+  PerfectSampler sampler(this);
+  aux_var = sampler.simulate();
+  
   aux_dists = pairwise_dist_sq(aux_var);
 
   double aux_lik_rate = dens_from_pdist(aux_dists, beta, gamma, R) -

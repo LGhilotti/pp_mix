@@ -20,6 +20,8 @@ public:
        const VectorXd &mean) override { return sigma; }
 
    double mean() const override { return sigma; }
+
+   double lpdf(double val) const override {return 0.0; };
 };
 
 class FixedPrec : public BaseMultiPrec
@@ -40,6 +42,8 @@ public:
        const VectorXd &mean) override;
 
    PrecMat mean() const override;
+
+   double lpdf(const PrecMat &val) const override {return 0.0; };
 };
 
 

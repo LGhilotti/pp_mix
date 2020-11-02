@@ -87,6 +87,16 @@ double trunc_normal_rng(double mu, double sigma, double lower, double upper,
   }
 }
 
+double trunc_normal_rng_inversion(double mu, double sigma, double lower,
+                                  double upper, std::mt19937_64 &rng) {
+  double u =
+      stan::math::uniform_rng(stan::math::Phi((lower - mu) / sigma),
+                              stan::math::Phi((upper - mu) / sigma), rng);
+
+  double tmp = stan::math::inv_Phi(u);
+  return sigma * tmp + mu;
+}
+
 double trunc_normal_lpdf(double x, double mu, double sigma, double lower,
                          double upper) {
   if ((x < lower) || (x > upper)) return stan::math::NEGATIVE_INFTY;
@@ -152,3 +162,38 @@ VectorXd softmax(const VectorXd &logs) {
   VectorXd num = (logs.array() - logs.maxCoeff()).exp();
   return num / num.sum();
 }
+
+MatrixXd posterior_sim_matrix(const MatrixXi &alloc_chain) {
+  MatrixXd out(alloc_chain.cols(), alloc_chain.cols());
+  for (int i = 1; i < alloc_chain.cols(); i++) {
+    for (int j = 1; j < alloc_chain.cols(); j++) {
+      double val = (alloc_chain.col(i).array() == alloc_chain.col(j).array())
+                       .cast<double>()
+                       .mean();
+      out(i, j) = val;
+      out(j, i) = val;
+    }
+  }
+  return out;
+
+
+VectorXd softmax(const VectorXd &logs) {
+  VectorXd num = (logs.array() - logs.maxCoeff()).exp();
+  return num / num.sum();
+}
+
+// VectorXd minbinder(const MatrixXi &alloc_chain) {
+//   MatrixXd psm = posposterior_sim_matrix(alloc_chain);
+//   std::vector<double> dists;
+
+//   std::transform(
+//     alloc_chain.rowwise().begin(), alloc_chain.rowwise().end(),
+//     std::back_inserter(dists),
+//     [&psm](const VectorXi &clus){
+//       int maxclus = clus.maxCoeff();
+//       MatrixXd coclust = MatrixXd::Zero(clus.size(), clus)
+//       for (int k=0; k < maxclus; k++) {
+
+//       }
+//      })
+// }

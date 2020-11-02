@@ -41,15 +41,57 @@ class ConditionalMCMC(object):
         self.params.mala_stepsize = mala_stepsize
         self.serialized_params = self.params.SerializeToString()
 
-    def run(self, nburn, niter, thin, data):
-        check_params(self.params, data)
+    def run(self, nburn, niter, thin, data, log_every=200, bernoulli=False):
+        check_params(self.params, data, bernoulli)
         if data.ndim == 1:
             self.dim = 1
         else:
             self.dim = data.shape[1]
 
         self._serialized_chains = pp_mix_cpp._run_pp_mix(
-            nburn, niter, thin, data, self.serialized_params)
+            nburn, niter, thin, data, self.serialized_params, bernoulli, log_every)
+
+        if self.dim == 1:
+            objType = UnivariateMixtureState
+        else:
+            objType = MultivariateMixtureState
+
+        self.chains = list(map(
+            lambda x: getDeserialized(x, objType), self._serialized_chains))
+
+    def serialize_chains(self, filename):
+        writeChains(self.chains, filename)
+
+    def sample_predictive(self):
+        if self.dim == 1:
+            out = pp_mix_cpp._sample_predictive_univ(self._serialized_chains)
+        else:
+            out = pp_mix_cpp._sample_predictive_multi(
+                self._serialized_chains, self.dim)
+        return out
+
+
+class RJMCMC(object):
+    def __init__(self, params_file="", pp_params=None, prec_params=None):
+        if params_file != "":
+            with open(params_file, 'r') as fp:
+                self.params = Params()
+                text_format.Parse(fp.read(), self.params)
+
+        else:
+            self.params = make_params(pp_params, prec_params)
+        
+        self.serialized_params = self.params.SerializeToString()
+
+    def run(self, nburn, niter, thin, data, log_every=200, bernoulli=False):
+        check_params(self.params, data, bernoulli)
+        if data.ndim == 1:
+            self.dim = 1
+        else:
+            self.dim = data.shape[1]
+
+        self._serialized_chains = pp_mix_cpp._run_rj(
+            nburn, niter, thin, data, self.serialized_params, log_every)
 
         if self.dim == 1:
             objType = UnivariateMixtureState

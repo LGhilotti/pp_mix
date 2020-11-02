@@ -38,6 +38,10 @@ public:
     double get_df() const {return df;}
 
     MatrixXd get_psi() const {return psi;}
+
+    double lpdf(const PrecMat& val) const override {
+        return stan::math::wishart_lpdf(val.get_prec(), df, psi);
+    };
 };
 
 #endif 

@@ -36,6 +36,7 @@ void PerfectSampler::estimate_doubling_time() {
 void PerfectSampler::one_backward(std::deque<Point>* points) {
   double rsec = stan::math::uniform_rng(0, 1, Rng::Instance().get());
   double cstar = pp->get_cstar();
+  
   if (rsec > cstar / (cstar + points->size())) {
     if (points->size() == 0) return;
 
@@ -102,7 +103,9 @@ void PerfectSampler::one_forward(std::tuple<int, bool, double> trans) {
 MatrixXd PerfectSampler::simulate() {
   initialize();
 
-  estimate_doubling_time();
+  // estimate_doubling_time();
+  // std::cout << "estimated doubling time" << std::endl;
+
   if (state.size() == 0) {
     MatrixXd out(state.size(), pp->get_dim());
     for (int i = 0; i < state.size(); i++) {
@@ -112,11 +115,14 @@ MatrixXd PerfectSampler::simulate() {
   }
 
   int start_t = 0;
-  int end_t = double_t;
+  int end_t = 32;
   bool is_first = true;
   bool coalesced = false;
 
+  int iter = 0;
   while (!coalesced) {
+    iter += 1;
+    std::cout << "iter: " << iter << std::endl;
     for (int i = start_t; i < end_t; i++) {
       one_backward(&state);
     }

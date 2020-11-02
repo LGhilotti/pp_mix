@@ -76,3 +76,21 @@ message UnivariateMixtureState {
 
     PPState pp_state = 12;
 }
+
+
+message BernoulliMixtureState {
+    int32 ma = 1;
+    int32 mna = 2;
+    int32 mtot = 3;
+
+    repeated EigenVector a_probs = 4;
+    repeated EigenVector na_probs = 5;
+
+    EigenVector a_jumps = 6;
+    EigenVector na_jumps = 7;
+
+    repeated int32 clus_alloc = 10; 
+    double u = 11;
+
+    PPState pp_state = 12;
+}
