@@ -69,7 +69,7 @@ double o_multi_normal_prec_lpdf(const std::vector<VectorXd> &x,
 
   std::vector<double> loglikes(n);
   for (int i = 0; i < n; i++) {
-    loglikes[i] = ((x[i] - mu).transpose() * cho_sigma).squaredNorm();
+    loglikes[i] = (cho_sigma * (x[i] - mu)).squaredNorm();
   }
 
   out -= std::accumulate(loglikes.begin(), loglikes.end(), 0.0);
@@ -175,6 +175,11 @@ MatrixXd posterior_sim_matrix(const MatrixXi &alloc_chain) {
     }
   }
   return out;
+
+
+VectorXd softmax(const VectorXd &logs) {
+  VectorXd num = (logs.array() - logs.maxCoeff()).exp();
+  return num / num.sum();
 }
 
 // VectorXd minbinder(const MatrixXi &alloc_chain) {
