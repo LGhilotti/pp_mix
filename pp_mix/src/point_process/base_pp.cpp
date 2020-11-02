@@ -50,7 +50,7 @@ void BasePP::sample_given_active(
         MatrixXd aux(active.rows() + npoints, dim);
         aux << active, *non_active;
         double pap = papangelou(xi, aux);
-        birth_arate = pap + std::log(psi_u); // - phi_star_dens(xi); // + std::log(psi_u);
+        birth_arate = pap + std::log(psi_u) - phi_star_dens(xi); // + std::log(psi_u);
         // std::cout << "birth_arate: " << std::exp(birth_arate) << std::endl;
         // std::cout << "pap: " << pap << ", phi_dens: "
         //           << phi_star_dens(xi) << std::endl;

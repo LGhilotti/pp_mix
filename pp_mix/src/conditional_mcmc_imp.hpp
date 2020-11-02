@@ -318,9 +318,12 @@ void ConditionalMCMC<Prec, prec_t, data_t>::sample_means() {
   //     acc_mean += 1;
   //   }
 
+  MatrixXd allmeans(a_means.rows() + na_means.rows(), dim);
+  allmeans << a_means, na_means;
+
   for (int i = 0; i < a_means.rows(); i++) {
     tot_mean += 1;
-    MatrixXd others(a_means.rows() - 1, dim);
+    MatrixXd others(allmeans.rows() - 1, dim);
     double sigma;
     if (uniform_rng(0, 1, Rng::Instance().get()) < 0.1) {
       sigma = max_proposal_sigma;
@@ -338,7 +341,7 @@ void ConditionalMCMC<Prec, prec_t, data_t>::sample_means() {
     proplik = lpdf_given_clus_multi(data_by_clus[i], prop, a_precs[i]);
 
     lik_ratio = proplik - currlik;
-    others = delete_row(a_means, i);
+    others = delete_row(allmeans, i);
 
     prior_ratio =
         pp_mix->papangelou(prop, others) - pp_mix->papangelou(currmean, others);
