@@ -114,7 +114,7 @@ VectorXd StraussPP::phi_star_rng() {
 }
 
 double StraussPP::phi_star_dens(VectorXd xi, bool log) {
-  double out = 1.0 / vol_range;
+  double out = beta;
   if (log) out = std::log(out);
 
   return out;
