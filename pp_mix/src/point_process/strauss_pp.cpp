@@ -20,8 +20,6 @@ StraussPP::StraussPP(StraussParams::Priors priors, double beta, double gamma,
 }
 
 void StraussPP::initialize() {
-  am_beta = AdaptiveMetropolis<double, double>(1);
-  am_beta.init();
   c_star = beta * vol_range;
   boost::math::chi_squared chisq(dim);
   sqrt_chisq_quantile = sqrt(quantile(complement(chisq, 0.1)));
@@ -93,7 +91,7 @@ double StraussPP::papangelou(MatrixXd xi, const MatrixXd &x, bool log) {
 
 double StraussPP::papangelou(const Point &xi, const std::list<Point> &x,
                            bool log) {
-    
+
     double exp;
     exp = std::accumulate(
         x.begin(), x.end(), 0.0, [&xi, this](double out, const Point &p2) {
@@ -166,7 +164,7 @@ void StraussPP::update_hypers(const MatrixXd &active,
   // }
   PerfectSampler sampler(this);
   aux_var = sampler.simulate();
-  
+
   aux_dists = pairwise_dist_sq(aux_var);
 
   double aux_lik_rate = dens_from_pdist(aux_dists, beta, gamma, R) -

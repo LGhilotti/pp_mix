@@ -3,7 +3,6 @@
 
 #include "base_pp.hpp"
 #include "perfect_sampler.hpp"
-#include "../adaptive_metropolis.hpp"
 #include "../../protos/cpp/params.pb.h"
 #include <google/protobuf/stubs/casts.h>
 #include <boost/math/distributions/chi_squared.hpp>
@@ -13,7 +12,6 @@ class StraussPP: public BasePP {
     double beta, gamma, R;
     bool fixed_params = false;
     StraussParams::Priors priors;
-    AdaptiveMetropolis<double, double> am_beta;
     double sqrt_chisq_quantile;
 
  public:

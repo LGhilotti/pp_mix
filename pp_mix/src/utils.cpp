@@ -147,6 +147,7 @@ std::vector<VectorXd> to_vector_of_vectors(const MatrixXd &mat) {
   return out;
 }
 
+// element i,j of D contains the squaredNorm of the difference of row i of x and row j of y 
 MatrixXd pairwise_dist_sq(const MatrixXd &x, const MatrixXd &y) {
   MatrixXd D(x.rows(), y.rows());
   int i = 0;
