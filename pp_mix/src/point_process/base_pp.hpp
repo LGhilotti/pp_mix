@@ -46,13 +46,16 @@ class BasePP {
 
     MatrixXd sample_uniform(int npoints);
 
+    // Sample from b_bar'(csi)=phi_star(csi)/c_star (used in birth process)
     virtual VectorXd phi_star_rng() = 0;
 
+    // Gives (log) of phi_star(xi)
     virtual double phi_star_dens(VectorXd xi, bool log = true) = 0;
 
     void sample_given_active(
         const MatrixXd &active, MatrixXd *non_active, double psi_u);
 
+    // PERFECT SIMULATION
     virtual void update_hypers(const MatrixXd &active, const MatrixXd &non_active) = 0;
 
     virtual void get_state_as_proto(google::protobuf::Message *out) = 0;

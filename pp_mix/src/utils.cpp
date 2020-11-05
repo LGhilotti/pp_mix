@@ -147,7 +147,9 @@ std::vector<VectorXd> to_vector_of_vectors(const MatrixXd &mat) {
   return out;
 }
 
-// element i,j of D contains the squaredNorm of the difference of row i of x and row j of y 
+// element i,j of D contains the squaredNorm of the difference of row i of x and row j of y
+// if matrices contain points, element i,j of D is the squared distance between point i of
+// x and point j of y
 MatrixXd pairwise_dist_sq(const MatrixXd &x, const MatrixXd &y) {
   MatrixXd D(x.rows(), y.rows());
   int i = 0;
@@ -157,6 +159,8 @@ MatrixXd pairwise_dist_sq(const MatrixXd &x, const MatrixXd &y) {
   return D;
 }
 
+// if x contains points on different lines, the returned D has element i,j
+// equal to the distance between point i and point j (squared)
 MatrixXd pairwise_dist_sq(const MatrixXd &x) { return pairwise_dist_sq(x, x); }
 
 VectorXd softmax(const VectorXd &logs) {

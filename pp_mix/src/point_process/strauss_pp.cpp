@@ -25,6 +25,7 @@ void StraussPP::initialize() {
   sqrt_chisq_quantile = sqrt(quantile(complement(chisq, 0.1)));
 }
 
+// density f(x) of a strauss PP
 double StraussPP::dens(const MatrixXd &x, bool log) {
   // std::cout << "R: " << R << std::endl;
   double out;
@@ -45,14 +46,15 @@ double StraussPP::dens(const MatrixXd &x, bool log) {
   return out;
 }
 
+// Same as previous one, but starts already from a distance matrix
 double StraussPP::dens_from_pdist(MatrixXd &dists, double beta_,
                                   double gamma_, double R_, bool log) {
   double out;
   if (dists.rows() == 1)
-    out = beta_;
+    out = std::log(beta_);
   else {
     int npoints = dists.rows();
-    double out = std::log(beta_) * npoints;
+    out = std::log(beta_) * npoints;
     dists.diagonal() = ArrayXd::Ones(npoints) * R_ * R_ * 10.0;
 
     out += std::log(gamma_) * (dists.array() < R_ * R_).count() / 2;
@@ -66,6 +68,7 @@ double StraussPP::papangelou(MatrixXd xi, const MatrixXd &x, bool log) {
   double out = 0.0;
   if (xi.cols() != dim) xi.transposeInPlace();
 
+  //check if all points inside the region
   for (int i = 0; i < xi.rows(); i++) {
     for (int j = 0; j < dim; j++) {
       if ((xi(i, j) < ranges(0, j)) || (xi(i, j) > ranges(1, j))) {
@@ -93,6 +96,7 @@ double StraussPP::papangelou(const Point &xi, const std::list<Point> &x,
                            bool log) {
 
     double exp;
+    // counts the number of points in x which are closer than R to xi
     exp = std::accumulate(
         x.begin(), x.end(), 0.0, [&xi, this](double out, const Point &p2) {
           return out + 1.0 * ((p2.coords - xi.coords).squaredNorm() < R * R);
@@ -103,6 +107,7 @@ double StraussPP::papangelou(const Point &xi, const std::list<Point> &x,
     return out;
 }
 
+// For Strauss phi_star is constant and equal to beta, thus uniform in B
 VectorXd StraussPP::phi_star_rng() {
   VectorXd out(dim);
   for (int i = 0; i < dim; i++) {
