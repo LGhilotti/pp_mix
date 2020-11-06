@@ -16,10 +16,10 @@ MatrixXd PrecMat::get_prec() const
     return prec;
 }
 
-MatrixXd PrecMat::get_var() const { 
+MatrixXd PrecMat::get_var() const {
     if (! compute_var)
         throw std::runtime_error("Variance has not been computed!");
-        
+
     return var;
 }
 
@@ -28,7 +28,7 @@ LLT<MatrixXd> PrecMat::get_cho_factor() const
     return cho_factor;
 }
 
-const MatrixXd& PrecMat::get_cho_factor_eval() const
+MatrixXd PrecMat::get_cho_factor_eval() const
 {
     return cho_factor_eval;
 }

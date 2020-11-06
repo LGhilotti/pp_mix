@@ -11,7 +11,7 @@ class PrecMat {
    MatrixXd prec;
    MatrixXd var;
    LLT<MatrixXd> cho_factor;
-   MatrixXd cho_factor_eval;
+   MatrixXd cho_factor_eval; // matrix U in Cholesky decomposition: Prec=LL^T = U^T U
    double log_det;
    double univariate_val;
    bool is_univariate = false;
@@ -37,11 +37,11 @@ class PrecMat {
 
    LLT<MatrixXd> get_cho_factor() const;
 
-   const MatrixXd& get_cho_factor_eval() const;
+   MatrixXd get_cho_factor_eval() const;
 
    double get_log_det() const;
 };
 
 std::ostream &operator<<(std::ostream &output, const PrecMat &p);
 
-#endif 
+#endif

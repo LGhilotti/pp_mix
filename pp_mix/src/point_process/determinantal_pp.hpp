@@ -11,7 +11,7 @@ class DeterminantalPP : public BasePP {
   // parameters in the PES density
   double rho;
   double nu;
-  double s;
+  double s; //in (0,1)
 
   // eigendecomposition params
   VectorXd phis;

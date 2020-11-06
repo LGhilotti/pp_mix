@@ -28,7 +28,7 @@ class FixedPrec : public BaseMultiPrec
 {
 protected:
    int dim;
-   double sigma;
+   double sigma; // The precision matrix is assumed to be sigma*I here
 
 public:
    FixedPrec(int dim, double sigma) : dim(dim), sigma(sigma) {}
@@ -47,4 +47,4 @@ public:
 };
 
 
-#endif 
+#endif

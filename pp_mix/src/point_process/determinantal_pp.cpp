@@ -5,10 +5,12 @@
 using stan::math::LOG_SQRT_PI;
 double PI = stan::math::pi();
 
+// initialize Kappas, phis, phi_tildes, Ds, c*, A and b
 void DeterminantalPP::initialize() {
   std::cout << "initialize" << std::endl;
+  //Sets Kappas, phis, phi_tildes and Ds
   eigen_decomposition();
-  c_star = phi_tildes.sum();
+  c_star = phi_tildes.sum(); // assuming B=[-1/2 , 1/2]^d
 
   std::cout << "phis: " << phis.transpose() << std::endl;
   std::cout << "phi_tildes: " << phi_tildes.transpose() << std::endl;
@@ -113,7 +115,7 @@ void DeterminantalPP::update_hypers(const MatrixXd &active,
 double DeterminantalPP::log_det_Ctilde(const MatrixXd &x) {
   MatrixXd Ctilde(x.rows(), x.rows());
 
-  // TODO Ctilde is symmetric!
+  // TODO: Ctilde is symmetric! Also the diagonal elements are identical!
   for (int l = 0; l < x.rows(); l++) {
     for (int m = 0; m < x.rows(); m++) {
       double aux = 0.0;
@@ -131,6 +133,7 @@ double DeterminantalPP::log_det_Ctilde(const MatrixXd &x) {
   return 2.0 * std::log(Ctilde.llt().matrixL().determinant());
 }
 
+// Sets Kappas, phis, phi_tildes and Ds
 void DeterminantalPP::eigen_decomposition() {
   std::vector<double> k(2 * N + 1);
   for (int n = -N; n <= N; n++) {

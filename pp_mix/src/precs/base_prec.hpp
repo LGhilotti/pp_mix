@@ -17,14 +17,14 @@ public:
 class BaseUnivPrec: public BasePrec {
 public:
     virtual ~BaseUnivPrec() {};
-    
+
     virtual double sample_prior() = 0;
 
     virtual double sample_given_data(
         const std::vector<double> &data, const double &curr,
         const VectorXd &mean) = 0;
 
-    virtual double mean() const = 0;
+    virtual double mean() const = 0; // prior mean
 
     virtual double lpdf(double val) const = 0;
 };
