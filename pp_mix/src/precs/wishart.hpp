@@ -16,12 +16,12 @@ using namespace stan::math;
 class Wishart : public BaseMultiPrec
 {
 protected:
-    double df;
-    MatrixXd psi;
+    double df; // called n on wiki
+    MatrixXd psi; // called V on wiki
     MatrixXd inv_psi;
 
 public:
-    Wishart(double df, int dim, double sigma);
+    Wishart(double df, int dim, double sigma); // assumes psi= sigma*I
 
     // Wishart(double df, const MatrixXd &psi);
 
@@ -44,4 +44,4 @@ public:
     };
 };
 
-#endif 
+#endif

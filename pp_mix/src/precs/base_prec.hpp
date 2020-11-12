@@ -18,8 +18,10 @@ class BaseUnivPrec: public BasePrec {
 public:
     virtual ~BaseUnivPrec() {};
 
+    // Sample from full-cond of Delta^(na): non allocated are distributed as prior
     virtual double sample_prior() = 0;
 
+    // Sample from full-cond of Delta^(a): allocated
     virtual double sample_given_data(
         const std::vector<double> &data, const double &curr,
         const VectorXd &mean) = 0;
@@ -34,8 +36,10 @@ class BaseMultiPrec: public BasePrec {
 public:
     virtual ~BaseMultiPrec(){};
 
+    // Sample from full-cond of Delta^(na): non allocated are distributed as prior
     virtual PrecMat sample_prior() = 0;
 
+    // Sample from full-cond of Delta^(a): allocated 
     virtual PrecMat sample_given_data(
         const std::vector<VectorXd> &data, const PrecMat &curr,
         const VectorXd &mean) = 0;

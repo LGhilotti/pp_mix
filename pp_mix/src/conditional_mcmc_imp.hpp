@@ -21,7 +21,7 @@ void ConditionalMCMC<Prec, prec_t, data_t>::initialize(
   // given an initial number of points
   // int init_n_clus = 5;
   // a_means = pp_mix->sample_n_points(init_n_clus);
-  
+
   initialize_allocated_means();
 
   // a_means = MatrixXd::Zero(std::pow(2, dim), dim);
@@ -47,27 +47,34 @@ void ConditionalMCMC<Prec, prec_t, data_t>::initialize(
 
   nclus = a_means.rows();
   clus_alloc = VectorXi::Zero(ndata);
+  // initial allocation of data into cluster is random
   VectorXd probas = VectorXd::Ones(nclus) / nclus;
   for (int i = 0; i < ndata; i++) {
     clus_alloc(i) = categorical_rng(probas, Rng::Instance().get()) - 1;
   }
   // std::cout << "clus_alloc: " << clus_alloc.transpose() << std::endl;
 
+  // initial vector s(a) has identical element and sums to nclus/(nclus+1)
   a_jumps = VectorXd::Ones(nclus) / (nclus + 1);
 
+  // initial vector Delta(a) is equal to the mean (scalar or matrix)
   a_precs.resize(nclus);
   for (int i = 0; i < nclus; i++) {
     a_precs[i] = g->mean();
     // std::cout << "prec: \n" << a_precs[i] << std::endl;
   }
 
+  // initial mu(na) is just one, uniformly selected in ranges
   na_means = pp_mix->sample_uniform(1);
+  // initial s(na) (just one value) is 1/(nclus + 1) -> this way the full s vector sums to 1!
   na_jumps = VectorXd::Ones(na_means.rows()) / (nclus + na_means.rows());
 
+  // initial Delta(na) (just one scalar or matrix) is the mean
   na_precs.resize(na_means.rows());
   for (int i = 0; i < na_means.rows(); i++) {
     na_precs[i] = g->mean();
   }
+  // initial u parameter
   u = 1.0;
 
   std::cout << "initialize done" << std::endl;
@@ -75,10 +82,15 @@ void ConditionalMCMC<Prec, prec_t, data_t>::initialize(
 
 template <class Prec, typename prec_t, typename data_t>
 void ConditionalMCMC<Prec, prec_t, data_t>::run_one() {
+  // set T = sum(s1,...,sM)
   double T = a_jumps.sum() + na_jumps.sum();
+
+  // sample u | rest
   u = gamma_rng(ndata, T, Rng::Instance().get());
+  // compute laplace transform psi in u
   double psi_u = h->laplace(u);
 
+  // sample c | rest and reorganize the all and nall parameters, and c as well
   sample_allocations_and_relabel();
 
   // UNALLOCATED PROCESS
@@ -102,6 +114,7 @@ void ConditionalMCMC<Prec, prec_t, data_t>::run_one() {
   sample_vars();
   sample_jumps();
 
+  // PERFECT SIMULATION (for updating hypers)
   pp_mix->update_hypers(a_means, na_means);
 
   // print_debug_string();
@@ -112,6 +125,7 @@ void ConditionalMCMC<Prec, prec_t, data_t>::sample_allocations_and_relabel() {
   // std::cout << "sample_allocations_and_relabel" << std::endl;
   int Ma = a_means.rows();
   int Mna = na_means.rows();
+  // current number of components (a + na)
   int Mtot = Ma + Mna;
 
   // std::cout << "a_means: \n" << a_means << std::endl;
@@ -141,7 +155,11 @@ void ConditionalMCMC<Prec, prec_t, data_t>::sample_allocations_and_relabel() {
       probas[k + Ma] += lpdf_given_clus(datum, curr_na_means.row(k).transpose(),
                                         curr_na_precs[k]);
     }
+    // now, we have (probas) the updated probabilities (log and just proportional) for sampling the categorical c_i
+
     // std::cout << "unnormalized_probas: " << probas.transpose() << std::endl;
+
+    // reconvert probas with the updated probabilities normalized (summing to 1)
     probas = softmax(probas);
     // std::cout << "normalized: " << probas.transpose() << std::endl;
     newalloc = categorical_rng(probas, Rng::Instance().get()) - 1;
@@ -253,7 +271,7 @@ void ConditionalMCMC<Prec, prec_t, data_t>::_relabel() {
 
 template <class Prec, typename prec_t, typename data_t>
 void ConditionalMCMC<Prec, prec_t, data_t>::sample_means() {
-  
+
   // const MatrixXd &ranges = pp_mix->get_ranges();
   // // We update each mean separately
 
@@ -301,7 +319,7 @@ void ConditionalMCMC<Prec, prec_t, data_t>::sample_means() {
   //   VectorXd mean_proposal_inverse = prop + bias_prop;
   //   prop_ratio = 0.0;
   //   for (int k=0; k < prop.size(); k++) {
-  //       prop_ratio += trunc_normal_lpdf(prop(k), prop_mean(k), sigma, 
+  //       prop_ratio += trunc_normal_lpdf(prop(k), prop_mean(k), sigma,
   //                                       ranges(0, k), ranges(1, k));
   //       prop_ratio += trunc_normal_lpdf(currmean(k), mean_proposal_inverse(k),
   //                                       sigma, ranges(0, k), ranges(1, k));
@@ -334,6 +352,8 @@ void ConditionalMCMC<Prec, prec_t, data_t>::sample_means() {
     const VectorXd &currmean = a_means.row(i).transpose();
     const MatrixXd &cov_prop = MatrixXd::Identity(dim, dim) * sigma;
 
+    // we PROPOSE a new point from a multivariate normal, with mean equal to the current point
+    // and covariance matrix diagonal
     VectorXd prop =
         stan::math::multi_normal_rng(currmean, cov_prop, Rng::Instance().get());
 

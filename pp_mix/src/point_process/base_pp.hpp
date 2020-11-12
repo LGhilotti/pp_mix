@@ -44,6 +44,7 @@ class BasePP {
     virtual double papangelou(const Point &xi, const std::list<Point> &x,
                               bool log = true) = 0;
 
+    // sample npoints uniformly in the region defined by range
     MatrixXd sample_uniform(int npoints);
 
     // Sample from b_bar'(csi)=phi_star(csi)/c_star (used in birth process)

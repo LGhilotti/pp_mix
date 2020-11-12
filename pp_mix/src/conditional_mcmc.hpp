@@ -68,21 +68,25 @@ class ConditionalMCMC {
     }
 
     ConditionalMCMC(
-        BasePP * pp_mix, BaseJump * h, Prec * g, 
+        BasePP * pp_mix, BaseJump * h, Prec * g,
         const Params& params);
 
     void set_pp_mix(BasePP* pp_mix) {this->pp_mix = pp_mix;}
     void set_jump(BaseJump* h) {this->h = h;}
     void set_prec(Prec* g) {this->g = g;}
 
+    // initializes some of the members (data, dim, ndata,..)
+    // The constructor only initialize some other members (pointers)
     void initialize(const std::vector<data_t> &data);
 
     virtual void initialize_allocated_means() = 0;
 
+    // it performs the whole step of updatings
     void run_one();
 
     void sample_allocations_and_relabel();
 
+    // it uses a MH step for sampling each mean
     void sample_means();
 
     void sample_vars();
@@ -102,7 +106,7 @@ class ConditionalMCMC {
         const data_t &x, const VectorXd &mu, const prec_t &sigma)  = 0;
 
     virtual double lpdf_given_clus_multi(
-        const std::vector<data_t> &x, const VectorXd &mu, 
+        const std::vector<data_t> &x, const VectorXd &mu,
         const prec_t &sigma) = 0;
 
     virtual void set_dim(const data_t& datum) = 0;
@@ -126,6 +130,8 @@ public:
     MultivariateConditionalMCMC(BasePP *pp_mix, BaseJump *h, BasePrec *g,
                                 const Params &params);
 
+    // initialize 10 (or less) allocated means: if <10 data, take the means on
+    // the data, otherwise choose the means on randomly selected data 
     void initialize_allocated_means() override;
 
     void get_state_as_proto(google::protobuf::Message *out_) override;
@@ -148,7 +154,7 @@ public:
         dim = datum.size();
     }
 
-    void print_data_by_clus(int clus); 
+    void print_data_by_clus(int clus);
 
 };
 
