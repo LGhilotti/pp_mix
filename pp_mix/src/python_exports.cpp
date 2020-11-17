@@ -65,6 +65,7 @@ std::deque<py::bytes> run_pp_mix_multi(int burnin, int niter, int thin,
                                        const Eigen::MatrixXd &data,
                                        Params params, int log_every) {
   Eigen::MatrixXd ranges(2, data.cols());
+  // ranges are set using the minimum and maximum values of data
   ranges.row(0) = data.colwise().minCoeff();
   ranges.row(1) = data.colwise().maxCoeff();
   ranges *= 2;
@@ -74,6 +75,8 @@ std::deque<py::bytes> run_pp_mix_multi(int burnin, int niter, int thin,
   BasePP *pp_mix = make_pp(params);
   BaseJump *h = make_jump(params);
   BasePrec *g = make_prec(params);
+  // make_pp only sets PP-specific parameter members.
+  // Now, sets member of BasePP(ranges, dim,...) and calls initialize() which sets PP-specific members (eigen-decomposition,..)
   pp_mix->set_ranges(ranges);
 
   MultivariateConditionalMCMC sampler(pp_mix, h, g, params);
@@ -148,6 +151,8 @@ std::deque<py::bytes> run_pp_mix_bernoulli(int burnin, int niter, int thin,
   }
   return out;
 }
+
+/////////////////////////// This is the main function provided to Python user
 
 std::deque<py::bytes> _run_pp_mix(int burnin, int niter, int thin,
                                   const Eigen::MatrixXd &data,
