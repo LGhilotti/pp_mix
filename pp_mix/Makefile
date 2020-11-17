@@ -1,17 +1,17 @@
 ROOT_DIR := .
-STAN_ROOT_DIR := /home/mario/PhD/spatial_lda/lib/math
 SRC_DIR := $(ROOT_DIR)/src
 SPIKES_DIR := $(SRC_DIR)/spikes
 PROTO_DIR := $(ROOT_DIR)/protos
+STAN_ROOT_DIR := $(if $(STAN_ROOT_DIR), $(STAN_ROOT_DIR), /home/mario/PhD/spatial_lda/lib/math)
 
 CXX = g++
 CFLAGS = \
 	-std=c++1y \
 	-MMD \
 	-I$(STAN_ROOT_DIR) \
-	-I$(STAN_ROOT_DIR)/lib/eigen_3.3.3/ \
-	-I$(STAN_ROOT_DIR)/lib/boost_1.69.0/  \
-	-I$(STAN_ROOT_DIR)/lib/sundials_4.1.0/include  \
+	-I$(STAN_ROOT_DIR)/lib/eigen_*/ \
+	-I$(STAN_ROOT_DIR)/lib/boost_*/  \
+	-I$(STAN_ROOT_DIR)/lib/sundials_*/include  \
 	-I$(STAN_ROOT_DIR)/lib/tbb_2019_U8/include  \
 	-I$(PROTO_DIR) \
 	-D_REENTRANT -fPIC \
