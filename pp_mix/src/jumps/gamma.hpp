@@ -1,7 +1,7 @@
 #ifndef GAMMA_JUMP
 #define GAMMA_JUMP
 
-#include <stan/math/prim/mat.hpp>
+#include <stan/math/prim.hpp>
 #include "base_jump.hpp"
 #include "../rng.hpp"
 
@@ -14,7 +14,7 @@ class GammaJump: public BaseJump {
   public:
     GammaJump(double alpha, double beta): alpha(alpha), beta(beta) {}
     ~GammaJump() {}
-    
+
     double sample_tilted(double u) override;
 
     double sample_given_data(

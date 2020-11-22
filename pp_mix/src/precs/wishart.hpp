@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <Eigen/Dense>
-#include <stan/math/prim/mat.hpp>
+#include <stan/math/prim.hpp>
 
 #include "base_prec.hpp"
 #include "../rng.hpp"

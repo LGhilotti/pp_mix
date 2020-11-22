@@ -10,7 +10,7 @@
 #include <functional>
 
 #include <Eigen/Dense>
-#include <stan/math/prim/mat.hpp>
+#include <stan/math/prim.hpp>
 #include <google/protobuf/message.h>
 
 #include "rng.hpp"
@@ -131,7 +131,7 @@ public:
                                 const Params &params);
 
     // initialize 10 (or less) allocated means: if <10 data, take the means on
-    // the data, otherwise choose the means on randomly selected data 
+    // the data, otherwise choose the means on randomly selected data
     void initialize_allocated_means() override;
 
     void get_state_as_proto(google::protobuf::Message *out_) override;

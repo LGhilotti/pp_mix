@@ -9,7 +9,7 @@
 #include <fstream>
 #include <numeric>
 #include <random>
-#include <stan/math/prim/mat.hpp>
+#include <stan/math/prim.hpp>
 #include <vector>
 
 #include "../protos/cpp/state.pb.h"
@@ -42,7 +42,7 @@ T loadTextProto(std::string filename) {
 
 double o_multi_normal_prec_lpdf(const VectorXd &x, const VectorXd &mu,
                                 const PrecMat &sigma);
-
+// this is just proportional (-n*p/2 log(2pi) misses): we just need it for MH step so it is enough
 double o_multi_normal_prec_lpdf(const std::vector<VectorXd> &x,
                                 const VectorXd &mu, const PrecMat &sigma);
 

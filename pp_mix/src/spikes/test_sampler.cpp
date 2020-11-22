@@ -3,7 +3,7 @@
 #include <string>
 #include <memory>
 
-#include <stan/math/prim/mat.hpp>
+#include <stan/math/prim.hpp>
 
 #include "../conditional_mcmc.hpp"
 #include "../factory.hpp"
@@ -41,7 +41,7 @@ Eigen::MatrixXd simulate_multivariate() {
     }
 
     return data;
-} 
+}
 
 
 Eigen::MatrixXd simulate_univariate() {
@@ -78,7 +78,7 @@ int main() {
     Params params = loadTextProto<Params>(params_file);
 
     // BasePP *pp_mix = make_pp(params);
-    BasePP *pp_mix = new DeterminantalPP(10, 2.0, 3.0);
+    BasePP *pp_mix = new DeterminantalPP(10, 2.0, 3.0, 0.3);
     pp_mix->set_ranges(ranges);
 
     BaseJump *h = make_jump(params);
@@ -100,7 +100,7 @@ int main() {
     // std::vector<Eigen::VectorXd> datavec = to_vector_of_vectors(data);
 
     sampler.initialize(datavec);
-    
+
     // std::deque<MultivariateMixtureState> chains;
 
     // sampler.set_verbose();
