@@ -2,7 +2,7 @@
 #define PREC_GAMMA_HPP
 
 #include <algorithm>
-#include <stan/math/prim/mat.hpp>
+#include <stan/math/prim.hpp>
 
 #include "../rng.hpp"
 #include "../utils.hpp"

@@ -1,7 +1,7 @@
 #ifndef GAMMA_JUMP
 #define GAMMA_JUMP
 
-#include <stan/math/prim/mat.hpp>
+#include <stan/math/prim.hpp>
 #include "base_jump.hpp"
 #include "../rng.hpp"
 

@@ -10,7 +10,7 @@
 #include <iostream>
 #include <map>
 #include <set>
-#include <stan/math/prim/mat.hpp>
+#include <stan/math/prim.hpp>
 #include <vector>
 
 #include "../protos/cpp/params.pb.h"

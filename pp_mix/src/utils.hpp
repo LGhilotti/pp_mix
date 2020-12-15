@@ -9,7 +9,7 @@
 #include <fstream>
 #include <numeric>
 #include <random>
-#include <stan/math/prim/mat.hpp>
+#include <stan/math/prim.hpp>
 #include <vector>
 
 #include "../protos/cpp/state.pb.h"

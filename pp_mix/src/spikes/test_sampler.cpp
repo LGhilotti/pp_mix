@@ -3,7 +3,7 @@
 #include <string>
 #include <memory>
 
-#include <stan/math/prim/mat.hpp>
+#include <stan/math/prim.hpp>
 
 #include "../conditional_mcmc.hpp"
 #include "../factory.hpp"

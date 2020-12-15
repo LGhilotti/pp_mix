@@ -3,7 +3,7 @@
 
 #include <stdexcept>
 #include <Eigen/Dense>
-#include <stan/math/prim/mat.hpp>
+#include <stan/math/prim.hpp>
 #include <google/protobuf/message.h>
 
 #include "../rng.hpp"

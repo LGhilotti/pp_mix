@@ -175,11 +175,6 @@ MatrixXd posterior_sim_matrix(const MatrixXi &alloc_chain) {
     }
   }
   return out;
-
-
-VectorXd softmax(const VectorXd &logs) {
-  VectorXd num = (logs.array() - logs.maxCoeff()).exp();
-  return num / num.sum();
 }
 
 // VectorXd minbinder(const MatrixXi &alloc_chain) {
