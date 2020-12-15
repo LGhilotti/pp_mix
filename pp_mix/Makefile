@@ -2,7 +2,7 @@ ROOT_DIR := .
 SRC_DIR := $(ROOT_DIR)/src
 SPIKES_DIR := $(SRC_DIR)/spikes
 PROTO_DIR := $(ROOT_DIR)/protos
-STAN_ROOT_DIR := $(if $(STAN_ROOT_DIR), $(STAN_ROOT_DIR), /home/mario/PhD/spatial_lda/lib/math)
+STAN_ROOT_DIR := $(if $(STAN_ROOT_DIR), $(STAN_ROOT_DIR), /home/mario/dev/bayesmix/lib/math)
 
 CXX = g++
 CFLAGS = \
