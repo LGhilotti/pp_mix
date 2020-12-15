@@ -86,7 +86,7 @@ VectorXd DeterminantalPP::phi_star_rng() {
 }
 
 double DeterminantalPP::phi_star_dens(VectorXd xi, bool log) {
-  double out = phi_tildes.sum();
+  double out = phi_tildes.sum() / vol_range;
   if (log) out = std::log(out);
 
   return out;
