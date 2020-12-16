@@ -27,7 +27,8 @@ double DeterminantalPP::dens(const MatrixXd &x, bool log) {
   if ((x.size() == 1 && dim == 1) || (x.rows() == 1 & dim > 1) ||
       (x.cols() == 1 && dim > 1)) {
     n = 1;
-    out = -1.0 * n * std::log(vol_range) + vol_range;
+    out =
+        -1.0 * n * std::log(vol_range) + vol_range + std::log(phi_tildes.sum());
 
   } else {
     int n = x.rows();
