@@ -7,15 +7,9 @@ double PI = stan::math::pi();
 
 // initialize Kappas, phis, phi_tildes, Ds, c*, A and b
 void DeterminantalPP::initialize() {
-  std::cout << "initialize" << std::endl;
   //Sets Kappas, phis, phi_tildes and Ds
   eigen_decomposition();
   c_star = phi_tildes.sum(); // assuming B=[-1/2 , 1/2]^d
-
-  std::cout << "phis: " << phis.transpose() << std::endl;
-  std::cout << "phi_tildes: " << phi_tildes.transpose() << std::endl;
-  std::cout << "Ds: " << Ds << std::endl;
-  std::cout << "Kappas: " << Kappas.rows() << "x" << Kappas.cols() << std::endl;
 
   A = MatrixXd::Zero(dim, dim);
   b = VectorXd::Zero(dim);
@@ -23,9 +17,6 @@ void DeterminantalPP::initialize() {
     A(i, i) = 1.0 / (ranges(1, i) - ranges(0, i));
     b(i) = -A(i, i) * (ranges(1, i) + ranges(0, i)) / 2.0;
   }
-
-  std::cout << "A: \n" << A << std::endl;
-  std::cout << "b: " << b.transpose() << std::endl;
 }
 
 double DeterminantalPP::dens(const MatrixXd &x, bool log) {
@@ -97,19 +88,17 @@ VectorXd DeterminantalPP::phi_star_rng() {
 }
 
 double DeterminantalPP::phi_star_dens(VectorXd xi, bool log) {
-  double out = dens(xi.transpose());
+  double out = phi_tildes.sum() / vol_range;
   if (log) out = std::log(out);
 
   return out;
 }
 
 void DeterminantalPP::update_hypers(const MatrixXd &active,
-                                  const MatrixXd &non_active) {
+                                    const MatrixXd &non_active) {
   double rho_new = rho;
 
-
-  if (rho_new != rho)
-    eigen_decomposition();
+  if (rho_new != rho) eigen_decomposition();
 };
 
 double DeterminantalPP::log_det_Ctilde(const MatrixXd &x) {
@@ -121,12 +110,8 @@ double DeterminantalPP::log_det_Ctilde(const MatrixXd &x) {
       double aux = 0.0;
       for (int kind = 0; kind < Kappas.rows(); kind++) {
         double dotprod = Kappas.row(kind).dot(x.row(l) - x.row(m));
-        // std::cout << "dotprod: " << dotprod << std::endl;
-        // std::cout << "curr: " << phi_tildes[kind] * std::cos(2. * PI *
-        // dotprod);
         aux += phi_tildes[kind] * std::cos(2. * PI * dotprod);
       }
-      // std::cout << "aux: " << aux << std::endl;
       Ctilde(l, m) = aux;
     }
   }
@@ -139,7 +124,6 @@ void DeterminantalPP::eigen_decomposition() {
   for (int n = -N; n <= N; n++) {
     k[n + N] = n;
   }
-  // std::cout << "dim: " << dim << std::endl;
   std::vector<std::vector<double>> kappas;
   if (dim == 1) {
     kappas.resize(k.size());
@@ -162,18 +146,10 @@ void DeterminantalPP::eigen_decomposition() {
                          (stan::math::lgamma(dim_ / nu + 1) - std::log(rho) -
                           stan::math::lgamma(dim_ / 2 + 1) - 0.5 * LOG_SQRT_PI);
   double alpha_max = std::exp(alpha_max);
-  // evaluate phi
-  // double aux_log =
-  //     nu *
-  //     (std::log(s) - LOG_SQRT_PI +
-  //      dim * (stan::math::lgamma(2.5) - stan::math::lgamma(1.0 + 1.0 / nu)) +
-  //      dim * std::log(rho));
 
   for (int i = 0; i < Kappas.rows(); i++) {
-    // std::cout <<
-    phis[i] = std::pow(s, dim) * std::exp(-(s * alpha_max * Kappas.row(i).norm()));
-    // phis[i] = std::exp(dim * std::log(s) -
-    //                    std::exp(aux_log + nu * std::log(Kappas.row(i).norm())));
+    phis[i] =
+        std::pow(s, dim) * std::exp(-(s * alpha_max * Kappas.row(i).norm()));
 
     phi_tildes[i] = phis[i] / (1 - phis[i]);
     Ds += std::log(1 + phi_tildes[i]);

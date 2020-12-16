@@ -163,12 +163,14 @@ MatrixXd pairwise_dist_sq(const MatrixXd &x, const MatrixXd &y) {
 // equal to the distance between point i and point j (squared)
 MatrixXd pairwise_dist_sq(const MatrixXd &x) { return pairwise_dist_sq(x, x); }
 
-/*
+
 VectorXd softmax(const VectorXd &logs) {
   VectorXd num = (logs.array() - logs.maxCoeff()).exp();
   return num / num.sum();
+  // after a "strange" step, what it returns is (p1/P,...,pM/P), where P=sum(pi)
+  // what it receives is (ln(p1),...,ln(pM))
 }
-*/
+
 MatrixXd posterior_sim_matrix(const MatrixXi &alloc_chain) {
   MatrixXd out(alloc_chain.cols(), alloc_chain.cols());
   for (int i = 1; i < alloc_chain.cols(); i++) {
@@ -181,13 +183,6 @@ MatrixXd posterior_sim_matrix(const MatrixXi &alloc_chain) {
     }
   }
   return out;
-}
-
-VectorXd softmax(const VectorXd &logs) {
-  VectorXd num = (logs.array() - logs.maxCoeff()).exp();
-  return num / num.sum();
-  // after a "strange" step, what it returns is (p1/P,...,pM/P), where P=sum(pi)
-  // what it receives is (ln(p1),...,ln(pM))
 }
 
 // VectorXd minbinder(const MatrixXi &alloc_chain) {
