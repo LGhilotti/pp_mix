@@ -15,7 +15,7 @@ void ConditionalMCMC<Prec, prec_t, data_t>::initialize(
   ndata = data.size();
   set_dim(data[0]);
 
-  MatrixXd ranges = pp_mix->get_ranges();
+  MatrixXd ranges = pp_mix->get_ranges(); //USELESS!
 
   // initialize the allocated means with a "perfect" simulation
   // given an initial number of points
