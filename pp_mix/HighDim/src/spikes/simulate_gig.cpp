@@ -3,11 +3,10 @@
 using namespace Eigen;
 
 int main(){
-  int n=10000;
+  int n=1000;
   ArrayXd samples(n);
-  std::vector<double> res(GIG::rgig(n,-3,2,0));
   for (int i=0;i<n;i++){
-    samples(i)=res[i];
+    samples(i)=GIG::rgig(-3,2,0);
   }
   std::cout<< "Mean: "<<samples.mean()<<std::endl;
   std::cout<<"Variance: "<<(samples - samples.mean()).square().sum()/(samples.size()-1)<<std::endl;

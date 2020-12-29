@@ -50,7 +50,6 @@ class DeterminantalPP : public BasePP {
 
   double rejection_sampling_M(int npoints) override;
 
-  // NB assumes that X has been rescaled in -0.5, 0.5!
   double log_det_Ctilde(const MatrixXd& x);
 
   void eigen_decomposition();

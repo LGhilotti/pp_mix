@@ -1,0 +1,52 @@
+syntax="proto3";
+
+message WishartParams {
+    double nu = 1;
+    bool identity = 2;
+    oneof sigma_ { double sigma = 3; }
+    int32 dim = 4;
+}
+
+message FixedMultiPrecParams {
+    double sigma = 1;
+    int32 dim = 2;
+}
+
+message FixedUnivPrecParams {
+    double sigma = 1;
+}
+
+message GammaParams {
+    double alpha = 1;
+    double beta = 2;
+}
+
+
+message DPPParams {
+    double c = 1;
+    int32 N = 2;
+    double s = 3;
+}
+
+message Params {
+
+    DPPParams dpp = 1;
+
+
+    oneof prec_params {
+        FixedMultiPrecParams fixed_multi_prec = 2;
+        WishartParams wishart = 3;
+        FixedUnivPrecParams fixed_univ_prec = 4;
+        GammaParams gamma_prec = 5;
+    }
+
+    GammaParams gamma_jump = 6;
+
+    int32 dimf = 7;
+
+    double a = 8;
+    double alphajump = 9;
+    double betajump = 10;
+    double agamma = 11;
+    double bgamma = 12;
+}

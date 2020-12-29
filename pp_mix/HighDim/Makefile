@@ -8,7 +8,7 @@ CFLAGS = \
 	-std=c++1y \
 	-MMD \
 	-I$(STAN_ROOT_DIR) \
-	-I$(STAN_ROOT_DIR)/lib/eigen_*/ \
+	-I$(ROOT_DIR)/eigen/ \
 	-I$(STAN_ROOT_DIR)/lib/boost_*/  \
 	-I$(STAN_ROOT_DIR)/lib/sundials_*/include  \
 	-I$(STAN_ROOT_DIR)/lib/tbb_2019_U8/include  \
@@ -20,19 +20,22 @@ LDLIBS = \
 LDFLAGS = -D_REENTRANT -O3 -fopenmp
 
 SPIKES_SRCS = $(SPIKES_DIR)/simulate_gig.cpp
+#OUR_SRCS = $(SRC_DIR)/rng.cpp
+
+#OBJS = $(subst .cpp,.o, $(OUR_SRCS))
 
 SPIKES_EXECS = $(subst .cpp,.out, $(SPIKES_SRCS))
 SPIKES_OBJS =  $(subst .cpp,.o, $(SPIKES_SRCS))
 
 test: $(SPIKES_EXECS)
 
-$(SPIKES_EXECS): %.out: %.o
+$(SPIKES_EXECS): %.out: %.o #$(OBJS)
 	$(CXX) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJS) $< $(LDLIBS)
 
 %.o : %.cpp
 	$(CXX) $(CFLAGS) -MMD -MP -c $< -o $@
 
 clean:
-	rm $(SPIKES_OBJS) 
+	rm $(SPIKES_OBJS) #$(OBJS)
 
 distclean: clean
