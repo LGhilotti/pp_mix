@@ -15,9 +15,8 @@
 
 #include "gig.hpp"
 #include "rng.hpp"
-#include "point_process/determinantalPP.hpp"
-#include "jumps/jump_gamma.hpp"
-#include "precs/delta_wishart.hpp"
+#include "point_process/base_determinantalPP.hpp"
+#include "precs/base_prec.hpp"
 #include "precs/precmat.hpp"
 #include "utils.hpp"
 //#include "../protos/cpp/state.pb.h"
@@ -90,8 +89,8 @@ class ConditionalMCMC {
     void set_prec(Prec* g) {this->g = g;}
     void set_params(const Params & p);
 
-    // initializes some of the members (data, dim, ndata,..)
-    // The constructor only initialize some other members (pointers)
+    // initializes some of the members (data, dim, ndata,..) and state of sampler
+    // The constructor only initialize some other members (pointers) and params field
     void initialize(const MatrixXd &dat);
 
     // initializes the etas, projecting the data onto Col(Lambda):
@@ -143,9 +142,9 @@ class ConditionalMCMC {
         return std::pow(_beta_jump, _alpha_jump) / std::pow(_beta_jump + u, _alpha_jump);
     }
 
-    //wll be private:  for update of Lambda
+    //will be private:  for update of Lambda! Used in sample_lambda().
     inline double compute_exp_lik(const MatrixXd& lamb) const;
-
+    inline double compute_exp_prior(const MatrixXd& lamb) const;
 
     virtual void get_state_as_proto(google::protobuf::Message *out_) = 0;
 
@@ -199,6 +198,8 @@ public:
 
     //ETAS
     void sample_etas() override;
+    // LAMBDA
+    void sample_Lambda() override;
 
     void get_state_as_proto(google::protobuf::Message *out_) override;
 
@@ -237,6 +238,8 @@ public:
 
     //ETAS
     void sample_etas() override;
+    // LAMBDA
+    void sample_Lambda() override;
 
     void get_state_as_proto(google::protobuf::Message *out_) override;
 

@@ -34,8 +34,30 @@ BaseDeterminantalPP::BaseDeterminantalPP(const MatrixXd &ranges, int N, double c
 }
 
 
-double BaseDeterminantalPP::dens(const MatrixXd& x, double Ds_p, const VectorXd& phis_p,
-            const VectorXd& phi_tildes_p, double c_star_p, bool log){
+double BaseDeterminantalPP::dens_cond(const MatrixXd& x, bool log) {
+
+  double out = ln_dens_process(x, Ds, phis, phi_tildes, c_star);
+  out -= std::log(1-std::exp(-Ds));
+
+  if (!log) out = std::exp(out);
+
+  return out;
+
+}
+
+double BaseDeterminantalPP::dens(const MatrixXd &x, bool log) {
+
+  double out = ln_dens_process(x, Ds, phis, phi_tildes, c_star);
+
+  if (!log) out = std::exp(out);
+
+  return out;
+
+}
+
+
+double BaseDeterminantalPP::ln_dens_process(const MatrixXd& x, double Ds_p, const VectorXd& phis_p,
+            const VectorXd& phi_tildes_p, double c_star_p){
 
   double out;
   int n;
@@ -71,80 +93,11 @@ double BaseDeterminantalPP::dens(const MatrixXd& x, double Ds_p, const VectorXd&
       out = stan::math::NEGATIVE_INFTY;
     }
   }
-  if (!log) out = std::exp(out);
-
   // std::cout << "dens: " << out << std::endl;
 
   return out;
 
 }
-
-
-double BaseDeterminantalPP::dens_cond_process(const MatrixXd& x, double Ds_p, const VectorXd& phis_p,
-            const VectorXd& phi_tildes_p, double c_star_p, bool log){
-
-  double out = dens(x,Ds_p,phi_p,phi_tildes_p,c_star_p,true);
-  out -= std::log(1-std::exp(-Ds_p));
-  if (!log) out = std::exp(out);
-
-  return out;
-
-}
-
-
-double BaseDeterminantalPP::dens(const MatrixXd &x, bool log) {
-  double out;
-  int n;
-
-  // check if it's jut one point
-  if ((x.size() == 1 && dim == 1) || (x.rows() == 1 & dim > 1) ||
-      (x.cols() == 1 && dim > 1)) {
-    n = 1;
-    out =
-        -1.0 * n * std::log(vol_range) - Ds + std::log(c_star);
-  }
-  else {
-    int n = x.rows();
-    bool check_range = true;
-    for (int i = 0; i < n; i++) {
-      for (int j = 0; j < dim; j++) {
-        if (x(i, j) < ranges(0, j) || x(i, j) > ranges(1, j))
-          check_range = false;
-      }
-    }
-    if (check_range) {
-      out = -1.0 * n * std::log(vol_range) - Ds;
-
-      // Transform data points to be in the unit cube centered in 0
-      MatrixXd xtrans(n,x.cols());
-
-      for (int i = 0; i < n; i++)
-        xtrans.row(i) = (A * x.row(i).transpose() + b).transpose();
-
-      // std::cout << "xtrans " << xtrans.transpose() << std::endl;
-      out += log_det_Ctilde(xtrans);
-    } else {
-      out = stan::math::NEGATIVE_INFTY;
-    }
-  }
-  if (!log) out = std::exp(out);
-
-  // std::cout << "dens: " << out << std::endl;
-
-  return out;
-}
-
-
-
-double BaseDeterminantalPP::dens_cond_process(const MatrixXd &x, bool log) {
-
-  double out = dens(x,true);
-  out -= std::log(1-std::exp(-Ds));
-  if (!log) out = std::exp(out);
-
-  return out;
-}
-
 
 
 double BaseDeterminantalPP::log_det_Ctilde(const MatrixXd &x, const VectorXd& phi_tildes_p) {

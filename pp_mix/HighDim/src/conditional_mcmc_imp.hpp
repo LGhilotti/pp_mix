@@ -2,8 +2,8 @@
 #define CONDITIONAL_MCMC_IMP_HPP
 
 
-template <class Prec, typename prec_t>
-ConditionalMCMC<Prec, prec_t>::ConditionalMCMC(BaseDeterminantalPP *pp_mix,
+template <class Prec, typename prec_t, typename fact_t>
+ConditionalMCMC<Prec, prec_t, fact_t>::ConditionalMCMC(BaseDeterminantalPP *pp_mix,
                                                   Prec *g,
                                                   const Params &params)
     : pp_mix(pp_mix), g(g) {
@@ -12,21 +12,22 @@ ConditionalMCMC<Prec, prec_t>::ConditionalMCMC(BaseDeterminantalPP *pp_mix,
       return;
     }
 
-template <class Prec, typename prec_t>
-void ConditionalMCMC<Prec, prec_t>::set_params(const Params & p){
+template <class Prec, typename prec_t, typename fact_t>
+void ConditionalMCMC<Prec, prec_t, fact_t>::set_params(const Params & p){
 
   this->params = p;
   set_dim_factor();
-  this->_a_phi = params.get_a();
-  this->_alpha_jump = params.get_alphajump();
-  this->_beta_jump = params.get_betajump();
-  this->_a_gamma = params.get_agamma();
-  this->_b_gamma = params.get_bgamma();
+  this->_a_phi = params.a();
+  this->_alpha_jump = params.alphajump();
+  this->_beta_jump = params.betajump();
+  this->_a_gamma = params.agamma();
+  this->_b_gamma = params.bgamma();
+  this->prop_lambda_sigma = params.prop_sigma();
   return;
 }
 
-template <class Prec, typename prec_t>
-void ConditionalMCMC<Prec, prec_t>::initialize(
+template <class Prec, typename prec_t, typename fact_t>
+void ConditionalMCMC<Prec, prec_t, fact_t>::initialize(
     const MatrixXd &dat) {
 
   this->data = dat;
@@ -85,13 +86,16 @@ void ConditionalMCMC<Prec, prec_t>::initialize(
   // initial u parameter
   u = 1.0;
 
+  // DECOMPOSE DPP (in MultiDpp also assign the pointer to Lambda)
+  pp_mix->set_decomposition(&Lambda);
+
   std::cout << "initialize done" << std::endl;
 }
 
 
 
-template <class Prec, typename prec_t>
-void ConditionalMCMC<Prec, prec_t>::run_one() {
+template <class Prec, typename prec_t, typename fact_t>
+void ConditionalMCMC<Prec, prec_t, fact_t>::run_one() {
   // set T = sum(s1,...,sM)
   double T = a_jumps.sum() + na_jumps.sum();
 
@@ -130,8 +134,8 @@ void ConditionalMCMC<Prec, prec_t>::run_one() {
   // print_debug_string();
 }
 
-template <class Prec, typename prec_t>
-void ConditionalMCMC<Prec, prec_t>::sample_jumps_na()
+template <class Prec, typename prec_t, typename fact_t>
+void ConditionalMCMC<Prec, prec_t, fact_t>::sample_jumps_na()
 {
     na_jumps.conservativeResize(na_means.rows(), 1);
     int N_na = na_jumps.size();
@@ -141,8 +145,8 @@ void ConditionalMCMC<Prec, prec_t>::sample_jumps_na()
 }
 
 
-template <class Prec, typename prec_t>
-void ConditionalMCMC<Prec, prec_t>::sample_jumps_a()
+template <class Prec, typename prec_t, typename fact_t>
+void ConditionalMCMC<Prec, prec_t, fact_t>::sample_jumps_a()
 {
     //#pragma omp parallel for
     for (int i = 0; i < a_means.rows(); i++)
@@ -151,8 +155,8 @@ void ConditionalMCMC<Prec, prec_t>::sample_jumps_a()
     return;
 }
 
-template <class Prec, typename prec_t>
-void ConditionalMCMC<Prec, prec_t>::sample_means_na()
+template <class Prec, typename prec_t, typename fact_t>
+void ConditionalMCMC<Prec, prec_t, fact_t>::sample_means_na()
 {
   for (int i=0; i < 10; i++) {
     int na_points = na_means.rows();
@@ -163,8 +167,8 @@ void ConditionalMCMC<Prec, prec_t>::sample_means_na()
   return;
 }
 
-template <class Prec, typename prec_t>
-void ConditionalMCMC<Prec, prec_t>::sample_means_a()
+template <class Prec, typename prec_t, typename fact_t>
+void ConditionalMCMC<Prec, prec_t, fact_t>::sample_means_a()
 {
   MatrixXd allmeans(a_means.rows() + na_means.rows(), dim_fact);
   allmeans << a_means, na_means;
@@ -226,8 +230,8 @@ void ConditionalMCMC<Prec, prec_t>::sample_means_a()
 }
 
 
-template <class Prec, typename prec_t>
-void ConditionalMCMC<Prec, prec_t>::sample_deltas_na() {
+template <class Prec, typename prec_t, typename fact_t>
+void ConditionalMCMC<Prec, prec_t, fact_t>::sample_deltas_na() {
 
   na_deltas.resize(na_means.rows());
   for (int i = 0; i < na_means.rows(); i++) {
@@ -237,8 +241,8 @@ void ConditionalMCMC<Prec, prec_t>::sample_deltas_na() {
 }
 
 
-template <class Prec, typename prec_t>
-void ConditionalMCMC<Prec, prec_t>::sample_deltas_a() {
+template <class Prec, typename prec_t, typename fact_t>
+void ConditionalMCMC<Prec, prec_t, fact_t>::sample_deltas_a() {
 
   //#pragma omp parallel for
   for (int i = 0; i < a_means.rows(); i++) {
@@ -250,8 +254,8 @@ void ConditionalMCMC<Prec, prec_t>::sample_deltas_a() {
 
 
 
-template <class Prec, typename prec_t>
-void ConditionalMCMC<Prec, prec_t>::sample_allocations_and_relabel() {
+template <class Prec, typename prec_t, typename fact_t>
+void ConditionalMCMC<Prec, prec_t, fact_t>::sample_allocations_and_relabel() {
   std::cout << "sample_allocations_and_relabel" << std::endl;
   int Ma = a_means.rows();
   int Mna = na_means.rows();
@@ -262,8 +266,8 @@ void ConditionalMCMC<Prec, prec_t>::sample_allocations_and_relabel() {
 
   const MatrixXd &curr_a_means = a_means;
   const MatrixXd &curr_na_means = na_means;
-  const std::vector<prec_t> &curr_a_deltas = a_deltas;
-  const std::vector<prec_t> &curr_na_deltas = na_deltas;
+  const std::vector<prec_t, fact_t> &curr_a_deltas = a_deltas;
+  const std::vector<prec_t, fact_t> &curr_na_deltas = na_deltas;
   const VectorXd &curr_a_jumps = a_jumps;
   const VectorXd &curr_na_jumps = na_jumps;
 
@@ -299,8 +303,8 @@ void ConditionalMCMC<Prec, prec_t>::sample_allocations_and_relabel() {
   _relabel();
 }
 
-template <class Prec, typename prec_t>
-void ConditionalMCMC<Prec, prec_t>::_relabel() {
+template <class Prec, typename prec_t, typename fact_t>
+void ConditionalMCMC<Prec, prec_t, fact_t>::_relabel() {
   std::set<int> na2a;  // non active that become active
   std::set<int> a2na;  // active that become non active
 
@@ -321,7 +325,7 @@ void ConditionalMCMC<Prec, prec_t>::_relabel() {
   std::vector<int> a2na_vec(a2na.begin(), a2na.end());
   int n_new_na = a2na.size();
   MatrixXd new_na_means(n_new_na, dim_fact);
-  std::vector<prec_t> new_na_deltas(n_new_na);
+  std::vector<prec_t, fact_t> new_na_deltas(n_new_na);
   VectorXd new_na_jumps(n_new_na);
 
   for (int i = 0; i < n_new_na; i++) {
@@ -334,7 +338,7 @@ void ConditionalMCMC<Prec, prec_t>::_relabel() {
   std::vector<int> na2a_vec(na2a.begin(), na2a.end());
   int n_new_a = na2a_vec.size();
   MatrixXd new_a_means(n_new_a, dim_fact);
-  std::vector<prec_t> new_a_deltas(n_new_a);
+  std::vector<prec_t, fact_t> new_a_deltas(n_new_a);
   VectorXd new_a_jumps(n_new_a);
 
   for (int i = 0; i < n_new_a; i++) {
@@ -404,8 +408,8 @@ void ConditionalMCMC<Prec, prec_t>::_relabel() {
 }
 
 
-template <class Prec, typename prec_t>
-void ConditionalMCMC<Prec, prec_t>::sample_sigma_bar() {
+template <class Prec, typename prec_t, typename fact_t>
+void ConditionalMCMC<Prec, prec_t, fact_t>::sample_sigma_bar() {
 
   VectorXd alphas = VectorXd::Constant(dim_data, ndata/2.0 + _a_gamma);
 
@@ -422,8 +426,8 @@ void ConditionalMCMC<Prec, prec_t>::sample_sigma_bar() {
 }
 
 
-template <class Prec, typename prec_t>
-void ConditionalMCMC<Prec, prec_t>::sample_Psi() {
+template <class Prec, typename prec_t, typename fact_t>
+void ConditionalMCMC<Prec, prec_t, fact_t>::sample_Psi() {
   // make it parallel omp
   for (int j=0; j< dim_data; j++)
     for(int h=0; h< dim_fact; h++)
@@ -433,16 +437,16 @@ void ConditionalMCMC<Prec, prec_t>::sample_Psi() {
 }
 
 
-template <class Prec, typename prec_t>
-void ConditionalMCMC<Prec, prec_t>::sample_tau() {
+template <class Prec, typename prec_t, typename fact_t>
+void ConditionalMCMC<Prec, prec_t, fact_t>::sample_tau() {
 
   tau = GIG::rgig(dim_data*dim_fact*(_a_phi-1), 2*(Lambda.array()/Phi.array()).sum() , 1);
   return;
 }
 
 
-template <class Prec, typename prec_t>
-void ConditionalMCMC<Prec, prec_t>::sample_Phi() {
+template <class Prec, typename prec_t, typename fact_t>
+void ConditionalMCMC<Prec, prec_t, fact_t>::sample_Phi() {
 
   for (int j=0; j < dim_data; j++)
     for (int h=0; h < dim_fact; h++)
@@ -454,16 +458,23 @@ void ConditionalMCMC<Prec, prec_t>::sample_Phi() {
 
 
 
-template <class Prec, typename prec_t>
-double ConditionalMCMC<Prec, prec_t>::compute_exp_lik(const MatrixXd& lamb) {
+template <class Prec, typename prec_t, typename fact_t>
+double ConditionalMCMC<Prec, prec_t, fact_t>::compute_exp_lik(const MatrixXd& lamb) const {
 
   return (sigma_bar.array().sqrt().matrix().asDiagonal()*(data.transpose() - lamb*etas.transpose())).colwise().squaredNorm().sum();
 
 }
 
+template <class Prec, typename prec_t, typename fact_t>
+double ConditionalMCMC<Prec, prec_t, fact_t>::compute_exp_prior(const MatrixXd& lamb) const {
 
-template <class Prec, typename prec_t>
-void ConditionalMCMC<Prec, prec_t>::print_debug_string() {
+  return (lamb.array().square()/(Psi.array()*Phi.array().square())).sum() * (- 0.5 / (tau*tau));
+
+}
+
+
+template <class Prec, typename prec_t, typename fact_t>
+void ConditionalMCMC<Prec, prec_t, fact_t>::print_debug_string() {
   std::cout << "*********** DEBUG STRING***********" << std::endl;
   std::cout << "#### ACTIVE: Number actives: " << a_means.rows() << std::endl;
   ;

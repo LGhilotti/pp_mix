@@ -1,53 +1,16 @@
 #include "factory.hpp"
 
-BasePP *make_pp(const Params &params) {
-  BasePP *out;
-  if (params.has_strauss())
-    out = make_strauss(params.strauss());
-  else if (params.has_nrep())
-    out = make_nrep(params.nrep());
-  else if (params.has_dpp())
-    out = make_dpp(params.dpp());
-
-  return out;
-}
-
-BasePP *make_strauss(const StraussParams &params) {
-  BasePP *out;
-
-  if (params.fixed_params())
-    out = new StraussPP(params.init().beta(), params.init().gamma(),
-                        params.init().r());
-  else if (params.has_init() and params.has_prior())
-    out = new StraussPP(params.prior(), params.init().beta(),
-                        params.init().gamma(), params.init().r());
+// DPP
+BaseDeterminantalPP* make_dpp(const Params &params, const MatrixXd& ranges) {
+  if (ranges.cols()==1)
+    return new UniDpp(ranges, params.dpp().N(), params.dpp().c(), params.dpp().s() );
   else
-    out = new StraussPP(params.prior());
-
-  return out;
+    return new MultiDpp(ranges, params.dpp().N(), params.dpp().c(), params.dpp().s() );
 }
 
-BasePP *make_nrep(const NrepParams &params) {
-  return new NrepPP(params.u(), params.p());
-}
 
-BasePP *make_dpp(const DPPParams &params) {
-  return new DeterminantalPP(params.n(), params.rho(), params.nu(), params.s());
-}
-
-BaseJump *make_jump(const Params &params) {
-  BaseJump *out;
-  if (params.has_gamma_jump()) {
-    out = make_gamma_jump(params.gamma_jump());
-  }
-  return out;
-}
-
-BaseJump *make_gamma_jump(const GammaParams &params) {
-  return new GammaJump(params.alpha(), params.beta());
-}
-
-BasePrec *make_prec(const Params &params) {
+// Delta Precision
+BasePrec *make_delta(const Params &params) {
   BasePrec *out;
   if (params.has_fixed_multi_prec())
     out = make_fixed_prec(params.fixed_multi_prec());
@@ -62,7 +25,7 @@ BasePrec *make_prec(const Params &params) {
 }
 
 BasePrec *make_fixed_prec(const FixedMultiPrecParams &params) {
-  return new FixedPrec(params.dim(), params.sigma());
+  return new Delta_FixedMulti(params.dim(), params.sigma());
 }
 
 BasePrec *make_wishart(const WishartParams &params) {
@@ -71,13 +34,13 @@ BasePrec *make_wishart(const WishartParams &params) {
   if (params.sigma() > 0) {
     sigma = params.sigma();
   }
-  return new Wishart(params.nu(), params.dim(), sigma);
+  return new Delta_Wishart(params.nu(), params.dim(), sigma);
 }
 
 BasePrec *make_fixed_prec(const FixedUnivPrecParams &params) {
-  return new FixedUnivPrec(params.sigma());
+  return new Delta_FixedUniv(params.sigma());
 }
 
 BasePrec *make_gamma_prec(const GammaParams &params) {
-  return new GammaPrec(params.alpha(), params.beta());
+  return new Delta_Gamma(params.alpha(), params.beta());
 }

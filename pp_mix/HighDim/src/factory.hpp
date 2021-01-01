@@ -5,36 +5,22 @@
 
 #include "precs/base_prec.hpp"
 #include "precs/fixed_prec.hpp"
-#include "precs/wishart.hpp"
-#include "precs/gamma.hpp"
+#include "precs/delta_wishart.hpp"
+#include "precs/delta_gamma.hpp"
 
-#include "jumps/base_jump.hpp"
-#include "jumps/gamma.hpp"
-
-#include "point_process/base_pp.hpp"
-#include "point_process/strauss_pp.hpp"
-#include "point_process/nrep_pp.hpp"
-#include "point_process/determinantal_pp.hpp"
+#include "point_process/base_determinantalPP.hpp"
+#include "point_process/multi_factor_dpp.hpp"
 
 #include "conditional_mcmc.hpp"
 
-#include "../protos/cpp/params.pb.h"
+//#include "../protos/cpp/params.pb.h"
 
-BasePP* make_pp(const Params& params);
-
-BasePP* make_strauss(const StraussParams& params);
-
-BasePP* make_nrep(const NrepParams& params);
-
-BasePP* make_dpp(const DPPParams& params);
+// DPP
+BaseDeterminantalPP* make_dpp(const Params& params, const MatrixXd& ranges);
 
 
-BaseJump* make_jump(const Params& params);
-
-BaseJump* make_gamma_jump(const GammaParams& params);
-
-
-BasePrec* make_prec(const Params& params);
+// Delta Precision
+BasePrec* make_delta(const Params& params);
 
 BasePrec *make_fixed_prec(const FixedMultiPrecParams &params);
 

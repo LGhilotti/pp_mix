@@ -3,16 +3,15 @@
 #include "conditional_mcmc_imp.hpp"
 
 MultivariateConditionalMCMC::MultivariateConditionalMCMC(BaseDeterminantalPP *pp_mix,
-                                                         GammaJump *h,
                                                          BasePrec *g,
                                                          const Params &params)
-    : ConditionalMCMC<BaseMultiPrec, PrecMat>() {
+    : ConditionalMCMC<BaseMultiPrec, PrecMat, VectorXd>() {
   set_pp_mix(pp_mix);
-  set_jump(h);
   set_prec(dynamic_cast<BaseMultiPrec *>(g));
   set_params(params);
   min_proposal_sigma = 0.1;
   max_proposal_sigma = 2.0;
+
 }
 
 void MultivariateConditionalMCMC::initialize_etas(const MatrixXd &dat) {
@@ -110,15 +109,37 @@ void MultivariateConditionalMCMC::sample_Lambda() {
 
   MatrixXd prop_lambda = Map<MatrixXd>(prop_lambda_vec.data(),dim_data,dim_fact);
 
+  // we use log for each term
   double curr_lik, prop_lik;
-  curr_lik = std::exp(-0.5 * compute_exp_lik(Lambda));
-  prop_lik = std::exp(-0.5 * compute_exp_lik(prop_lambda));
+  curr_lik = -0.5 * compute_exp_lik(Lambda);
+  prop_lik = -0.5 * compute_exp_lik(prop_lambda);
 
   double curr_prior_cond_process, prop_prior_cond_process;
   MatrixXd means(a_means.rows()+na_means.rows(),dim_fact);
   means << a_means, na_means;
 
-  curr_prior_cond_process = pp_mix->dens_cond_process()
+  pp_mix->decompose_proposal(prop_lambda);
+
+  curr_prior_cond_process = pp_mix->dens_cond(means, true);
+  prop_prior_cond_process = pp_mix->dens_cond_in_proposal(means, true);
+
+  double curr_prior_lambda, prop_prior_lambda;
+  curr_prior_lambda = compute_exp_prior(Lambda);
+  prop_prior_lambda = compute_exp_prior(prop_lambda);
+
+  double curr_dens, prop_dens, log_ratio;
+  curr_dens = curr_lik + curr_prior_cond_process + curr_prior_lambda;
+  prop_dens = prop_lik + prop_prior_cond_process + prop_prior_lambda;
+  log_ratio = prop_dens - curr_dens;
+
+  if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < log_ratio){
+    //ACCEPTED
+    std::cout<<"accepted Lambda"<<std::endl;
+    Lambda.swap(prop_lambda);
+    pp_mix->update_decomposition_from_proposal();
+
+  }
+  else std::cout<<"rejected Lambda"<<std::endl;
 
   return;
 }
@@ -170,9 +191,25 @@ void MultivariateConditionalMCMC::get_state_as_proto(
 
   out->set_u(u);
 
-  PPState pp_params;
-  pp_mix->get_state_as_proto(&pp_params);
-  out->mutable_pp_state()->CopyFrom(pp_params);
+  for (int i = 0; i < ndata; i++) {
+    EigenVector * eta;
+    eta = out->add_etas();
+
+    to_proto(etas.row(i).transpose(), eta);
+  }
+
+  to_proto(sigma_bar, out->mutable_sigma_bar());
+
+  LambdaBlock lb;
+  lb.set_tau(tau);
+  to_proto(Phi, lb.mutable_Phi());
+  to_proto(Psi, lb.mutable_Psi());
+  to_proto(Lambda, lb.mutable_Lambda());
+  out->mutable_lamb_block()->CopyFrom(lb);
+
+  return;
+
+
 }
 
 void MultivariateConditionalMCMC::print_data_by_clus(int clus) {

@@ -48,25 +48,30 @@ public:
 
     virtual ~BaseDeterminantalPP() {}
 
-    // computes phis, phi_tildes, Ds and c_star; for MultiDpp need to recompute when Lambda changes
-    virtual void compute_eigen_and_cstar(const MatrixXd * Lamb) = 0; // Once set these parameters, no more difference for multi/uni factor
+    // manages the decomposition in Ds, phi,... for the dpp (using or not lambda)
+    virtual void set_decomposition(const MatrixXd * lambda) = 0;
+
+    // manages decomposition wrt the passed lambda; ONLY USED FOR MultiDpp
+    // I define it doing nothing, so UniDpp inherits it; override in MultiDpp
+    virtual void decompose_proposal(const MatrixXd& lambda) {} ;
 
     virtual void compute_Kappas() = 0; // compute just once the grid for summation over Z^dim
 
-    // final method that actually computes the density of dpp given parameters of decomposition
-    double dens(const MatrixXd& x, double Ds_p, const VectorXd& phis_p, const VectorXd& phi_tildes_p, double c_star_p, bool log=true);
+    // computes (log default) density in x of cond process wrt the proposed matrix Lambda; USEFUL FOR MultiDpp.
+    // For UniDpp it just calls dens_cond (because does not depend on Lambda), for MultiDpp it uses "tmp" variables.
+    virtual double dens_cond_in_proposal(const MatrixXd& x, bool log=true) = 0;
 
-    // final method that actually computes the density of conditional process given parameters of decomposition
-    double dens_cond_process(const MatrixXd& x, double Ds_p, const VectorXd& phis_p, const VectorXd& phi_tildes_p, double c_star_p, bool log=true);
+    // computes (log default) density in x of cond process wrt the current decomposition (expressed by the Father variables Ds, phis,...)
+    double dens_cond(const MatrixXd& x, bool log=true);
 
-    // for computing density of dpp wrt the matrix Lambda already stored (we have already the Ds, phis of dpp):
-    // uni factor never changes the Ds,phis,.. ; multi, I assume Ds, phis are always updated to the current Lambda.
+    // computes (log default) density in x of dpp process wrt the current decomposition (expressed by the Father variables Ds, phis,...)
     double dens(const MatrixXd& x, bool log=true);
-    // for computing density of dpp wrt a given lambda matrix: uni factor just calls dens(x,log), multi need to perform
-    // the decomposition and then evaluate the density
-    double dens(const MatrixXd& lamb, const MatrixXd& x, bool log=true);
 
-    double dens_cond_process(const MatrixXd& x, bool log=true);
+
+    // final method that actually computes the log-density of dpp given parameters of decomposition
+    double ln_dens_process(const MatrixXd& x, double Ds_p, const VectorXd& phis_p, const VectorXd& phi_tildes_p, double c_star_p);
+
+
 
     double log_det_Ctilde(const MatrixXd& x, const VectorXd& phi_tildes_p);
 

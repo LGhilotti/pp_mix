@@ -1,16 +1,25 @@
 #include "multi_factor_dpp.hpp"
 
-// Sets the pointer to Lambda and sets phis, phi_tildes, Ds and c_star
-// Once set these parameters, no more difference for multi/uni factor
-void MultiDpp::compute_eigen_and_cstar(const MatrixXd * Lamb) override {
-  std::cout << "compute eigen and cstar! "<<std::endl;
 
-  Lambda = Lamb;
 
-  Ds = 0.0;
-  c_star = 0.0;
+void MultiDpp::set_decomposition(const MatrixXd * lambda) override {
 
-  LLT<MatrixXd> M ((*Lambda).transpose() * (*Lambda));
+  Lambda = lambda;
+  compute_eigen_and_cstar(&Ds, &phis, &phi_tildes, &c_star, lambda);
+  return;
+
+}
+
+
+
+void MultiDpp::compute_eigen_and_cstar(double * D, VectorXd * Phis, VectorXd * Phi_tildes, double * C_star, const MatrixXd * lambda){
+
+  std::cout << "compute initial eigen and cstar! "<<std::endl;
+
+  D -> 0.0;
+  C_star -> 0.0;
+
+  LLT<MatrixXd> M ((*lambda).transpose() * (*lambda));
   // compute determinant of Lambda^T Lambda
   double det = std::pow(M.matrixL().determinant(),2);
 
@@ -18,18 +27,26 @@ void MultiDpp::compute_eigen_and_cstar(const MatrixXd * Lamb) override {
   for (int i = 0; i < Kappas.rows(); i++) {
     VectorXd sol = M.solve(Kappas.row(i).transpose());
     double dot_prod = (Kappas.row(i)).dot(sol);
-    phis[i] = s*std::exp(esp_fact*dot_prod);
+    (*Phis)[i] = s*std::exp(esp_fact*dot_prod);
 
-    phi_tildes[i] = phis[i] / (1 - phis[i]);
-    Ds += std::log(1 + phi_tildes[i]);
-    c_star += phi_tildes[i];
+    (*Phi_tildes)[i] = (*Phis)[i] / (1 - (*Phis)[i]);
+    *D += std::log(1 + (*Phi_tildes)[i]);
+    *C_star += (*Phi_tildes)[i];
   }
 
-  std::cout << "Ds: "<<this->Ds<<std::endl;
-  std::cout << "cstar: "<<this->c_star<<std::endl;
-
   return;
+
 }
+
+
+
+void MultiDpp::decompose_proposal(const MatrixXd& lambda) override {
+
+  compute_eigen_and_cstar(&Ds_tmp, &phis_tmp, &phi_tildes_tmp, &c_star_tmp, &lambda);
+  return;
+
+}
+
 
 
 // compute just once the grid for summation over Z^dim
@@ -54,5 +71,17 @@ void MultiDpp::compute_Kappas() override {
     Kappas.row(i) = Map<VectorXd>(kappas[i].data(), dim).transpose();
   }
   return;
+
+}
+
+
+double MultiDpp::dens_cond_in_proposal(const MatrixXd& x, bool log) override {
+
+  double out = ln_dens_process(x, Ds_tmp, phis_tmp, phi_tildes_tmp, c_star_tmp);
+  out -= std::log(1-std::exp(-Ds_tmp));
+
+  if (!log) out=std::exp(out);
+
+  return out;
 
 }
