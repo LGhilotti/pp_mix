@@ -92,46 +92,73 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::initialize(
   std::cout << "initialize done" << std::endl;
 }
 
+template <class Prec, typename prec_t, typename fact_t>
+std::vector<VectorXd> ConditionalMCMC<Prec, prec_t, fact_t>::proj_inside() {
+
+  std::vector<VectorXd> inside;
+  for (int i=0; i<ndata;i++){
+    if (is_inside(etas.row(i))){
+      inside.push_back(etas.row(i));
+    }
+  }
+  return inside;
+}
+
+template <class Prec, typename prec_t, typename fact_t>
+bool ConditionalMCMC<Prec, prec_t, fact_t>::is_inside(const VectorXd & eta){
+  MatrixXd ran = pp_mix->get_ranges();
+  bool is_in = true;
+  for (int i=0;i<dim_fact&& is_in==true;i++){
+    if (eta(i)<ran(0,i) || eta(i)>ran(1,i)){
+      is_in = false;
+    }
+  }
+  return is_in;
+}
 
 
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::run_one() {
-  // set T = sum(s1,...,sM)
-  double T = a_jumps.sum() + na_jumps.sum();
 
-  // sample u | rest
-  u = gamma_rng(ndata, T, Rng::Instance().get());
+  std::cout<< "begin iteration"<<std::endl;
+
+  sample_u();
+
   // compute laplace transform psi in u
-  double psi_u = h->laplace(u); // KEEP!
+  double psi_u = laplace(u);
 
   // sample c | rest and reorganize the all and nall parameters, and c as well
   sample_allocations_and_relabel();
 
-  // UNALLOCATED PROCESS
-  // std::cout << "npoints * " << na_means.rows() << std::endl;
-  for (int i=0; i < 10; i++) {
-    int npoints = na_means.rows();
-    pp_mix->sample_given_active(a_means, &na_means, psi_u);
-    if (na_means.rows() != npoints)
-      break;
-  }
-  na_deltas.resize(na_means.rows());
-  na_jumps.conservativeResize(na_means.rows(), 1);
-  for (int i = 0; i < na_means.rows(); i++) {
-    na_deltas[i] = g->sample_prior();
-    na_jumps(i) = h->sample_tilted(u);
-  }
+  // sample non-allocated variables
+  sample_means_na();
 
-  // ALLOCATED PROCES
-  // for (int i = 0; i < 10; i++)
-  sample_means();
-  sample_vars();
-  sample_jumps();
+  sample_jumps_na();
 
-  // PERFECT SIMULATION (for updating hypers)
-  pp_mix->update_hypers(a_means, na_means);
+  sample_deltas_na();
 
+  // sample allocated variables
+  sample_means_a();
+
+  sample_deltas_a();
+
+  sample_jumps_a();
+
+  // sample etas
+  sample_etas();
+
+  // sample Sigma bar
+  sample_sigma_bar();
+
+  // sample Lambda block
+  sample_Psi();
+  sample_tau();
+  sample_Phi();
+  sample_Lambda();
+
+  std::cout<<"end iteration"<<std::endl;
   // print_debug_string();
+  return;
 }
 
 template <class Prec, typename prec_t, typename fact_t>
@@ -414,7 +441,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_sigma_bar() {
   VectorXd alphas = VectorXd::Constant(dim_data, ndata/2.0 + _a_gamma);
 
   VectorXd betas = VectorXd::Constant(dim_data, _b_gamma);
-  betas+=0.5*data.colwise().squaredNorm().transpose() + (etas*Lambda.transpose()).colwise().squaredNorm().transpose();
+  betas+=0.5*data.colwise().squaredNorm().transpose() + 0.5*(etas*Lambda.transpose()).colwise().squaredNorm().transpose();
   for (int j=0; j < dim_data; j++){
     betas(j)-= Lambda.row(j)*etas.transpose()*data.col(j);
   }

@@ -8,7 +8,7 @@ CFLAGS = \
 	-std=c++1y \
 	-MMD \
 	-I$(STAN_ROOT_DIR) \
-	-I$(ROOT_DIR)/eigen/ \
+	-I$(ROOT_DIR)/../../../eigen/ \
 	-I$(STAN_ROOT_DIR)/lib/boost_*/  \
 	-I$(STAN_ROOT_DIR)/lib/sundials_*/include  \
 	-I$(STAN_ROOT_DIR)/lib/tbb_2019_U8/include  \

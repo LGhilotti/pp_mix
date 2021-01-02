@@ -15,6 +15,8 @@ BaseDeterminantalPP::BaseDeterminantalPP(const MatrixXd &ranges, int N, double c
   vol_range = diff_range.prod();
 
   compute_Kappas();
+  phis.resize(Kappas.rows());
+  phi_tildes.resize(Kappas.rows());
 
   A = MatrixXd::Zero(dim, dim);
   b = VectorXd::Zero(dim);

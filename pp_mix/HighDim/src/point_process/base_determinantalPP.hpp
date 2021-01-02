@@ -59,7 +59,7 @@ public:
 
     // computes (log default) density in x of cond process wrt the proposed matrix Lambda; USEFUL FOR MultiDpp.
     // For UniDpp it just calls dens_cond (because does not depend on Lambda), for MultiDpp it uses "tmp" variables.
-    virtual double dens_cond_in_proposal(const MatrixXd& x, bool log=true) = 0;
+    virtual double dens_cond_in_proposal(const MatrixXd& x, bool log=true) {} ;
 
     // computes (log default) density in x of cond process wrt the current decomposition (expressed by the Father variables Ds, phis,...)
     double dens_cond(const MatrixXd& x, bool log=true);

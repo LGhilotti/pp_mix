@@ -99,6 +99,9 @@ class ConditionalMCMC {
 
     virtual void initialize_allocated_means() = 0;
 
+    std::vector<VectorXd> proj_inside();
+    bool is_inside(const VectorXd & eta);
+
     // it performs the whole step of updatings
     void run_one();
 
@@ -193,8 +196,6 @@ public:
     // the data, otherwise choose the means on randomly selected data
     void initialize_allocated_means() override;
 
-    std::vector<VectorXd> proj_inside();
-    bool is_inside(const VectorXd & eta);
 
     //ETAS
     void sample_etas() override;

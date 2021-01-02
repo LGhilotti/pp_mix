@@ -24,29 +24,6 @@ void MultivariateConditionalMCMC::initialize_etas(const MatrixXd &dat) {
 
 }
 
-std::vector<VectorXd> MultivariateConditionalMCMC::proj_inside() {
-
-  std::vector<VectorXd> inside;
-  for (int i=0; i<ndata;i++){
-    if (is_inside(etas.row(i))){
-      inside.push_back(etas.row(i));
-    }
-  }
-  return inside;
-}
-
-
-bool MultivariateConditionalMCMC::is_inside(const VectorXd & eta){
-  MatrixXd ran = pp_mix->get_ranges();
-  bool is_in = true;
-  for (int i=0;i<dim_fact&& is_in==true;i++){
-    if (eta(i)<ran(0,i) || eta(i)>ran(1,i)){
-      is_in = false;
-    }
-  }
-  return is_in;
-}
-
 
 void MultivariateConditionalMCMC::initialize_allocated_means() {
   int init_n_clus = 10;
@@ -86,11 +63,11 @@ void MultivariateConditionalMCMC::sample_etas() {
     MatrixXd G(ndata,dim_fact);
     // known terms of systems is depending on the single data
     for (int i=0; i < a_means.rows(); i++){
-      MatrixXd B1(dim_fact,obs_by_clus[i].size());
-      B1 = (a_deltas[i].get_prec() * a_means.row(i).transpose()).replicate(1,B1.cols());
-      B1 +=M2(all,obs_by_clus[i]);
+      MatrixXd B(dim_fact,obs_by_clus[i].size());
+      B = (a_deltas[i].get_prec() * a_means.row(i).transpose()).replicate(1,B.cols());
+      B +=M2(all,obs_by_clus[i]);
       // each modified row has solution for points in the cluster.
-      G(obs_by_clus[i],all)=(Sn_bar_cho[i].solve(B1)).transpose();
+      G(obs_by_clus[i],all)=(Sn_bar_cho[i].solve(B)).transpose();
     }
 
     // Here, G contains (in each row) mean of full-cond, while precisions have to be taken from Sn_bar
@@ -222,32 +199,107 @@ void MultivariateConditionalMCMC::print_data_by_clus(int clus) {
 /////////////////////////////////
 
 UnivariateConditionalMCMC::UnivariateConditionalMCMC(BaseDeterminantalPP *pp_mix,
-                                                     GammaJump *h, BasePrec *g,
+                                                     BasePrec *g,
                                                      const Params &params)
     : ConditionalMCMC<BaseUnivPrec, double, double>() {
   set_pp_mix(pp_mix);
-  set_jump(h);
   set_prec(dynamic_cast<BaseUnivPrec *>(g));
-  this->params = params;
+  set_params(params);
   min_proposal_sigma = 0.1;
   max_proposal_sigma = 1.0;
 }
 
+
+void UnivariateConditionalMCMC::initialize_etas(const MatrixXd &dat) {
+
+  etas = (dat*Lambda)/Lambda.squaredNorm();
+
+  return;
+
+}
+
+
 void UnivariateConditionalMCMC::initialize_allocated_means() {
   int init_n_clus = 4;
-  if (init_n_clus >= ndata) {
-    a_means.resize(ndata, 1);
-    for (int i = 0; i < ndata; i++) a_means(i, 0) = data.row(i);
+  std::vector<VectorXd> in = proj_inside();
+
+  if (init_n_clus >= in.size()) {
+    a_means.resize(in.size(), 1);
+    for (int i=0; i < in.size(); i++)
+      a_means(i,0) = in[i](0);
   } else {
     a_means.resize(init_n_clus, 1);
-    std::vector<int> index(ndata);
+    std::vector<int> index(in.size());
     std::iota(index.begin(), index.end(), 0);
-    std::random_shuffle(index.begin(), index.begin() + ndata);
-    for (int i = 0; i < init_n_clus; i++) {
-      a_means(i, 0) = data.row(index[i]);
+    std::random_shuffle(index.begin(), index.begin() + in.size());
+    for (int i=0; i < init_n_clus; i++) {
+      a_means(i,0) = in[index[i]](0);
     }
   }
+  return;
 }
+
+void UnivariateConditionalMCMC::sample_etas() {
+
+    RowVectorXd M0(Lambda.transpose() * sigma_bar.asDiagonal());
+    double M1( M0 * Lambda);
+    std::vector<double> Sn_bar(a_means.rows());
+
+    for (int i=0; i < a_means.rows(); i++){
+      Sn_bar[i]=M1+a_deltas[i];
+    }
+
+    RowVectorXd M2(M0*data.transpose());
+    RowVectorXd G(ndata);
+    // known terms of systems is depending on the single data
+    for (int i=0; i < a_means.rows(); i++){
+      RowVectorXd B(obs_by_clus[i].size());
+      B = (a_deltas[i] * a_means(i,0)) * RowVectorXd::Ones(B.size());
+      B +=M2(obs_by_clus[i]);
+      // each modified element has solution for points in the cluster.
+      G(obs_by_clus[i]) = B/Sn_bar[i];
+    }
+
+    // Here, G contains means of full-cond, while precisions have to be taken from Sn_bar
+    // Now, I sample each eta from the full-cond normal
+    for (int i=0; i < ndata; i++){
+      etas(i,0)=normal_rng(G(i), 1.0/Sn_bar[clus_alloc(i)], Rng::Instance().get());
+    }
+    return;
+}
+
+
+void UnivariateConditionalMCMC::sample_Lambda() {
+
+  VectorXd prop_lambda_vec = normal_rng(Map<VectorXd>(Lambda.data(), dim_data),
+              VectorXd::Constant(dim_data, prop_lambda_sigma));
+
+  MatrixXd prop_lambda = Map<MatrixXd>(prop_lambda_vec.data(),dim_data,1);
+
+  // we use log for each term
+  double curr_lik, prop_lik;
+  curr_lik = -0.5 * compute_exp_lik(Lambda);
+  prop_lik = -0.5 * compute_exp_lik(prop_lambda);
+
+  double curr_prior_lambda, prop_prior_lambda;
+  curr_prior_lambda = compute_exp_prior(Lambda);
+  prop_prior_lambda = compute_exp_prior(prop_lambda);
+
+  double curr_dens, prop_dens, log_ratio;
+  curr_dens = curr_lik + curr_prior_lambda;
+  prop_dens = prop_lik + prop_prior_lambda;
+  log_ratio = prop_dens - curr_dens;
+
+  if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < log_ratio){
+    //ACCEPTED
+    std::cout<<"accepted Lambda"<<std::endl;
+    Lambda.swap(prop_lambda);
+  }
+  else std::cout<<"rejected Lambda"<<std::endl;
+
+  return;
+}
+
 
 VectorXd UnivariateConditionalMCMC::compute_grad_for_clus(
     int clus, const VectorXd &mean) {
