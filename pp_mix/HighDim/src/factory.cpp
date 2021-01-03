@@ -3,9 +3,9 @@
 // DPP
 BaseDeterminantalPP* make_dpp(const Params &params, const MatrixXd& ranges) {
   if (ranges.cols()==1)
-    return new UniDpp(ranges, params.dpp().N(), params.dpp().c(), params.dpp().s() );
+    return new UniDpp(ranges, params.dpp().n(), params.dpp().c(), params.dpp().s() );
   else
-    return new MultiDpp(ranges, params.dpp().N(), params.dpp().c(), params.dpp().s() );
+    return new MultiDpp(ranges, params.dpp().n(), params.dpp().c(), params.dpp().s() );
 }
 
 

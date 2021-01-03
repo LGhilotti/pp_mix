@@ -7,7 +7,7 @@ class UniDpp: public BaseDeterminantalPP {
 
 public:
 
-  UniDpp(const MatrixXd &ranges, int N, double c, double s): BaseDeterminantalPP(ranges,N,c,s) {};
+  UniDpp(const MatrixXd &ranges, int N, double c, double s);
 
   // set the pointer to Lambda and performs the initial decomposition
   void set_decomposition(const MatrixXd * lambda) override;
@@ -16,6 +16,8 @@ public:
   void compute_eigen_and_cstar();
 
   void compute_Kappas() override; // compute just once the grid for summation over Z
+
+  double dens_cond_in_proposal(const MatrixXd& x, bool log=true) override;
 
 };
 

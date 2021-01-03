@@ -14,10 +14,6 @@ BaseDeterminantalPP::BaseDeterminantalPP(const MatrixXd &ranges, int N, double c
   diff_range = (ranges.row(1) - ranges.row(0)).transpose();
   vol_range = diff_range.prod();
 
-  compute_Kappas();
-  phis.resize(Kappas.rows());
-  phi_tildes.resize(Kappas.rows());
-
   A = MatrixXd::Zero(dim, dim);
   b = VectorXd::Zero(dim);
   for (int i = 0; i < dim; i++) {
@@ -90,7 +86,7 @@ double BaseDeterminantalPP::ln_dens_process(const MatrixXd& x, double Ds_p, cons
         xtrans.row(i) = (A * x.row(i).transpose() + b).transpose();
 
       // std::cout << "xtrans " << xtrans.transpose() << std::endl;
-      out += log_det_Ctilde(xtrans);
+      out += log_det_Ctilde(xtrans, phi_tildes_p);
     } else {
       out = stan::math::NEGATIVE_INFTY;
     }
@@ -130,7 +126,7 @@ double BaseDeterminantalPP::papangelou(const VectorXd& xi, const MatrixXd &x, bo
   for (int i = 0; i < n; i++)
     alltrans.row(i) = (A * all.row(i).transpose() + b).transpose();
 
-  double out = -1.0*std::log(vol_range)+ log_det_Ctilde(alltrans) - log_det_Ctilde(alltrans.topRows(n-1));
+  double out = -1.0*std::log(vol_range)+ log_det_Ctilde(alltrans, phi_tildes) - log_det_Ctilde(alltrans.topRows(n-1), phi_tildes);
 
   if (!log) out = std::exp(out);
 

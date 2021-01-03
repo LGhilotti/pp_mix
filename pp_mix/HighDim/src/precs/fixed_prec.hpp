@@ -15,7 +15,7 @@ public:
 
    double sample_prior() override { return sigma; }
 
-   double sample_given_data(
+   double sample_alloc(
        const std::vector<double> &data, const double &curr,
        const VectorXd &mean) override { return sigma; }
 
@@ -37,7 +37,7 @@ public:
 
    PrecMat sample_prior() override;
 
-   PrecMat sample_given_data(
+   PrecMat sample_alloc(
        const std::vector<VectorXd> &data, const PrecMat &curr,
        const VectorXd &mean) override;
 

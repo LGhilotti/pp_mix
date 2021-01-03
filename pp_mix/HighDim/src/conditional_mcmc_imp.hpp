@@ -16,7 +16,7 @@ template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::set_params(const Params & p){
 
   this->params = p;
-  set_dim_factor();
+  this->dim_fact = params.dimf();
   this->_a_phi = params.a();
   this->_alpha_jump = params.alphajump();
   this->_beta_jump = params.betajump();
@@ -39,8 +39,8 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::initialize(
   Phi = 1.0/(dim_data*dim_fact) * MatrixXi::Ones(dim_data,dim_fact) ;
   Psi = 2.0 * MatrixXi::Ones(dim_data,dim_fact);
 
-  Lambda = Map<MatrixXd>(normal_rng(VectorXd::Zero(dim_data*dim_fact),
-        8.*pow(_a_phi,2)*VectorXd::Ones(dim_data*dim_fact)).data() , dim_data,dim_fact );
+  Lambda = Map<MatrixXd>(normal_rng( std::vector<double>(dim_data*dim_fact, 0.0),
+        std::vector<double>(dim_data*dim_fact, 8.*pow(_a_phi,2) ), Rng::Instance().get() ).data() , dim_data,dim_fact );
 
   // Initialize Sigma_bar
   sigma_bar = _a_gamma/_b_gamma * VectorXd::Ones(dim_data);
@@ -131,7 +131,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::run_one() {
   sample_allocations_and_relabel();
 
   // sample non-allocated variables
-  sample_means_na();
+  sample_means_na(psi_u);
 
   sample_jumps_na();
 
@@ -166,8 +166,8 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_jumps_na()
 {
     na_jumps.conservativeResize(na_means.rows(), 1);
     int N_na = na_jumps.size();
-    na_jumps = gamma_rng(_alpha_jump * VectorXd::Ones(N_na),
-            (_beta_jump + u) * VectorXd::Ones(N_na) , Rng::Instance().get());
+    na_jumps = Map<VectorXd>( gamma_rng( std::vector<double>(N_na, _alpha_jump),
+            std::vector<double>(N_na, _beta_jump + u) , Rng::Instance().get()).data() , N_na);
     return;
 }
 
@@ -183,7 +183,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_jumps_a()
 }
 
 template <class Prec, typename prec_t, typename fact_t>
-void ConditionalMCMC<Prec, prec_t, fact_t>::sample_means_na()
+void ConditionalMCMC<Prec, prec_t, fact_t>::sample_means_na(double psi_u)
 {
   for (int i=0; i < 10; i++) {
     int na_points = na_means.rows();
@@ -438,15 +438,14 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::_relabel() {
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::sample_sigma_bar() {
 
-  VectorXd alphas = VectorXd::Constant(dim_data, ndata/2.0 + _a_gamma);
-
   VectorXd betas = VectorXd::Constant(dim_data, _b_gamma);
   betas+=0.5*data.colwise().squaredNorm().transpose() + 0.5*(etas*Lambda.transpose()).colwise().squaredNorm().transpose();
   for (int j=0; j < dim_data; j++){
     betas(j)-= Lambda.row(j)*etas.transpose()*data.col(j);
   }
 
-  sigma_bar = gamma_rng(alphas,betas,Rng::Instance().get());
+  sigma_bar = Map<VectorXd>( gamma_rng(std::vector<double>(dim_data, ndata/2.0 + _a_gamma),
+            std::vector<double>(betas.data(),betas.data()+betas.size()), Rng::Instance().get()).data(), dim_data);
 
   return;
 
@@ -477,7 +476,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_Phi() {
 
   for (int j=0; j < dim_data; j++)
     for (int h=0; h < dim_fact; h++)
-      Phi(j,h)=GIG:rgig( _a_phi-1 , 2.0*std::abs(Lambda(j,h)), 1);
+      Phi(j,h)=GIG::rgig( _a_phi-1 , 2.0*std::abs(Lambda(j,h)), 1);
 
   Phi/= Phi.sum();
   return;
@@ -504,7 +503,7 @@ template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::print_debug_string() {
   std::cout << "*********** DEBUG STRING***********" << std::endl;
   std::cout << "#### ACTIVE: Number actives: " << a_means.rows() << std::endl;
-  
+
   for (int i = 0; i < a_means.rows(); i++) {
     std::cout << "Component: " << i << ", weight: " << a_jumps(i)
               << ", mean: " << a_means.row(i) << std::endl;

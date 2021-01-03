@@ -13,10 +13,11 @@ CFLAGS = \
 	-I$(STAN_ROOT_DIR)/lib/boost_*/  \
 	-I$(STAN_ROOT_DIR)/lib/sundials_*/include  \
 	-I$(STAN_ROOT_DIR)/lib/tbb_2019_U8/include  \
+	-I$(PROTO_DIR) \
 	-D_REENTRANT -fPIC \
 	-O3 -march=native -msse2 -funroll-loops -ftree-vectorize -fopenmp
 LDLIBS = \
- 	-L$(STAN_ROOT_DIR)/lib/tbb \
+ 	$(shell pkg-config --libs protobuf) -L$(STAN_ROOT_DIR)/lib/tbb \
 	-lgsl -lgslcblas -lpthread -ltbb -Wl,-rpath,"$(STAN_ROOT_DIR)/lib/tbb"
 LDFLAGS = -D_REENTRANT -O3 -fopenmp
 

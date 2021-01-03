@@ -81,10 +81,10 @@ void MultivariateConditionalMCMC::sample_etas() {
 
 void MultivariateConditionalMCMC::sample_Lambda() {
 
-  VectorXd prop_lambda_vec = normal_rng(Map<VectorXd>(Lambda.data(), dim_data*dim_fact),
-              VectorXd::Constant(dim_data*dim_fact, prop_lambda_sigma));
+  // Current Lambda (here are the means) are expanded to vector<double> column major
+  MatrixXd prop_lambda = Map<MatrixXd>(normal_rng( std::vector<double>(Lambda.data(), Lambda.data() + Lambda.size()) ,
+              std::vector<double>(dim_data*dim_fact, prop_lambda_sigma), Rng::Instance().get()).data() , dim_data, dim_fact);
 
-  MatrixXd prop_lambda = Map<MatrixXd>(prop_lambda_vec.data(),dim_data,dim_fact);
 
   // we use log for each term
   double curr_lik, prop_lik;
@@ -121,17 +121,17 @@ void MultivariateConditionalMCMC::sample_Lambda() {
   return;
 }
 
-
+/*
 VectorXd MultivariateConditionalMCMC::compute_grad_for_clus(
     int clus, const VectorXd &mean) {
-  VectorXd grad = VectorXd::Zero(dim);
+  VectorXd grad = VectorXd::Zero(dim_data);
   for (const VectorXd datum : data_by_clus[clus]) grad += datum - mean;
   // TODO FIXME
   // grad += a_deltas[clus].get_prec() * (datum - mean);
 
   return grad;
 }
-
+*/
 void MultivariateConditionalMCMC::get_state_as_proto(
     google::protobuf::Message *out_) {
   using namespace google::protobuf::internal;
@@ -179,9 +179,9 @@ void MultivariateConditionalMCMC::get_state_as_proto(
 
   LambdaBlock lb;
   lb.set_tau(tau);
-  to_proto(Phi, lb.mutable_Phi());
-  to_proto(Psi, lb.mutable_Psi());
-  to_proto(Lambda, lb.mutable_Lambda());
+  to_proto(Phi, lb.mutable_phi());
+  to_proto(Psi, lb.mutable_psi());
+  to_proto(Lambda, lb.mutable_lambda());
   out->mutable_lamb_block()->CopyFrom(lb);
 
   return;
@@ -242,7 +242,7 @@ void UnivariateConditionalMCMC::initialize_allocated_means() {
 void UnivariateConditionalMCMC::sample_etas() {
 
     RowVectorXd M0(Lambda.transpose() * sigma_bar.asDiagonal());
-    double M1( M0 * Lambda);
+    double M1( (M0 * Lambda)(0) );
     std::vector<double> Sn_bar(a_means.rows());
 
     for (int i=0; i < a_means.rows(); i++){
@@ -271,10 +271,8 @@ void UnivariateConditionalMCMC::sample_etas() {
 
 void UnivariateConditionalMCMC::sample_Lambda() {
 
-  VectorXd prop_lambda_vec = normal_rng(Map<VectorXd>(Lambda.data(), dim_data),
-              VectorXd::Constant(dim_data, prop_lambda_sigma));
-
-  MatrixXd prop_lambda = Map<MatrixXd>(prop_lambda_vec.data(),dim_data,1);
+  MatrixXd prop_lambda = Map<MatrixXd>(normal_rng(std::vector<double>(Lambda.data(), Lambda.data() + Lambda.size()),
+              std::vector<double>(dim_data, prop_lambda_sigma), Rng::Instance().get()).data(), dim_data,1);
 
   // we use log for each term
   double curr_lik, prop_lik;
@@ -300,7 +298,7 @@ void UnivariateConditionalMCMC::sample_Lambda() {
   return;
 }
 
-
+/*
 VectorXd UnivariateConditionalMCMC::compute_grad_for_clus(
     int clus, const VectorXd &mean) {
   double grad = 0.0;
@@ -312,6 +310,7 @@ VectorXd UnivariateConditionalMCMC::compute_grad_for_clus(
   out(0) = grad;
   return out;
 }
+*/
 
 void UnivariateConditionalMCMC::get_state_as_proto(
     google::protobuf::Message *out_) {
@@ -342,9 +341,20 @@ void UnivariateConditionalMCMC::get_state_as_proto(
 
   out->set_u(u);
 
-  PPState pp_params;
-  pp_mix->get_state_as_proto(&pp_params);
-  out->mutable_pp_state()->CopyFrom(pp_params);
+  to_proto(Map<VectorXd>(etas.data(), etas.rows()),
+           out->mutable_etas());
+
+  to_proto(sigma_bar, out->mutable_sigma_bar());
+
+  LambdaBlock lb;
+  lb.set_tau(tau);
+  to_proto(Phi, lb.mutable_phi());
+  to_proto(Psi, lb.mutable_psi());
+  to_proto(Lambda, lb.mutable_lambda());
+  out->mutable_lamb_block()->CopyFrom(lb);
+
+  return;
+
 }
 
 void UnivariateConditionalMCMC::print_data_by_clus(int clus) {

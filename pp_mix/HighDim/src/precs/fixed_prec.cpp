@@ -7,7 +7,7 @@ PrecMat Delta_FixedMulti::sample_prior()
     return PrecMat(out);
 }
 
-PrecMat Delta_FixedMulti::sample_given_data(
+PrecMat Delta_FixedMulti::sample_alloc(
     const std::vector<VectorXd> &data, const PrecMat &curr,
     const VectorXd &mean)
 {

@@ -19,8 +19,8 @@
 #include "precs/base_prec.hpp"
 #include "precs/precmat.hpp"
 #include "utils.hpp"
-//#include "../protos/cpp/state.pb.h"
-//#include "../protos/cpp/params.pb.h"
+#include "../protos/cpp/state.pb.h"
+#include "../protos/cpp/params.pb.h"
 
 
 using namespace Eigen;
@@ -112,7 +112,7 @@ class ConditionalMCMC {
     // sample allocated jumps
     void sample_jumps_a();
     // sample non-allocated means
-    void sample_means_na();
+    void sample_means_na(double psi_u);
     // sample allocated means
     void sample_means_a();
     // sample non-allocated deltas
@@ -165,11 +165,7 @@ class ConditionalMCMC {
         const std::vector<fact_t> &x, const VectorXd &mu,
         const prec_t &sigma) = 0;
 
-    inline void set_dim_factor() {
-      dim_fact = params.get_dimf();
-    }
-
-    virtual VectorXd compute_grad_for_clus(int clus, const VectorXd &mean) = 0;
+    //virtual VectorXd compute_grad_for_clus(int clus, const VectorXd &mean) = 0;
 
     double mean_acceptance_rate() {
         return (1.0 * acc_mean) / (1.0 * tot_mean);
@@ -216,7 +212,7 @@ public:
         return o_multi_normal_prec_lpdf(x, mu, sigma);
     }
 
-    VectorXd compute_grad_for_clus(int clus, const VectorXd &mean) override;
+    //VectorXd compute_grad_for_clus(int clus, const VectorXd &mean) override;
 
     void print_data_by_clus(int clus);
 
@@ -257,7 +253,7 @@ public:
     }
 
 
-    VectorXd compute_grad_for_clus(int clus, const VectorXd& mean) override;
+    //VectorXd compute_grad_for_clus(int clus, const VectorXd& mean) override;
 
     void print_data_by_clus(int clus);
 };

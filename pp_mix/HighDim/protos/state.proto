@@ -13,9 +13,9 @@ message EigenVector {
 
 message LambdaBlock {
     double tau = 1;
-    EigenMatrix Phi = 2;
-    EigenMatrix Psi = 3;
-    EigenMatrix Lambda = 4;
+    EigenMatrix phi = 2;
+    EigenMatrix psi = 3;
+    EigenMatrix lambda = 4;
 }
 
 
@@ -52,8 +52,8 @@ message UnivariateMixtureState {
     EigenVector a_means = 4;
     EigenVector na_means = 5;
 
-    EigenVector a_precs = 6;
-    EigenVector na_precs = 7;
+    EigenVector a_deltas = 6;
+    EigenVector na_deltas = 7;
 
     EigenVector a_jumps = 8;
     EigenVector na_jumps = 9;

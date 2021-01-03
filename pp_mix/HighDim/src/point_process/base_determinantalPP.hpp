@@ -55,11 +55,13 @@ public:
     // I define it doing nothing, so UniDpp inherits it; override in MultiDpp
     virtual void decompose_proposal(const MatrixXd& lambda) {} ;
 
+    virtual void update_decomposition_from_proposal() {} ;
+
     virtual void compute_Kappas() = 0; // compute just once the grid for summation over Z^dim
 
     // computes (log default) density in x of cond process wrt the proposed matrix Lambda; USEFUL FOR MultiDpp.
     // For UniDpp it just calls dens_cond (because does not depend on Lambda), for MultiDpp it uses "tmp" variables.
-    virtual double dens_cond_in_proposal(const MatrixXd& x, bool log=true) {} ;
+    virtual double dens_cond_in_proposal(const MatrixXd& x, bool log=true) = 0 ;
 
     // computes (log default) density in x of cond process wrt the current decomposition (expressed by the Father variables Ds, phis,...)
     double dens_cond(const MatrixXd& x, bool log=true);
@@ -68,7 +70,7 @@ public:
     double dens(const MatrixXd& x, bool log=true);
 
 
-    // final method that actually computes the log-density of dpp given parameters of decomposition
+    // PRIVATE: final method that actually computes the log-density of dpp given parameters of decomposition
     double ln_dens_process(const MatrixXd& x, double Ds_p, const VectorXd& phis_p, const VectorXd& phi_tildes_p, double c_star_p);
 
 

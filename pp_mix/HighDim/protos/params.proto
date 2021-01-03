@@ -24,7 +24,7 @@ message GammaParams {
 
 message DPPParams {
     double c = 1;
-    int32 N = 2;
+    int32 n = 2;
     double s = 3;
 }
 
