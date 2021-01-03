@@ -40,7 +40,7 @@ T loadTextProto(std::string filename) {
               << std::endl;
   return out;
 }
-*/
+
 double o_multi_normal_prec_lpdf(const VectorXd &x, const VectorXd &mu,
                                 const PrecMat &sigma);
 

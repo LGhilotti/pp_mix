@@ -1,6 +1,7 @@
 ROOT_DIR := .
 SRC_DIR := $(ROOT_DIR)/src
 SPIKES_DIR := $(SRC_DIR)/spikes
+PROTO_DIR := $(ROOT_DIR)/protos
 STAN_ROOT_DIR := $(if $(STAN_ROOT_DIR), $(STAN_ROOT_DIR), /home/mario/dev/bayesmix/lib/math)
 
 CXX = g++
@@ -19,23 +20,48 @@ LDLIBS = \
 	-lgsl -lgslcblas -lpthread -ltbb -Wl,-rpath,"$(STAN_ROOT_DIR)/lib/tbb"
 LDFLAGS = -D_REENTRANT -O3 -fopenmp
 
-SPIKES_SRCS = $(SPIKES_DIR)/simulate_gig.cpp
-#OUR_SRCS = $(SRC_DIR)/rng.cpp
+PROTO_SRCS = $(wildcard $(PROTO_DIR)/cpp/*.cpp)
+SPIKES_SRCS = $(SPIKES_DIR)/test_sampler.cpp
+OUR_SRCS = $(wildcard $(SRC_DIR)/*.cpp) \
+		   $(wildcard $(SRC_DIR)/precs/*.cpp) \
+		   $(wildcard $(SRC_DIR)/point_process/*.cpp)
 
-#OBJS = $(subst .cpp,.o, $(OUR_SRCS))
+OUR_SRCS := $(filter-out ./src/python_exports.cpp, $(OUR_SRCS))
+
+SRCS = $(PROTO_SRCS) $(OUR_SRCS)
+OBJS = $(subst .cpp,.o, $(SRCS))
+DEPENDS := $(patsubst %.cpp,%.d,$(SRCS))
 
 SPIKES_EXECS = $(subst .cpp,.out, $(SPIKES_SRCS))
 SPIKES_OBJS =  $(subst .cpp,.o, $(SPIKES_SRCS))
 
 test: $(SPIKES_EXECS)
 
-$(SPIKES_EXECS): %.out: %.o #$(OBJS)
+$(SPIKES_EXECS): %.out: %.o $(OBJS)
 	$(CXX) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJS) $< $(LDLIBS)
+
+-include $(DEPENDS)
 
 %.o : %.cpp
 	$(CXX) $(CFLAGS) -MMD -MP -c $< -o $@
 
 clean:
-	rm $(SPIKES_OBJS) #$(OBJS)
+	rm $(SPIKES_OBJS) $(OBJS) $(DEPENDS)
 
 distclean: clean
+
+compile_protos:
+	@ mkdir -p $(PROTO_DIR)/cpp;
+	@ mkdir -p $(PROTO_DIR)/py;
+	@ for filename in $(PROTO_DIR)/*.proto; do \
+		protoc --proto_path=$(PROTO_DIR) --python_out=$(PROTO_DIR)/py/ $$filename; \
+		protoc --proto_path=$(PROTO_DIR) --cpp_out=$(PROTO_DIR)/cpp/ $$filename; \
+	done
+	@ for filename in $(PROTO_DIR)/cpp/*.cc; do \
+	    mv -- "$$filename" "$${filename%.cc}.cpp"; \
+	done
+
+	touch $(PROTO_DIR)/__init__.py
+	touch $(PROTO_DIR)/py/__init__.py
+
+	2to3 --output-dir=$(PROTO_DIR)/py/ -W -n $(PROTO_DIR)/py/

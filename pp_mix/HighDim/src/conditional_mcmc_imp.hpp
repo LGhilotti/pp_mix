@@ -504,7 +504,7 @@ template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::print_debug_string() {
   std::cout << "*********** DEBUG STRING***********" << std::endl;
   std::cout << "#### ACTIVE: Number actives: " << a_means.rows() << std::endl;
-  ;
+  
   for (int i = 0; i < a_means.rows(); i++) {
     std::cout << "Component: " << i << ", weight: " << a_jumps(i)
               << ", mean: " << a_means.row(i) << std::endl;
