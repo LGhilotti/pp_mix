@@ -16,8 +16,8 @@
 
 
 Eigen::MatrixXd simulate_multivariate() {
-    int dim = 2;
-    int data_per_clus = 10;
+    int dim = 3;
+    int data_per_clus = 5;
     Eigen::MatrixXd data = Eigen::MatrixXd(data_per_clus * 2, dim);
     Eigen::VectorXd mean1 = Eigen::VectorXd::Ones(dim) * 5.0;
 
@@ -67,10 +67,9 @@ int main() {
     //Eigen::MatrixXd data = simulate_univariate();
     Eigen::MatrixXd data = simulate_multivariate();
 
-    Eigen::MatrixXd ranges(2, data.cols());
-    ranges.row(0) = data.colwise().minCoeff();
-    ranges.row(1) = data.colwise().maxCoeff();
-    ranges *= 2;
+    Eigen::MatrixXd ranges(2, 2);
+    ranges.row(0) = RowVectorXd::Constant(2, -50);
+    ranges.row(1) = RowVectorXd::Constant(2, 50);
 
     std::string params_file = \
       "/home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/HighDim/resources/sampler_params.asciipb";
@@ -87,9 +86,9 @@ int main() {
     sampler.initialize(data);
 
     std::cout<<"ALL GOOD!"<<std::endl;
-    
-/*
-    // std::deque<MultivariateMixtureState> chains;
+
+
+    std::deque<MultivariateMixtureState> chains;
 
     // sampler.set_verbose();
     // for (int i = 0; i < 100000; i++) {
@@ -97,21 +96,22 @@ int main() {
     // }
     // sampler.print_debug_string();
     // sampler.set_verbose();
-    int niter = 100000;
+
+    int niter = 2000;
     for (int i = 0; i < niter; i++) {
         sampler.run_one();
-        // MultivariateMixtureState state;
-        // sampler.get_state_as_proto(&state);
-        // chains.push_back(state);
-        // if (i % 1000 == 0)
-        //     sampler.print_debug_string();
-        // sampler.print_debug_string();
+        MultivariateMixtureState state;
+        sampler.get_state_as_proto(&state);
+        chains.push_back(state);
+        if (i % 1000 == 0)
+             sampler.print_debug_string();
 
         if (i % 100 == 0) {
             std::cout << "iter: " << i << " / " << niter << std::endl;
         }
     }
     sampler.print_debug_string();
-    std::cout << "ACCEPTANCE RATE: " << sampler.mean_acceptance_rate() << std::endl;
-*/
+    std::cout << "a_means ACCEPTANCE RATE: " << sampler.a_means_acceptance_rate() << std::endl;
+    std::cout << "Lambda ACCEPTANCE RATE: " << sampler.Lambda_acceptance_rate() << std::endl;
+
 }

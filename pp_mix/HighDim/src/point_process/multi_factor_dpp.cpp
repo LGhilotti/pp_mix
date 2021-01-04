@@ -3,9 +3,13 @@
 
 MultiDpp::MultiDpp(const MatrixXd &ranges, int N, double c, double s): BaseDeterminantalPP(ranges,N,c,s) {
 
+  std::cout<<"MultiDpp constructor"<<std::endl;
   compute_Kappas();
   phis.resize(Kappas.rows());
   phi_tildes.resize(Kappas.rows());
+  phis_tmp.resize(Kappas.rows());
+  phi_tildes_tmp.resize(Kappas.rows());
+  std::cout<<"end Multi constructor"<<std::endl;
 
 }
 
@@ -14,6 +18,7 @@ void MultiDpp::set_decomposition(const MatrixXd * lambda) {
 
   Lambda = lambda;
   compute_eigen_and_cstar(&Ds, &phis, &phi_tildes, &c_star, lambda);
+  std::cout<<"decomposition set"<<std::endl;
   return;
 
 }
@@ -22,7 +27,7 @@ void MultiDpp::set_decomposition(const MatrixXd * lambda) {
 
 void MultiDpp::compute_eigen_and_cstar(double * D_, VectorXd * Phis_, VectorXd * Phi_tildes_, double * C_star_, const MatrixXd * lambda){
 
-  std::cout << "compute initial eigen and cstar! "<<std::endl;
+  std::cout << "compute eigen and cstar! "<<std::endl;
 
   *D_ = 0.0;
   *C_star_ = 0.0;
@@ -35,11 +40,11 @@ void MultiDpp::compute_eigen_and_cstar(double * D_, VectorXd * Phis_, VectorXd *
   for (int i = 0; i < Kappas.rows(); i++) {
     VectorXd sol = M.solve(Kappas.row(i).transpose());
     double dot_prod = (Kappas.row(i)).dot(sol);
-    (*Phis_)[i] = s*std::exp(esp_fact*dot_prod);
+    (*Phis_)(i) = s*std::exp(esp_fact*dot_prod);
 
-    (*Phi_tildes_)[i] = (*Phis_)[i] / (1 - (*Phis_)[i]);
-    *D_ += std::log(1 + (*Phi_tildes_)[i]);
-    *C_star_ += (*Phi_tildes_)[i];
+    (*Phi_tildes_)(i) = (*Phis_)(i) / (1 - (*Phis_)(i));
+    *D_ += std::log(1 + (*Phi_tildes_)(i));
+    *C_star_ += (*Phi_tildes_)(i);
   }
 
   return;
@@ -87,6 +92,9 @@ void MultiDpp::compute_Kappas() {
   for (int i = 0; i < kappas.size(); i++) {
     Kappas.row(i) = Map<VectorXd>(kappas[i].data(), dim).transpose();
   }
+
+  std::cout<<"Kappas: "<<Kappas<<std::endl;
+
   return;
 
 }

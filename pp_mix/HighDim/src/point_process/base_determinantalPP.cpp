@@ -9,7 +9,7 @@ double PI = stan::math::pi();
 BaseDeterminantalPP::BaseDeterminantalPP(const MatrixXd &ranges, int N, double c, double s):
   ranges(ranges), N(N), c(c), s(s) {
 
-  std::cout << "constructor!"<<std::endl;
+  std::cout << "BaseDeterminantalPP constructor!"<<std::endl;
   dim = ranges.cols();
   diff_range = (ranges.row(1) - ranges.row(0)).transpose();
   vol_range = diff_range.prod();
@@ -20,14 +20,14 @@ BaseDeterminantalPP::BaseDeterminantalPP(const MatrixXd &ranges, int N, double c
     A(i, i) = 1.0 / (ranges(1, i) - ranges(0, i));
     b(i) = -A(i, i) * (ranges(1, i) + ranges(0, i)) / 2.0;
   }
-  // std::cout << "ranges: "<<this->ranges<<std::endl;
-  // std::cout << "N: "<<this->N<<std::endl;
-  // std::cout << "c: "<<this->c<<std::endl;
-  // std::cout << "s: "<<this->s<<std::endl;
-  // std::cout << "dim: "<<this->dim<<std::endl;
-  // std::cout << "diff_range: "<<this->diff_range<<std::endl;
-  // std::cout << "vol_range: "<<this->vol_range<<std::endl;
-
+  std::cout << "ranges: "<<this->ranges<<std::endl;
+  std::cout << "N: "<<this->N<<std::endl;
+  std::cout << "c: "<<this->c<<std::endl;
+  std::cout << "s: "<<this->s<<std::endl;
+  std::cout << "dim: "<<this->dim<<std::endl;
+  std::cout << "diff_range: "<<this->diff_range<<std::endl;
+  std::cout << "vol_range: "<<this->vol_range<<std::endl;
+  std::cout<<" end Base constructor"<<std::endl;
   return;
 }
 
@@ -179,7 +179,7 @@ void BaseDeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const M
   if (std::log(rsecond) < birth_prob) {
     // BIRTH MOVE
     VectorXd xi = phi_star_rng();
-
+    std::cout<<"birth"<<std::endl;
     // compute prob of acceptance of the new birth
     MatrixXd aux(active.rows() + npoints, dim);
     std::cout<<"defined aux"<<std::endl;
@@ -202,7 +202,7 @@ void BaseDeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const M
   } else {
     // Death Move
     if (npoints == 0) return;
-
+    std::cout<<"death"<<std::endl;
     VectorXd probas = VectorXd::Ones(npoints) / npoints;
     int ind = categorical_rng(probas, Rng::Instance().get()) - 1;
 

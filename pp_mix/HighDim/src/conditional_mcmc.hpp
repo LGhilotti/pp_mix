@@ -41,6 +41,9 @@ class ConditionalMCMC {
      // for each allocated cluster, it contains the vector of indexes of observations:
      // both useful for data and etas.
      std::vector<std::vector<int>> obs_by_clus;
+     // NOTE: in each iteration (run_one), when updating etas, this structure is no more correct,
+     // since it is not updated. But this structure is no more used in following updates, so
+     // it is ok. This will be updated at next iteration in _relabel and used correctly
      std::vector<std::vector<VectorXd>> etas_by_clus;
 
      /* STATE */
@@ -66,8 +69,12 @@ class ConditionalMCMC {
 
      // FOR DEBUGGING
      bool verbose = false;
-     int acc_mean = 0;
-     int tot_mean = 0;
+
+     int acc_sampled_a_means = 0;
+     int tot_sampled_a_means = 0;
+
+     int acc_sampled_Lambda = 0;
+     int tot_sampled_Lambda = 0;
 
      Params params;
 
@@ -121,6 +128,9 @@ class ConditionalMCMC {
     void sample_deltas_a();
     // sample cluster allocations and relabel the parameters
     void sample_allocations_and_relabel();
+
+    void _relabel();
+
     // sample u
     inline void sample_u(){
       double T = a_jumps.sum() + na_jumps.sum();
@@ -149,12 +159,13 @@ class ConditionalMCMC {
     inline double compute_exp_lik(const MatrixXd& lamb) const;
     inline double compute_exp_prior(const MatrixXd& lamb) const;
 
+    // to store the current state in proto format
     virtual void get_state_as_proto(google::protobuf::Message *out_) = 0;
 
+    // to just print the current state for debugging
     void print_debug_string();
 
 
-    void _relabel();
 
     void set_verbose() { verbose = !verbose; }
 
@@ -167,8 +178,12 @@ class ConditionalMCMC {
 
     //virtual VectorXd compute_grad_for_clus(int clus, const VectorXd &mean) = 0;
 
-    double mean_acceptance_rate() {
-        return (1.0 * acc_mean) / (1.0 * tot_mean);
+    double a_means_acceptance_rate() {
+        return (1.0 * acc_sampled_a_means) / (1.0 * tot_sampled_a_means);
+    }
+
+    double Lambda_acceptance_rate() {
+        return (1.0 * acc_sampled_Lambda) / (1.0 * tot_sampled_Lambda);
     }
 
     virtual void print_data_by_clus(int clus) = 0;

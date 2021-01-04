@@ -6,11 +6,19 @@ MultivariateConditionalMCMC::MultivariateConditionalMCMC(BaseDeterminantalPP *pp
                                                          BasePrec *g,
                                                          const Params &params)
     : ConditionalMCMC<BaseMultiPrec, PrecMat, VectorXd>() {
+  std::cout<<"begin multiMCMC constructor"<<std::endl;
   set_pp_mix(pp_mix);
   set_prec(dynamic_cast<BaseMultiPrec *>(g));
   set_params(params);
   min_proposal_sigma = 0.1;
   max_proposal_sigma = 2.0;
+  std::cout<<"a_phi: "<<_a_phi<<std::endl;
+  std::cout<<"alfa jump: "<<_alpha_jump<<std::endl;
+  std::cout<<"beta jump: "<<_beta_jump<<std::endl;
+  std::cout<<"a gamma: "<<_a_gamma<<std::endl;
+  std::cout<<"b gamma: "<<_b_gamma<<std::endl;
+  std::cout<<"prop lambda sigma: "<<prop_lambda_sigma<<std::endl;
+  std::cout<<"dim_factor: "<<dim_fact<<std::endl;
 
 }
 
@@ -48,6 +56,7 @@ void MultivariateConditionalMCMC::initialize_allocated_means() {
 
 void MultivariateConditionalMCMC::sample_etas() {
 
+    std::cout<<"sample etas"<<std::endl;
     MatrixXd M0(Lambda.transpose() * sigma_bar.asDiagonal());
     MatrixXd M1( M0 * Lambda);
     std::vector<MatrixXd> Sn_bar(a_means.rows());
@@ -85,7 +94,7 @@ void MultivariateConditionalMCMC::sample_Lambda() {
   MatrixXd prop_lambda = Map<MatrixXd>(normal_rng( std::vector<double>(Lambda.data(), Lambda.data() + Lambda.size()) ,
               std::vector<double>(dim_data*dim_fact, prop_lambda_sigma), Rng::Instance().get()).data() , dim_data, dim_fact);
 
-
+  tot_sampled_Lambda += 1;
   // we use log for each term
   double curr_lik, prop_lik;
   curr_lik = -0.5 * compute_exp_lik(Lambda);
@@ -112,6 +121,7 @@ void MultivariateConditionalMCMC::sample_Lambda() {
   if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < log_ratio){
     //ACCEPTED
     std::cout<<"accepted Lambda"<<std::endl;
+    acc_sampled_Lambda += 1;
     Lambda.swap(prop_lambda);
     pp_mix->update_decomposition_from_proposal();
 
@@ -274,6 +284,7 @@ void UnivariateConditionalMCMC::sample_Lambda() {
   MatrixXd prop_lambda = Map<MatrixXd>(normal_rng(std::vector<double>(Lambda.data(), Lambda.data() + Lambda.size()),
               std::vector<double>(dim_data, prop_lambda_sigma), Rng::Instance().get()).data(), dim_data,1);
 
+  tot_sampled_Lambda += 1;
   // we use log for each term
   double curr_lik, prop_lik;
   curr_lik = -0.5 * compute_exp_lik(Lambda);
@@ -291,6 +302,7 @@ void UnivariateConditionalMCMC::sample_Lambda() {
   if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < log_ratio){
     //ACCEPTED
     std::cout<<"accepted Lambda"<<std::endl;
+    acc_sampled_Lambda += 1;
     Lambda.swap(prop_lambda);
   }
   else std::cout<<"rejected Lambda"<<std::endl;
