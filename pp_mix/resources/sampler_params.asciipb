@@ -21,6 +21,8 @@ betajump: 3.0
 
 agamma: 2.0
 
-bgamma: 3.0
+bgamma: 1.0
 
-prop_sigma: 1.0
+prop_l_sigma: 1.0
+
+prop_m_sigma: 1.0

@@ -78,7 +78,7 @@ class ConditionalMCMC {
 
      Params params;
 
-     double min_proposal_sigma, max_proposal_sigma, prop_lambda_sigma;
+     double prop_means_sigma, prop_lambda_sigma;
 
  public:
      ConditionalMCMC() {}

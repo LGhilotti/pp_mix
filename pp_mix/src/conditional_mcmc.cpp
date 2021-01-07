@@ -10,14 +10,13 @@ MultivariateConditionalMCMC::MultivariateConditionalMCMC(BaseDeterminantalPP *pp
   set_pp_mix(pp_mix);
   set_prec(dynamic_cast<BaseMultiPrec *>(g));
   set_params(params);
-  min_proposal_sigma = 0.1;
-  max_proposal_sigma = 2.0;
   std::cout<<"a_phi: "<<_a_phi<<std::endl;
   std::cout<<"alfa jump: "<<_alpha_jump<<std::endl;
   std::cout<<"beta jump: "<<_beta_jump<<std::endl;
   std::cout<<"a gamma: "<<_a_gamma<<std::endl;
   std::cout<<"b gamma: "<<_b_gamma<<std::endl;
   std::cout<<"prop lambda sigma: "<<prop_lambda_sigma<<std::endl;
+  std::cout<<"prop means sigma: "<<prop_means_sigma<<std::endl;
   std::cout<<"dim_factor: "<<dim_fact<<std::endl;
 
 }

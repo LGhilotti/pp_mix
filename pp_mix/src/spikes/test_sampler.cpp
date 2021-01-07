@@ -43,28 +43,8 @@ Eigen::MatrixXd simulate_multivariate() {
 }
 
 
-Eigen::MatrixXd simulate_univariate() {
-    int data_per_clus = 50;
-    Eigen::MatrixXd data = Eigen::MatrixXd(data_per_clus * 2, 1);
-
-    for (int i = 0; i < data_per_clus; i++)
-    {
-        data(i) = stan::math::normal_rng(
-            5, 0.8, Rng::Instance().get());
-    }
-
-    for (int i = data_per_clus; i < 2 * data_per_clus; i++)
-    {
-        data(i) = stan::math::normal_rng(
-            -5, 0.8, Rng::Instance().get());
-    }
-
-    return data;
-}
-
 
 int main() {
-    //Eigen::MatrixXd data = simulate_univariate();
     Eigen::MatrixXd data = simulate_multivariate();
 
     Eigen::MatrixXd ranges(2, 2);

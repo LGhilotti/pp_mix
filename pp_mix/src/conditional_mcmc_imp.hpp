@@ -22,7 +22,9 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::set_params(const Params & p){
   this->_beta_jump = params.betajump();
   this->_a_gamma = params.agamma();
   this->_b_gamma = params.bgamma();
-  this->prop_lambda_sigma = params.prop_sigma();
+  this->prop_lambda_sigma = params.prop_l_sigma();
+  this->prop_means_sigma = params.prop_m_sigma();
+
   return;
 }
 
@@ -226,15 +228,10 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_means_a()
   for (int i = 0; i < a_means.rows(); i++) {
     tot_sampled_a_means += 1;
     MatrixXd others(allmeans.rows() - 1, dim_fact);
-    double sigma;
-    if (uniform_rng(0, 1, Rng::Instance().get()) < 0.1) {
-      sigma = max_proposal_sigma;
-    } else
-      sigma = min_proposal_sigma;
 
     double currlik, proplik, prior_ratio, lik_ratio, arate;
     const VectorXd &currmean = a_means.row(i).transpose();
-    const MatrixXd &cov_prop = MatrixXd::Identity(dim_fact, dim_fact) * sigma;
+    const MatrixXd &cov_prop = MatrixXd::Identity(dim_fact, dim_fact) * prop_means_sigma;
 
     // we PROPOSE a new point from a multivariate normal, with mean equal to the current point
     // and covariance matrix diagonal
