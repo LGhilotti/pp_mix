@@ -57,11 +57,11 @@ class ConditionalMCMC {
      MatrixXd etas;
      //Sigma_bar
      VectorXd sigma_bar;
+
      //Lambda-block
      double tau;
      MatrixXd Phi;
      MatrixXd Psi;
-     MatrixXd Lambda;
 
      // DISTRIBUTIONS
      BaseDeterminantalPP *pp_mix;
@@ -73,14 +73,16 @@ class ConditionalMCMC {
      int acc_sampled_a_means = 0;
      int tot_sampled_a_means = 0;
 
-     int acc_sampled_Lambda = 0;
-     int tot_sampled_Lambda = 0;
 
      Params params;
 
      double prop_means_sigma, prop_lambda_sigma;
 
  public:
+    MatrixXd Lambda;
+    int acc_sampled_Lambda = 0;
+    int tot_sampled_Lambda = 0;
+
      ConditionalMCMC() {}
      ~ConditionalMCMC()
      {
@@ -90,7 +92,9 @@ class ConditionalMCMC {
 
     ConditionalMCMC(
         BaseDeterminantalPP * pp_mix, Prec * g,
-        const Params& params);
+        const Params& params, const MatrixXd& lambda,
+        const MatrixXd& Etas,
+        double p_l_sigma, double p_m_sigma);
 
     void set_pp_mix(BaseDeterminantalPP* pp_mix) {this->pp_mix = pp_mix;}
     void set_prec(Prec* g) {this->g = g;}
@@ -197,7 +201,10 @@ public:
     MultivariateConditionalMCMC() {}
 
     MultivariateConditionalMCMC(BaseDeterminantalPP *pp_mix, BasePrec *g,
-                                const Params &params);
+                                const Params &params,const MatrixXd& mus,
+                                const VectorXd& SigBar,
+                                const MatrixXd& Etas,
+                                double p_l_sigma, double p_m_sigma);
 
     // initializes the etas, projecting the data onto Col(Lambda):
     // it is for both uni/multi factor cases, but implemented differently because of the least square systems.

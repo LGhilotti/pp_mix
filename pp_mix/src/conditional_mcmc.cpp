@@ -4,20 +4,23 @@
 
 MultivariateConditionalMCMC::MultivariateConditionalMCMC(BaseDeterminantalPP *pp_mix,
                                                          BasePrec *g,
-                                                         const Params &params)
+                                                         const Params &params,
+                                                         const MatrixXd& mus,
+                                                         const VectorXd& SigBar,
+                                                         const MatrixXd& Etas,
+                                                         double p_l_sigma, double p_m_sigma)
     : ConditionalMCMC<BaseMultiPrec, PrecMat, VectorXd>() {
   std::cout<<"begin multiMCMC constructor"<<std::endl;
   set_pp_mix(pp_mix);
   set_prec(dynamic_cast<BaseMultiPrec *>(g));
   set_params(params);
-  std::cout<<"a_phi: "<<_a_phi<<std::endl;
-  std::cout<<"alfa jump: "<<_alpha_jump<<std::endl;
-  std::cout<<"beta jump: "<<_beta_jump<<std::endl;
-  std::cout<<"a gamma: "<<_a_gamma<<std::endl;
-  std::cout<<"b gamma: "<<_b_gamma<<std::endl;
-  std::cout<<"prop lambda sigma: "<<prop_lambda_sigma<<std::endl;
-  std::cout<<"prop means sigma: "<<prop_means_sigma<<std::endl;
-  std::cout<<"dim_factor: "<<dim_fact<<std::endl;
+  a_means = mus;
+  na_means = MatrixXd(0,a_means.cols());
+  sigma_bar = SigBar;
+  etas = Etas;
+  prop_lambda_sigma = p_l_sigma;
+  prop_means_sigma = p_m_sigma;
+
 
 }
 
@@ -88,16 +91,21 @@ void MultivariateConditionalMCMC::sample_etas() {
 
 
 void MultivariateConditionalMCMC::sample_Lambda() {
-
+  std::cout<<"sample Lambda"<<std::endl;
   // Current Lambda (here are the means) are expanded to vector<double> column major
   MatrixXd prop_lambda = Map<MatrixXd>(normal_rng( std::vector<double>(Lambda.data(), Lambda.data() + Lambda.size()) ,
               std::vector<double>(dim_data*dim_fact, prop_lambda_sigma), Rng::Instance().get()).data() , dim_data, dim_fact);
+  // DEBUG
+  //std::cout<<"Proposal Lambda: \n"<<prop_lambda<<std::endl;
+  std::cout<<"Proposed Lambda"<<std::endl;
 
   tot_sampled_Lambda += 1;
   // we use log for each term
   double curr_lik, prop_lik;
   curr_lik = -0.5 * compute_exp_lik(Lambda);
   prop_lik = -0.5 * compute_exp_lik(prop_lambda);
+  // DEBUG
+  std::cout<<"curr_lik = "<<curr_lik<<"  ; prop_lik = "<<prop_lik<<std::endl;
 
   double curr_prior_cond_process, prop_prior_cond_process;
   MatrixXd means(a_means.rows()+na_means.rows(),dim_fact);
@@ -107,25 +115,32 @@ void MultivariateConditionalMCMC::sample_Lambda() {
 
   curr_prior_cond_process = pp_mix->dens_cond(means, true);
   prop_prior_cond_process = pp_mix->dens_cond_in_proposal(means, true);
+  // DEBUG
+  std::cout<<"curr_p_c_p = "<<curr_prior_cond_process<<"  ; prop_p_c_p = "<<prop_prior_cond_process<<std::endl;
 
   double curr_prior_lambda, prop_prior_lambda;
   curr_prior_lambda = compute_exp_prior(Lambda);
   prop_prior_lambda = compute_exp_prior(prop_lambda);
+  // DEBUG
+  std::cout<<"curr_prior_lambda = "<<curr_prior_lambda<<" ; prop_prior_lambda = "<<prop_prior_lambda<<std::endl;
 
   double curr_dens, prop_dens, log_ratio;
   curr_dens = curr_lik + curr_prior_cond_process + curr_prior_lambda;
   prop_dens = prop_lik + prop_prior_cond_process + prop_prior_lambda;
+  // DEBUG
+//  std::cout<<"curr_dens = "<<curr_dens<<" ; prop_dens = "<<prop_dens<<std::endl;
+
   log_ratio = prop_dens - curr_dens;
+  // DEBUG
+  //std::cout<<"log_ratio: "<<log_ratio<<std::endl;
 
   if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < log_ratio){
     //ACCEPTED
-    std::cout<<"accepted Lambda"<<std::endl;
     acc_sampled_Lambda += 1;
     Lambda.swap(prop_lambda);
     pp_mix->update_decomposition_from_proposal();
 
   }
-  else std::cout<<"rejected Lambda"<<std::endl;
 
   return;
 }
@@ -214,8 +229,10 @@ UnivariateConditionalMCMC::UnivariateConditionalMCMC(BaseDeterminantalPP *pp_mix
   set_pp_mix(pp_mix);
   set_prec(dynamic_cast<BaseUnivPrec *>(g));
   set_params(params);
+  /*
   min_proposal_sigma = 0.1;
   max_proposal_sigma = 1.0;
+  */
 }
 
 

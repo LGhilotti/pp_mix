@@ -1,0 +1,12 @@
+Sigma bar hyperparameters: a_gamma = 1 ; b_gamma = 5
+Average sigma bar after 50000 iterations: 
+1.66438
+1.88874
+1.90624
+1.65955
+Sigma bar hyperparameters: a_gamma = 2 ; b_gamma = 2
+Average sigma bar after 50000 iterations: 
+1.88142
+2.16819
+2.18636
+1.87561

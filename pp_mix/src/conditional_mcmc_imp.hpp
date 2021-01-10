@@ -5,7 +5,9 @@
 template <class Prec, typename prec_t, typename fact_t>
 ConditionalMCMC<Prec, prec_t, fact_t>::ConditionalMCMC(BaseDeterminantalPP *pp_mix,
                                                   Prec *g,
-                                                  const Params &params)
+                                                  const Params &params,const MatrixXd& lambda,
+                                                  const MatrixXd& Etas,
+                                                  double p_l_sigma, double p_m_sigma)
     : pp_mix(pp_mix), g(g) {
 
       set_params(params);
@@ -22,8 +24,6 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::set_params(const Params & p){
   this->_beta_jump = params.betajump();
   this->_a_gamma = params.agamma();
   this->_b_gamma = params.bgamma();
-  this->prop_lambda_sigma = params.prop_l_sigma();
-  this->prop_means_sigma = params.prop_m_sigma();
 
   return;
 }
@@ -44,7 +44,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::initialize(
 
   Lambda = Map<MatrixXd>(normal_rng( std::vector<double>(dim_data*dim_fact, 0.0),
         std::vector<double>(dim_data*dim_fact, 8.*pow(_a_phi,2) ), Rng::Instance().get() ).data() , dim_data,dim_fact );
-
+  /*
   // Initialize Sigma_bar
   sigma_bar = _a_gamma/_b_gamma * VectorXd::Ones(dim_data);
 
@@ -82,10 +82,10 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::initialize(
   }
   // initial u parameter
   u = 1.0;
-
+*/
   // DECOMPOSE DPP (in MultiDpp also assign the pointer to Lambda)
   pp_mix->set_decomposition(&Lambda);
-
+/*
   std::cout<<"data: "<<data<<std::endl;
   std::cout<<"ndata: "<<ndata<<std::endl;
   std::cout<<"dim_data: "<<dim_data<<std::endl;
@@ -107,7 +107,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::initialize(
   for (int i = 0; i < na_deltas.size(); i++) {
     std::cout << "non_alloc deltas: " << na_deltas[i] << std::endl;
   }
-
+*/
   std::cout << "initialize done" << std::endl;
 }
 
@@ -139,8 +139,7 @@ bool ConditionalMCMC<Prec, prec_t, fact_t>::is_inside(const VectorXd & eta){
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::run_one() {
 
-  std::cout<< "begin iteration"<<std::endl;
-
+/*
   sample_u();
 
   // compute laplace transform psi in u
@@ -168,14 +167,13 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::run_one() {
 
   // sample Sigma bar
   sample_sigma_bar();
-
+*/
   // sample Lambda block
   sample_Psi();
   sample_tau();
   sample_Phi();
   sample_Lambda();
 
-  std::cout<<"end iteration"<<std::endl;
   // print_debug_string();
   return;
 }
@@ -183,7 +181,6 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::run_one() {
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::sample_jumps_na()
 {
-  std::cout<<"sample jumps na"<<std::endl;
 
     na_jumps.conservativeResize(na_means.rows(), 1);
     int N_na = na_jumps.size();
@@ -196,7 +193,6 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_jumps_na()
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::sample_jumps_a()
 {
-    std::cout<<"sample jumps a"<<std::endl;
 
     //#pragma omp parallel for
     for (int i = 0; i < a_means.rows(); i++)
@@ -208,7 +204,6 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_jumps_a()
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::sample_means_na(double psi_u)
 {
-  std::cout<<"sample means na"<<std::endl;
   for (int i=0; i < 10; i++) {
     int na_points = na_means.rows();
     pp_mix->sample_nonalloc_fullcond(&na_means, a_means, psi_u);
@@ -221,7 +216,6 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_means_na(double psi_u)
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::sample_means_a()
 {
-  std::cout<<"sample a_means"<<std::endl;
   MatrixXd allmeans(a_means.rows() + na_means.rows(), dim_fact);
   allmeans << a_means, na_means;
 
@@ -280,7 +274,6 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_means_a()
 
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::sample_deltas_na() {
-  std::cout<<"sample deltas na"<<std::endl;
 
   na_deltas.resize(na_means.rows());
   for (int i = 0; i < na_means.rows(); i++) {
@@ -292,7 +285,6 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_deltas_na() {
 
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::sample_deltas_a() {
-  std::cout<<"sample deltas a"<<std::endl;
 
   //#pragma omp parallel for
   for (int i = 0; i < a_means.rows(); i++) {
@@ -306,7 +298,6 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_deltas_a() {
 
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::sample_allocations_and_relabel() {
-  std::cout << "sample_allocations_and_relabel" << std::endl;
   int Ma = a_means.rows();
   int Mna = na_means.rows();
   // current number of components (a + na)
@@ -461,7 +452,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::_relabel() {
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::sample_sigma_bar() {
 
-  std::cout<<"sample sigma bar"<<std::endl;
+  //std::cout<<"sample sigma bar"<<std::endl;
   VectorXd betas = VectorXd::Constant(dim_data, _b_gamma);
   betas+=0.5*data.colwise().squaredNorm().transpose() + 0.5*(etas*Lambda.transpose()).colwise().squaredNorm().transpose();
   for (int j=0; j < dim_data; j++){
@@ -478,8 +469,8 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_sigma_bar() {
 
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::sample_Psi() {
-  // make it parallel omp
   std::cout<<"sample Psi"<<std::endl;
+  // make it parallel omp
   for (int j=0; j< dim_data; j++)
     for(int h=0; h< dim_fact; h++)
       Psi(j,h)=GIG::rgig(0.5, std::pow(Lambda(j,h)/(Phi(j,h)*tau),2), 1);
@@ -498,7 +489,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_tau() {
 
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::sample_Phi() {
-  std::cout<<"sample phi"<<std::endl;
+  std::cout<<"sample Phi"<<std::endl;
   for (int j=0; j < dim_data; j++)
     for (int h=0; h < dim_fact; h++)
       Phi(j,h)=GIG::rgig( _a_phi-1 , 2.0*std::abs(Lambda(j,h)), 1);

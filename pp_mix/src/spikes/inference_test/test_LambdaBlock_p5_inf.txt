@@ -1,0 +1,128 @@
+LambdaBlock hyperparameter: a (dir) = 10
+Proposal Lambda sigma = 0.01
+Lambda acceptance rate = 0.4993
+Accepted sampled Lambda = 49930
+Average Lambda after 50000 iterations: 
+-283.42 -1516.8
+ 441.17  604.05
+-576.22 -325.06
+-464.82  277.81
+LambdaBlock hyperparameter: a (dir) = 10
+Proposal Lambda sigma = 0.1
+Lambda acceptance rate = 0.20068
+Accepted sampled Lambda = 20068
+Average Lambda after 50000 iterations: 
+     0.0186      1.0117
+    0.98841     0.01106
+    -0.9767     0.01479
+-0.00019408    -0.99503
+LambdaBlock hyperparameter: a (dir) = 10
+Proposal Lambda sigma = 1
+Lambda acceptance rate = 0.03182
+Accepted sampled Lambda = 3182
+Average Lambda after 50000 iterations: 
+ 0.19782   1.1895
+ 0.98581 0.016259
+  -1.124 0.023366
+  -0.377  -1.0036
+LambdaBlock hyperparameter: a (dir) = 10
+Proposal Lambda sigma = 10
+Lambda acceptance rate = 0.00375
+Accepted sampled Lambda = 375
+Average Lambda after 50000 iterations: 
+-0.27099 -0.61942
+-0.64269  -1.2161
+ -4.2414  -0.1324
+  2.9361  -1.1144
+LambdaBlock hyperparameter: a (dir) = 1
+Proposal Lambda sigma = 0.01
+Lambda acceptance rate = 0.2171
+Accepted sampled Lambda = 21710
+Average Lambda after 50000 iterations: 
+  0.015858     1.0168
+   0.98852 -0.0039289
+    -1.006 -0.0026586
+ 0.0080736   -0.99867
+LambdaBlock hyperparameter: a (dir) = 1
+Proposal Lambda sigma = 0.1
+Lambda acceptance rate = 0.00964
+Accepted sampled Lambda = 964
+Average Lambda after 50000 iterations: 
+  0.018118     1.0109
+     0.992 -0.0013016
+  -0.99863 -0.0052129
+  0.013538   -0.99722
+LambdaBlock hyperparameter: a (dir) = 1
+Proposal Lambda sigma = 1
+Lambda acceptance rate = 0.00026
+Accepted sampled Lambda = 26
+Average Lambda after 50000 iterations: 
+ -0.1325   1.0002
+  1.0972  0.10795
+-0.95764  0.09605
+-0.40898 -0.73786
+LambdaBlock hyperparameter: a (dir) = 1
+Proposal Lambda sigma = 10
+Lambda acceptance rate = 0.00011
+Accepted sampled Lambda = 11
+Average Lambda after 50000 iterations: 
+ 0.89634 -0.61816
+ -1.6673   1.2795
+ -3.3202  -1.8092
+-0.27126   -3.861
+LambdaBlock hyperparameter: a (dir) = 10
+Proposal Lambda sigma = 0.01
+Initialization: 
+-327.073 -1754.53
+  504.52  700.471
+-664.507 -376.644
+-537.467  321.735
+Lambda acceptance rate = 0.4993
+Accepted sampled Lambda = 49930
+Average Lambda after 50000 iterations: 
+-283.42 -1516.8
+ 441.17  604.05
+-576.22 -325.06
+-464.82  277.81
+LambdaBlock hyperparameter: a (dir) = 10
+Proposal Lambda sigma = 0.1
+Initialization: 
+ 450.06   447.7
+-67.825 -791.75
+-122.34 -700.12
+-454.03  900.76
+Lambda acceptance rate = 0.20068
+Accepted sampled Lambda = 20068
+Average Lambda after 50000 iterations: 
+     0.0186      1.0117
+    0.98841     0.01106
+    -0.9767     0.01479
+-0.00019408    -0.99503
+LambdaBlock hyperparameter: a (dir) = 10
+Proposal Lambda sigma = 1
+Initialization: 
+   1597  250.34
+-853.48 -210.14
+  318.6  159.97
+  -1790 -25.444
+Lambda acceptance rate = 0.03182
+Accepted sampled Lambda = 3182
+Average Lambda after 50000 iterations: 
+ 0.19782   1.1895
+ 0.98581 0.016259
+  -1.124 0.023366
+  -0.377  -1.0036
+LambdaBlock hyperparameter: a (dir) = 10
+Proposal Lambda sigma = 10
+Initialization: 
+ 309.32  734.22
+   1520 -1756.6
+ 860.62  447.59
+-290.39  564.54
+Lambda acceptance rate = 0.00375
+Accepted sampled Lambda = 375
+Average Lambda after 50000 iterations: 
+-0.27099 -0.61942
+-0.64269  -1.2161
+ -4.2414  -0.1324
+  2.9361  -1.1144

@@ -20,6 +20,7 @@ BaseDeterminantalPP::BaseDeterminantalPP(const MatrixXd &ranges, int N, double c
     A(i, i) = 1.0 / (ranges(1, i) - ranges(0, i));
     b(i) = -A(i, i) * (ranges(1, i) + ranges(0, i)) / 2.0;
   }
+  /*
   std::cout << "ranges: "<<this->ranges<<std::endl;
   std::cout << "N: "<<this->N<<std::endl;
   std::cout << "c: "<<this->c<<std::endl;
@@ -28,6 +29,7 @@ BaseDeterminantalPP::BaseDeterminantalPP(const MatrixXd &ranges, int N, double c
   std::cout << "diff_range: "<<this->diff_range<<std::endl;
   std::cout << "vol_range: "<<this->vol_range<<std::endl;
   std::cout<<" end Base constructor"<<std::endl;
+  */
   return;
 }
 

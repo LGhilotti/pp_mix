@@ -18,7 +18,6 @@ void MultiDpp::set_decomposition(const MatrixXd * lambda) {
 
   Lambda = lambda;
   compute_eigen_and_cstar(&Ds, &phis, &phi_tildes, &c_star, lambda);
-  std::cout<<"decomposition set"<<std::endl;
   return;
 
 }
@@ -27,7 +26,6 @@ void MultiDpp::set_decomposition(const MatrixXd * lambda) {
 
 void MultiDpp::compute_eigen_and_cstar(double * D_, VectorXd * Phis_, VectorXd * Phi_tildes_, double * C_star_, const MatrixXd * lambda){
 
-  std::cout << "compute eigen and cstar! "<<std::endl;
 
   *D_ = 0.0;
   *C_star_ = 0.0;
@@ -93,7 +91,6 @@ void MultiDpp::compute_Kappas() {
     Kappas.row(i) = Map<VectorXd>(kappas[i].data(), dim).transpose();
   }
 
-  std::cout<<"Kappas: "<<Kappas<<std::endl;
 
   return;
 

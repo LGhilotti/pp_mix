@@ -9,7 +9,7 @@ CFLAGS = \
 	-std=c++1y \
 	-MMD \
 	-I$(STAN_ROOT_DIR) \
-	-I$(ROOT_DIR)/../../../eigen/ \
+	-I$(ROOT_DIR)/../../eigen/ \
 	-I$(STAN_ROOT_DIR)/lib/boost_*/  \
 	-I$(STAN_ROOT_DIR)/lib/sundials_*/include  \
 	-I$(STAN_ROOT_DIR)/lib/tbb_2019_U8/include  \
@@ -22,7 +22,10 @@ LDLIBS = \
 LDFLAGS = -D_REENTRANT -O3 -fopenmp
 
 PROTO_SRCS = $(wildcard $(PROTO_DIR)/cpp/*.cpp)
-SPIKES_SRCS = $(SPIKES_DIR)/test_sampler.cpp
+SPIKES_SRCS = $(SPIKES_DIR)/inference_test/test_etas_inference.cpp  \
+				$(SPIKES_DIR)/inference_test/test_sigmabar_inference.cpp \
+				$(SPIKES_DIR)/inference_test/test_lambdablock_p5_inference.cpp \
+
 OUR_SRCS = $(wildcard $(SRC_DIR)/*.cpp) \
 		   $(wildcard $(SRC_DIR)/precs/*.cpp) \
 		   $(wildcard $(SRC_DIR)/point_process/*.cpp)
