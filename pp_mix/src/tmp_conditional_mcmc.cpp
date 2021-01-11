@@ -1,24 +1,21 @@
-#include "conditional_mcmc.hpp"
+#include "tmp_conditional_mcmc.hpp"
 
-#include "conditional_mcmc_imp.hpp"
+#include "tmp_conditional_mcmc_imp.hpp"
 
+namespace Test {
 MultivariateConditionalMCMC::MultivariateConditionalMCMC(BaseDeterminantalPP *pp_mix,
                                                          BasePrec *g,
                                                          const Params &params,
-                                                         const MatrixXd& mus,
+                                                         const MatrixXd& lambda,
                                                          const VectorXd& SigBar,
-                                                         const MatrixXd& Etas,
-                                                         double p_l_sigma, double p_m_sigma)
+                                                         double p_m_sigma)
     : ConditionalMCMC<BaseMultiPrec, PrecMat, VectorXd>() {
   std::cout<<"begin multiMCMC constructor"<<std::endl;
   set_pp_mix(pp_mix);
   set_prec(dynamic_cast<BaseMultiPrec *>(g));
   set_params(params);
-  a_means = mus;
-  na_means = MatrixXd(0,a_means.cols());
+  Lambda = lambda;
   sigma_bar = SigBar;
-  etas = Etas;
-  prop_lambda_sigma = p_l_sigma;
   prop_means_sigma = p_m_sigma;
 
 
@@ -58,7 +55,6 @@ void MultivariateConditionalMCMC::initialize_allocated_means() {
 
 void MultivariateConditionalMCMC::sample_etas() {
 
-    std::cout<<"sample etas"<<std::endl;
     MatrixXd M0(Lambda.transpose() * sigma_bar.asDiagonal());
     MatrixXd M1( M0 * Lambda);
     std::vector<MatrixXd> Sn_bar(a_means.rows());
@@ -91,13 +87,13 @@ void MultivariateConditionalMCMC::sample_etas() {
 
 
 void MultivariateConditionalMCMC::sample_Lambda() {
-  //std::cout<<"sample Lambda"<<std::endl;
+  std::cout<<"sample Lambda"<<std::endl;
   // Current Lambda (here are the means) are expanded to vector<double> column major
   MatrixXd prop_lambda = Map<MatrixXd>(normal_rng( std::vector<double>(Lambda.data(), Lambda.data() + Lambda.size()) ,
               std::vector<double>(dim_data*dim_fact, prop_lambda_sigma), Rng::Instance().get()).data() , dim_data, dim_fact);
   // DEBUG
   //std::cout<<"Proposal Lambda: \n"<<prop_lambda<<std::endl;
-  //std::cout<<"Proposed Lambda"<<std::endl;
+  std::cout<<"Proposed Lambda"<<std::endl;
 
   tot_sampled_Lambda += 1;
   // we use log for each term
@@ -105,7 +101,7 @@ void MultivariateConditionalMCMC::sample_Lambda() {
   curr_lik = -0.5 * compute_exp_lik(Lambda);
   prop_lik = -0.5 * compute_exp_lik(prop_lambda);
   // DEBUG
-  //std::cout<<"curr_lik = "<<curr_lik<<"  ; prop_lik = "<<prop_lik<<std::endl;
+  std::cout<<"curr_lik = "<<curr_lik<<"  ; prop_lik = "<<prop_lik<<std::endl;
 
   double curr_prior_cond_process, prop_prior_cond_process;
   MatrixXd means(a_means.rows()+na_means.rows(),dim_fact);
@@ -116,13 +112,13 @@ void MultivariateConditionalMCMC::sample_Lambda() {
   curr_prior_cond_process = pp_mix->dens_cond(means, true);
   prop_prior_cond_process = pp_mix->dens_cond_in_proposal(means, true);
   // DEBUG
-  //std::cout<<"curr_p_c_p = "<<curr_prior_cond_process<<"  ; prop_p_c_p = "<<prop_prior_cond_process<<std::endl;
+  std::cout<<"curr_p_c_p = "<<curr_prior_cond_process<<"  ; prop_p_c_p = "<<prop_prior_cond_process<<std::endl;
 
   double curr_prior_lambda, prop_prior_lambda;
   curr_prior_lambda = compute_exp_prior(Lambda);
   prop_prior_lambda = compute_exp_prior(prop_lambda);
   // DEBUG
-  //std::cout<<"curr_prior_lambda = "<<curr_prior_lambda<<" ; prop_prior_lambda = "<<prop_prior_lambda<<std::endl;
+  std::cout<<"curr_prior_lambda = "<<curr_prior_lambda<<" ; prop_prior_lambda = "<<prop_prior_lambda<<std::endl;
 
   double curr_dens, prop_dens, log_ratio;
   curr_dens = curr_lik + curr_prior_cond_process + curr_prior_lambda;
@@ -389,3 +385,4 @@ void UnivariateConditionalMCMC::print_data_by_clus(int clus) {
   for (const int &d : obs_by_clus[clus]) std::cout << data.row(d) << ", ";
   std::cout << std::endl;
 }
+};

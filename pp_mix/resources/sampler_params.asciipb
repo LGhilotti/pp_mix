@@ -1,5 +1,5 @@
 dpp {
-  c: 5
+  c: 10
   n: 30
   s: 0.8
 }
@@ -13,9 +13,9 @@ wishart {
 
 dimf: 2
 
-a: 10.0
+a: 1.0
 
-alphajump: 2.0
+alphajump: 6.0
 
 betajump: 3.0
 

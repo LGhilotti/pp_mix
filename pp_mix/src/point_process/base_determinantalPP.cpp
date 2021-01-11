@@ -168,10 +168,7 @@ double BaseDeterminantalPP::phi_star_dens(VectorXd xi, bool log) {
 
 void BaseDeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const MatrixXd &active,
                                  double psi_u) {
-  std::cout<<"inside sample_given_active"<<std::endl;
   int npoints = non_active->rows();
-  std::cout<<"rows: " <<non_active->rows()<<std::endl;
-  std::cout<<"columns: " <<non_active->cols()<<std::endl;
 
   double c_star_na = c_star * psi_u;
   birth_prob = std::log(c_star_na) - std::log(c_star_na + npoints);
@@ -181,30 +178,30 @@ void BaseDeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const M
   if (std::log(rsecond) < birth_prob) {
     // BIRTH MOVE
     VectorXd xi = phi_star_rng();
-    std::cout<<"birth"<<std::endl;
+    //std::cout<<"birth"<<std::endl;
     // compute prob of acceptance of the new birth
     MatrixXd aux(active.rows() + npoints, dim);
-    std::cout<<"defined aux"<<std::endl;
+  //  std::cout<<"defined aux"<<std::endl;
     aux << active, *non_active;
-    std::cout<<"filled aux: "<<aux<<std::endl;
-    std::cout<<"rows= "<<aux.rows()<<std::endl;
-    std::cout<<"cols= "<<aux.cols()<<std::endl;
+    //std::cout<<"filled aux: "<<aux<<std::endl;
+  //  std::cout<<"rows= "<<aux.rows()<<std::endl;
+  //  std::cout<<"cols= "<<aux.cols()<<std::endl;
 
     double pap = papangelou(xi, aux);
-    std::cout<<"done papan"<<std::endl;
+    //std::cout<<"done papan"<<std::endl;
     birth_arate = pap - phi_star_dens(xi);
 
     double rthird = uniform_rng(0, 1, Rng::Instance().get());
     if (std::log(rthird) < birth_arate) {
-      std::cout<<"entered"<<std::endl;
+    //  std::cout<<"entered"<<std::endl;
       non_active->conservativeResize(npoints + 1, dim);
-      std::cout<<"done conservative"<<std::endl;
+    //  std::cout<<"done conservative"<<std::endl;
       non_active->row(npoints) = xi;
     }
   } else {
     // Death Move
     if (npoints == 0) return;
-    std::cout<<"death"<<std::endl;
+    //std::cout<<"death"<<std::endl;
     VectorXd probas = VectorXd::Ones(npoints) / npoints;
     int ind = categorical_rng(probas, Rng::Instance().get()) - 1;
 

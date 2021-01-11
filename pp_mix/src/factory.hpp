@@ -12,7 +12,7 @@
 #include "point_process/multi_factor_dpp.hpp"
 #include "point_process/uni_factor_dpp.hpp"
 
-#include "conditional_mcmc.hpp"
+//#include "conditional_mcmc.hpp"
 
 #include "../protos/cpp/params.pb.h"
 

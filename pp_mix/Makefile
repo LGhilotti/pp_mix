@@ -22,8 +22,8 @@ LDLIBS = \
 LDFLAGS = -D_REENTRANT -O3 -fopenmp
 
 PROTO_SRCS = $(wildcard $(PROTO_DIR)/cpp/*.cpp)
-SPIKES_SRCS = $(SPIKES_DIR)/inference_test/test_etas_inference.cpp  \
-				$(SPIKES_DIR)/inference_test/test_sigmabar_inference.cpp \
+SPIKES_SRCS = $(SPIKES_DIR)/inference_test/inf_multiple_params/test_etas_repblock_inference.cpp
+				#$(SPIKES_DIR)/inference_test/test_sigmabar_inference.cpp \
 				$(SPIKES_DIR)/inference_test/test_lambdablock_p5_inference.cpp \
 
 OUR_SRCS = $(wildcard $(SRC_DIR)/*.cpp) \

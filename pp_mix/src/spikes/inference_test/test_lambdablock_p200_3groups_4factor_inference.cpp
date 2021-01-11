@@ -97,7 +97,7 @@ int main() {
     std::string params_file = \
       "/home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/resources/sampler_params.asciipb";
     Params params = loadTextProto<Params>(params_file);
-    // just a (dir param) and proposal for Lambda in MH step count, besides pp_mix params 
+    // just a (dir param) and proposal for Lambda in MH step count, besides pp_mix params
     std::cout<<"params.a (Dir) = "<<params.a()<<std::endl;
 
     double prop_m_sigma = 1; // Useless in this test
@@ -151,7 +151,7 @@ int main() {
 
     std::cout<<"average_Lambda= "<<average_Lambda<<std::endl;
 
-    myfile.open("./src/spikes/inference_test/test_LambdaBlock_p200_inf.txt", ios::app);
+    myfile.open("./src/spikes/inference_test/test_LambdaBlock_p200_3groups_4factor_inf.txt", ios::app);
     myfile <<"LambdaBlock hyperparameter: a (dir) = "<<params.a()<<"\n";
     myfile << "Proposal Lambda sigma = "<<p_sigma<<"\n";
     myfile << "Lambda acceptance rate = "<<std::setprecision(5)<<acc_rate<<"\n";

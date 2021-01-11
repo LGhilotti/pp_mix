@@ -1,7 +1,7 @@
 #ifndef CONDITIONAL_MCMC_IMP_HPP
 #define CONDITIONAL_MCMC_IMP_HPP
 
-
+namespace Test {
 template <class Prec, typename prec_t, typename fact_t>
 ConditionalMCMC<Prec, prec_t, fact_t>::ConditionalMCMC(BaseDeterminantalPP *pp_mix,
                                                   Prec *g,
@@ -29,25 +29,24 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::set_params(const Params & p){
 }
 
 template <class Prec, typename prec_t, typename fact_t>
-void ConditionalMCMC<Prec, prec_t, fact_t>::initialize(
-    const MatrixXd &dat) {
+void ConditionalMCMC<Prec, prec_t, fact_t>::initialize(const MatrixXd& dat) {
 
   std::cout<<"begin initialize MCMC"<<std::endl;
   this->data = dat;
   ndata = data.rows();
   dim_data = data.cols();
-
+/*
   // Initialize Lambda block: tau, psi, phi and Lambda
   tau = 2.0 * dim_data * dim_fact * _a_phi ;
   Phi = 1.0/(dim_data*dim_fact) * MatrixXi::Ones(dim_data,dim_fact) ;
   Psi = 2.0 * MatrixXi::Ones(dim_data,dim_fact);
 
   Lambda = Map<MatrixXd>(normal_rng( std::vector<double>(dim_data*dim_fact, 0.0),
-        std::vector<double>(dim_data*dim_fact, pow(_a_phi,2) ), Rng::Instance().get() ).data() , dim_data,dim_fact );
-  /*
+        std::vector<double>(dim_data*dim_fact, 8.*pow(_a_phi,2) ), Rng::Instance().get() ).data() , dim_data,dim_fact );
+
   // Initialize Sigma_bar
   sigma_bar = _a_gamma/_b_gamma * VectorXd::Ones(dim_data);
-
+*/
   // Initialize etas
   initialize_etas(dat);
 
@@ -82,7 +81,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::initialize(
   }
   // initial u parameter
   u = 1.0;
-*/
+
   // DECOMPOSE DPP (in MultiDpp also assign the pointer to Lambda)
   pp_mix->set_decomposition(&Lambda);
 /*
@@ -139,7 +138,7 @@ bool ConditionalMCMC<Prec, prec_t, fact_t>::is_inside(const VectorXd & eta){
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::run_one() {
 
-/*
+
   sample_u();
 
   // compute laplace transform psi in u
@@ -164,10 +163,10 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::run_one() {
 
   // sample etas
   sample_etas();
-
+/*
   // sample Sigma bar
   sample_sigma_bar();
-*/
+
   // sample Lambda block
   sample_Psi();
   sample_tau();
@@ -175,6 +174,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::run_one() {
   sample_Lambda();
 
   // print_debug_string();
+  */
   return;
 }
 
@@ -559,5 +559,5 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::print_debug_string() {
 
 }
 
-
+};
 #endif

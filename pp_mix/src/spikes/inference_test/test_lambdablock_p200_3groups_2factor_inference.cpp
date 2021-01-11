@@ -45,46 +45,52 @@ MatrixXd generate_data(const MatrixXd& lambda, const MatrixXd& etas, const Vecto
 
 int main() {
 
-    // we consider p=4, d=2
-    // we fix Lambda, M=2 (2 groups), mu1,mu2, Delta1, Delta2, cluster labels, Sigmabar
+    // we consider p=200, d=4
+    // we fix Lambda, M=3 (3 groups), mu1,mu2,mu3, Delta1, Delta2,Delta3, cluster labels, Sigmabar
     // and simulate etas and data.
-    const int p = 4;
+    const int p = 200;
     const int d = 2;
-    MatrixXd Lambda(p,d);
-    Lambda << 0, 1,
-              1, 0,
-              -1, 0,
-              0, -1;
+    MatrixXd Lambda = MatrixXd::Zero(p,d);
+    Lambda.block(0,0,100,1) = VectorXd::Ones(100);
+    Lambda.block(100,1,100,1) = VectorXd::Ones(100);
 
-    const int M = 2;
-    VectorXd mu_0(d), mu_1(d);
-    mu_0 << 10. , 0.;
-    mu_1 << 0. , 10.;
-    MatrixXd Mus(2,2);
+    std::cout<<"Lambda true: \n"<<Lambda<<std::endl;
+
+    const int M = 3;
+    VectorXd mu_0(d), mu_1(d), mu_2(d);
+    mu_0 << 10. , 10. ;
+    mu_1 << 0. , 10. ;
+    mu_2 << -10. , -20. ;
+    MatrixXd Mus(M,d);
     Mus.row(0)=mu_0;
     Mus.row(1)=mu_1;
+    Mus.row(2)=mu_2;
 
-    MatrixXd Delta_0(d,d), Delta_1(d,d);
-    Delta_0 = MatrixXd::Identity(d,d);
-    Delta_1 = MatrixXd::Identity(d,d);
-    std::vector<MatrixXd> Deltas{Delta_0,Delta_1};
+    MatrixXd Delta_0(d,d), Delta_1(d,d), Delta_2(d,d);
+    Delta_0 = MatrixXd::Identity(d,d)*30;
+    Delta_1 = MatrixXd::Identity(d,d)*30;
+    Delta_2 = MatrixXd::Identity(d,d)*30;
+    std::vector<MatrixXd> Deltas{Delta_0,Delta_1,Delta_2};
 
-    VectorXd sigma_bar (VectorXd::Constant(p, 2.0));
+    VectorXd sigma_bar (VectorXd::Constant(p, 100.0));
 
-    // we will consider 100 observations, first 50 from group 0, last 50 from group 1.
-    VectorXi cluster_alloc(100);
-    cluster_alloc.head(50) = VectorXi::Zero(50);
-    cluster_alloc.tail(50) = VectorXi::Ones(50);
+    // we will consider 120 observations, first 40 from group 0, then 40 from group 1, last 40 from group 2.
+    VectorXi cluster_alloc(120);
+    cluster_alloc.head(40) = VectorXi::Zero(40);
+    cluster_alloc.segment(40,40) = VectorXi::Ones(40);
+    cluster_alloc.tail(40) = VectorXi::Constant(40, 2);
+
+    std::cout<<"cluster alloc: \n"<<cluster_alloc<<std::endl;
 
     MatrixXd Etas = generate_etas(Mus, Deltas, cluster_alloc);
 
     MatrixXd data = generate_data(Lambda, Etas, sigma_bar);
 
-    std::cout<<"data: "<<data<<std::endl;
+    std::cout<<"dimension data: "<<data.rows()<<" x "<<data.cols()<<std::endl;
 
-    Eigen::MatrixXd ranges(2, 2);
-    ranges.row(0) = RowVectorXd::Constant(2, -50);
-    ranges.row(1) = RowVectorXd::Constant(2, 50);
+    Eigen::MatrixXd ranges(2, d);
+    ranges.row(0) = RowVectorXd::Constant(d, -50);
+    ranges.row(1) = RowVectorXd::Constant(d, 50);
 
     std::string params_file = \
       "/home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/resources/sampler_params.asciipb";
@@ -93,7 +99,7 @@ int main() {
     std::cout<<"params.a (Dir) = "<<params.a()<<std::endl;
 
     double prop_m_sigma = 1; // Useless in this test
-    std::vector<double> prop_sigmas{0.01,0.1,1,10};
+    std::vector<double> prop_sigmas{0.001,0.01,0.1,1};
     int log_every = 1000;
     int niter = 50000;
     ofstream myfile;
@@ -108,19 +114,23 @@ int main() {
 
     MultivariateConditionalMCMC sampler(pp_mix, g, params, Mus, sigma_bar, Etas, p_sigma , prop_m_sigma);
 
-    myfile.open("./src/spikes/inference_test/test_LambdaBlock_p5_inf.txt", ios::app);
+    myfile.open("./src/spikes/inference_test/test_LambdaBlock_p200_3groups_2factor_inf.txt", ios::app);
     myfile <<"LambdaBlock hyperparameter: a (dir) = "<<params.a()<<"\n";
     myfile << "Proposal Lambda sigma = "<<p_sigma<<"\n";
 
     sampler.initialize(data);
 
-    myfile <<"Initialization: \n"<<sampler.Lambda<<"\n";
+    myfile << "Initialization: \n"<<sampler.Lambda<<"\n";
+    myfile << "mean first 100 rows: "<<sampler.Lambda.topRows(100).colwise().mean()<<"\n";
+    myfile << "mean second 100 rows: "<<sampler.Lambda.bottomRows(100).colwise().mean()<<"\n";
+
     /*
     std::cout<<"Initialized Lambda: "<<std::endl;
     std::cout<<sampler.Lambda<<std::endl;
     */
     // assume burnin = niter
     for (int i = 0; i < niter; i++) {
+      std::cout<<"begin iter"<<std::endl;
       sampler.run_one();
       /*
       if (i==0) {
@@ -148,10 +158,19 @@ int main() {
 
     std::cout<<"average_Lambda= "<<average_Lambda<<std::endl;
 
+
     myfile << "Lambda acceptance rate = "<<std::setprecision(5)<<acc_rate<<"\n";
     myfile << "Accepted sampled Lambda = "<<sampler.acc_sampled_Lambda<<"\n";
     myfile << "Average Lambda after "<<niter<<" iterations: \n";
     myfile << average_Lambda << "\n";
+    myfile << "final mean first 100 rows: "<<sampler.Lambda.topRows(100).colwise().mean()<<"\n";
+    myfile << "final mean second 100 rows: "<<sampler.Lambda.bottomRows(100).colwise().mean()<<"\n";
+
+    MatrixXd sim_data = generate_data(average_Lambda,Etas,sigma_bar);
+    myfile << "generated data with average lambda: \n";
+    myfile << "means of the first 100 components: \n"<<sim_data.block(0,0,120,100).rowwise().mean()<<"\n";
+    myfile << "means of the second 100 components: \n"<<sim_data.block(0,100,120,100).rowwise().mean()<<"\n";
+
     myfile.close();
 
     }
