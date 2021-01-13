@@ -47,16 +47,6 @@ class ConditionalMCMC {
      // Rep-pp
      double u;
 
-     //Sigma_bar
-     VectorXd sigma_bar;
-
-
-     //Lambda-block
-     double tau;
-     MatrixXd Phi;
-     MatrixXd Psi;
-     MatrixXd Lambda;
-
      // DISTRIBUTIONS
      BaseDeterminantalPP *pp_mix;
      Prec *g;
@@ -75,8 +65,15 @@ class ConditionalMCMC {
      double prop_means_sigma, prop_lambda_sigma;
 
  public:
+   //Sigma_bar
+   VectorXd sigma_bar;
+   //Lambda-block
+   double tau;
+   MatrixXd Phi;
+   MatrixXd Psi;
+   MatrixXd Lambda;
    // etas: n x d matrix
-   MatrixXd etas;
+  MatrixXd etas;
    // for each allocated cluster, it contains the vector of indexes of observations:
    // both useful for data and etas.
    std::vector<std::vector<int>> obs_by_clus;
@@ -114,7 +111,7 @@ class ConditionalMCMC {
     virtual void initialize_allocated_means() = 0;
 
     std::vector<VectorXd> proj_inside();
-    bool is_inside(const VectorXd & eta);
+    bool is_inside(const VectorXd & point);
 
     // it performs the whole step of updatings
     void run_one();
@@ -204,9 +201,10 @@ public:
     MultivariateConditionalMCMC() {}
 
     MultivariateConditionalMCMC(BaseDeterminantalPP *pp_mix, BasePrec *g,
-                                const Params &params, const MatrixXd& lambda,
-                                const VectorXd& SigBar,
-                                double p_m_sigma);
+                                const Params &params, //const MatrixXd& lambda,
+                                //const VectorXd& SigBar,
+                                //const MatrixXd& Etas,
+                                double p_m_sigma, double p_l_sigma);
 
     // initializes the etas, projecting the data onto Col(Lambda):
     // it is for both uni/multi factor cases, but implemented differently because of the least square systems.

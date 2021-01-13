@@ -2,18 +2,21 @@
 #include <deque>
 #include <string>
 #include <memory>
+#include <iostream>
 #include <fstream>
-#include <iomanip>
+#include <vector>
 #include <stan/math/prim.hpp>
 
-#include "../../conditional_mcmc.hpp"
+#include "../../tmp_conditional_mcmc.hpp"
 #include "../../factory.hpp"
 #include "../../precs/delta_gamma.hpp"
 #include "../../precs/delta_wishart.hpp"
-#include "../../../protos/cpp/params.pb.h"
 #include "../../point_process/multi_factor_dpp.hpp"
 #include "../../point_process/uni_factor_dpp.hpp"
+
 using namespace Eigen;
+using namespace stan::math;
+
 
 MatrixXd generate_etas(const MatrixXd& mus, const std::vector<MatrixXd>& deltas,
                         const VectorXi& c_alloc) {
@@ -42,7 +45,6 @@ MatrixXd generate_data(const MatrixXd& lambda, const MatrixXd& etas, const Vecto
 }
 
 
-
 int main() {
 
     // we consider p=4, d=2
@@ -58,8 +60,8 @@ int main() {
 
     const int M = 2;
     VectorXd mu_0(d), mu_1(d);
-    mu_0 << 10. , -5. ;
-    mu_1 << -10. , 5. ;
+    mu_0 << 10. , 0.;
+    mu_1 << 0. , 10.;
     MatrixXd Mus(2,2);
     Mus.row(0)=mu_0;
     Mus.row(1)=mu_1;
@@ -78,9 +80,10 @@ int main() {
 
     MatrixXd Etas = generate_etas(Mus, Deltas, cluster_alloc);
 
+    // DATA DO NOT INFLUENCE THIS TEST, NOT IN THE POSTERIOR OF REP-PP BLOCK
+
     MatrixXd data = generate_data(Lambda, Etas, sigma_bar);
 
-    std::cout<<"data: "<<data<<std::endl;
 
     Eigen::MatrixXd ranges(2, 2);
     ranges.row(0) = RowVectorXd::Constant(2, -50);
@@ -89,74 +92,81 @@ int main() {
     std::string params_file = \
       "/home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/resources/sampler_params.asciipb";
     Params params = loadTextProto<Params>(params_file);
-    // just a (dir param) and proposal for Lambda in MH step count, besides pp_mix params
-    std::cout<<"params.a (Dir) = "<<params.a()<<std::endl;
+    // NOTE: We use dpp, wishart, jump params
 
-    double prop_m_sigma = 1; // Useless in this test
-    std::vector<double> prop_sigmas{0.01,0.1,1,10};
-    int log_every = 1000;
-    int niter = 50000;
-    ofstream myfile;
+    double prop_m_sigma = 1;
 
-    // Only Lambda block is free; others are passed fixed.
-    // Also pass parameters of proposal for tuning (no more in params.proto for testing)
-    // pp_mix and g are passed even if not used because the quantities are fixed.
-    for (auto p_sigma : prop_sigmas){
+    // I want to make the program estimate this quantity
+    /*
+    std::vector<std::vector<int>> obs_by_clus(2);
+    obs_by_clus[0].resize(50);
+    obs_by_clus[1].resize(50);
+    std::iota(std::begin(obs_by_clus[0]), std::end(obs_by_clus[0]), 0);
+    std::iota(std::begin(obs_by_clus[1]), std::end(obs_by_clus[1]), 50);
+    */
+
     BaseDeterminantalPP *pp_mix = make_dpp(params, ranges);
 
     BasePrec *g = make_delta(params);
 
-    MultivariateConditionalMCMC sampler(pp_mix, g, params, Mus, sigma_bar, Etas, p_sigma , prop_m_sigma);
+    Test::MultivariateConditionalMCMC sampler(pp_mix, g, params, Lambda, sigma_bar, Etas, prop_m_sigma);
 
-    myfile.open("./src/spikes/inference_test/test_LambdaBlock_p5_2groups_zeromean_inf.txt", ios::app);
-    myfile <<"LambdaBlock hyperparameter: a (dir) = "<<params.a()<<"\n";
-    myfile << "Proposal Lambda sigma = "<<p_sigma<<"\n";
+    std::ofstream myfile;
+    myfile.open("./src/spikes/inference_test/test_repblock_p4_inf.txt", std::ios::app);
+    myfile <<"Original parameters: \n"<<"number of clusters: "<<M<<"\n";
+    myfile <<"allocated means: \n"<<Mus<<"\n";
+    myfile <<"allocated deltas: \n"<<Deltas[0]<<"\n"<<Deltas[1]<<"\n";
+    myfile <<"cluster allocations: \n"<<cluster_alloc<<"\n";
 
     sampler.initialize(data);
 
-    myfile <<"Initialization: \n"<<sampler.Lambda<<"\n";
-    /*
-    std::cout<<"Initialized Lambda: "<<std::endl;
-    std::cout<<sampler.Lambda<<std::endl;
-    */
+    myfile << "Initialization! Parameters: \n"<<"number of clusters: "<<sampler.a_means.rows()<<"\n";
+    myfile <<"Initial allocated means: \n"<<sampler.a_means<<"\n";
+    myfile <<"Initial allocated deltas: \n";
+    for (int i = 0; i < sampler.a_means.rows(); i++){
+      myfile <<sampler.a_deltas[i]<<"\n";
+    }
+    myfile <<"Initial cluster allocations: \n"<<sampler.clus_alloc<<"\n";
+
+
+    std::cout<<"Initialization ALL GOOD!"<<std::endl;
+
+
     // assume burnin = niter
+    int log_every = 50;
+    int niter = 1000;
     for (int i = 0; i < niter; i++) {
       sampler.run_one();
-      /*
-      if (i==0) {
-        std::cout<<"first Lambda: "<<std::endl;
-        std::cout<<sampler.Lambda<<std::endl;
-      }
-      */
       if ((i + 1) % log_every == 0) {
         std::cout<<"Burnin, iter #"<< i + 1<< " / "<< niter<<std::endl;
       }
     }
 
-    MatrixXd average_Lambda = MatrixXd::Zero(p,d);
+    double average_nclus = 0.;
 
     for (int i = 0; i < niter; i++) {
         sampler.run_one();
-        average_Lambda += sampler.Lambda;
+        average_nclus += sampler.a_means.rows();
         if (i % 1000 == 0){
-             std::cout<<"Lambda = "<<sampler.Lambda<<std::endl;
+             std::cout<<"a_means = "<<sampler.a_means<<std::endl;
              std::cout << "iter: " << i << " / " << niter << std::endl;
         }
     }
-    average_Lambda /= niter;
-    double acc_rate = sampler.Lambda_acceptance_rate();
+    average_nclus /= niter;
 
-    std::cout<<"average_Lambda= "<<average_Lambda<<std::endl;
+    std::cout<<"average_nclus= "<<average_nclus<<std::endl;
 
-    myfile << "Lambda acceptance rate = "<<std::setprecision(5)<<acc_rate<<"\n";
-    myfile << "Accepted sampled Lambda = "<<sampler.acc_sampled_Lambda<<"\n";
-    myfile << "Average Lambda after "<<niter<<" iterations: \n";
-    myfile << average_Lambda << "\n";
-    myfile.close();
-
+    myfile << "#### Acceptance rate: "<<sampler.a_means_acceptance_rate()<<"\n";
+    myfile << "Average nclus after "<<niter<<" iterations: \n";
+    myfile << average_nclus << "\n";
+    myfile << "Final iteration parameters: \n"<<"number of clusters: "<<sampler.a_means.rows()<<"\n";
+    myfile <<"allocated means: \n"<<sampler.a_means<<"\n";
+    myfile <<"allocated deltas: \n";
+    for (int i = 0; i < sampler.a_means.rows(); i++){
+      myfile <<sampler.a_deltas[i]<<"\n";
     }
-
-
+    myfile <<"cluster allocations: \n"<<sampler.clus_alloc<<"\n";
+    myfile.close();
 
     return 0;
 }

@@ -469,7 +469,6 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_sigma_bar() {
 
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::sample_Psi() {
-  std::cout<<"sample Psi"<<std::endl;
   // make it parallel omp
   for (int j=0; j< dim_data; j++)
     for(int h=0; h< dim_fact; h++)
@@ -481,7 +480,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_Psi() {
 
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::sample_tau() {
-  std::cout<<"sample tau"<<std::endl;
+  //std::cout<<"sample tau"<<std::endl;
   tau = GIG::rgig(dim_data*dim_fact*(_a_phi-1), 2*(Lambda.array().abs()/Phi.array()).sum() , 1);
   return;
 }
@@ -489,7 +488,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_tau() {
 
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::sample_Phi() {
-  std::cout<<"sample Phi"<<std::endl;
+//  std::cout<<"sample Phi"<<std::endl;
   for (int j=0; j < dim_data; j++)
     for (int h=0; h < dim_fact; h++)
       Phi(j,h)=GIG::rgig( _a_phi-1 , 2.0*std::abs(Lambda(j,h)), 1);

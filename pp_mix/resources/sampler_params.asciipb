@@ -1,5 +1,5 @@
 dpp {
-  c: 10
+  c: 20
   n: 30
   s: 0.8
 }
@@ -15,10 +15,10 @@ dimf: 2
 
 a: 1.0
 
-alphajump: 6.0
+alphajump: 2.0
 
 betajump: 3.0
 
-agamma: 2
+agamma: 60.
 
-bgamma: 2
+bgamma: 30.

@@ -58,7 +58,7 @@ void MultivariateConditionalMCMC::initialize_allocated_means() {
 
 void MultivariateConditionalMCMC::sample_etas() {
 
-    std::cout<<"sample etas"<<std::endl;
+    //std::cout<<"sample etas"<<std::endl;
     MatrixXd M0(Lambda.transpose() * sigma_bar.asDiagonal());
     MatrixXd M1( M0 * Lambda);
     std::vector<MatrixXd> Sn_bar(a_means.rows());

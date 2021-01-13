@@ -6,17 +6,20 @@ namespace Test {
 MultivariateConditionalMCMC::MultivariateConditionalMCMC(BaseDeterminantalPP *pp_mix,
                                                          BasePrec *g,
                                                          const Params &params,
-                                                         const MatrixXd& lambda,
-                                                         const VectorXd& SigBar,
-                                                         double p_m_sigma)
+                                                        // const MatrixXd& lambda,
+                                                         //const VectorXd& SigBar,
+                                                         //const MatrixXd& Etas,
+                                                         double p_m_sigma, double p_l_sigma)
     : ConditionalMCMC<BaseMultiPrec, PrecMat, VectorXd>() {
   std::cout<<"begin multiMCMC constructor"<<std::endl;
   set_pp_mix(pp_mix);
   set_prec(dynamic_cast<BaseMultiPrec *>(g));
   set_params(params);
-  Lambda = lambda;
-  sigma_bar = SigBar;
+  //Lambda = lambda;
+//  sigma_bar = SigBar;
+//  etas = Etas;
   prop_means_sigma = p_m_sigma;
+  prop_lambda_sigma = p_l_sigma;
 
 
 }
@@ -87,13 +90,13 @@ void MultivariateConditionalMCMC::sample_etas() {
 
 
 void MultivariateConditionalMCMC::sample_Lambda() {
-  std::cout<<"sample Lambda"<<std::endl;
+  //std::cout<<"sample Lambda"<<std::endl;
   // Current Lambda (here are the means) are expanded to vector<double> column major
   MatrixXd prop_lambda = Map<MatrixXd>(normal_rng( std::vector<double>(Lambda.data(), Lambda.data() + Lambda.size()) ,
               std::vector<double>(dim_data*dim_fact, prop_lambda_sigma), Rng::Instance().get()).data() , dim_data, dim_fact);
   // DEBUG
-  //std::cout<<"Proposal Lambda: \n"<<prop_lambda<<std::endl;
-  std::cout<<"Proposed Lambda"<<std::endl;
+  std::cout<<"Proposal Lambda: \n"<<prop_lambda<<std::endl;
+//  std::cout<<"Proposed Lambda"<<std::endl;
 
   tot_sampled_Lambda += 1;
   // we use log for each term
@@ -118,7 +121,7 @@ void MultivariateConditionalMCMC::sample_Lambda() {
   curr_prior_lambda = compute_exp_prior(Lambda);
   prop_prior_lambda = compute_exp_prior(prop_lambda);
   // DEBUG
-  std::cout<<"curr_prior_lambda = "<<curr_prior_lambda<<" ; prop_prior_lambda = "<<prop_prior_lambda<<std::endl;
+ std::cout<<"curr_prior_lambda = "<<curr_prior_lambda<<" ; prop_prior_lambda = "<<prop_prior_lambda<<std::endl;
 
   double curr_dens, prop_dens, log_ratio;
   curr_dens = curr_lik + curr_prior_cond_process + curr_prior_lambda;
@@ -135,7 +138,7 @@ void MultivariateConditionalMCMC::sample_Lambda() {
     acc_sampled_Lambda += 1;
     Lambda.swap(prop_lambda);
     pp_mix->update_decomposition_from_proposal();
-
+    std::cout<<"accepted Lambda"<<std::endl;
   }
 
   return;

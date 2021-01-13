@@ -35,25 +35,25 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::initialize(const MatrixXd& dat) {
   this->data = dat;
   ndata = data.rows();
   dim_data = data.cols();
-/*
+
   // Initialize Lambda block: tau, psi, phi and Lambda
   tau = 2.0 * dim_data * dim_fact * _a_phi ;
   Phi = 1.0/(dim_data*dim_fact) * MatrixXi::Ones(dim_data,dim_fact) ;
   Psi = 2.0 * MatrixXi::Ones(dim_data,dim_fact);
 
   Lambda = Map<MatrixXd>(normal_rng( std::vector<double>(dim_data*dim_fact, 0.0),
-        std::vector<double>(dim_data*dim_fact, 8.*pow(_a_phi,2) ), Rng::Instance().get() ).data() , dim_data,dim_fact );
+        std::vector<double>(dim_data*dim_fact, pow(_a_phi,2) ), Rng::Instance().get() ).data() , dim_data,dim_fact );
 
   // Initialize Sigma_bar
   sigma_bar = _a_gamma/_b_gamma * VectorXd::Ones(dim_data);
-*/
+
   // Initialize etas
   initialize_etas(dat);
 
   // REP-PP BLOCK
   // Initialize the allocated means
   initialize_allocated_means();
-  std::cout << "a_means: \n" << a_means.transpose() << std::endl;
+  //std::cout << "a_means: \n" << a_means.transpose() << std::endl;
 
   double nclus = a_means.rows();
   // Initialize cluster allocations
@@ -123,11 +123,11 @@ std::vector<VectorXd> ConditionalMCMC<Prec, prec_t, fact_t>::proj_inside() {
 }
 
 template <class Prec, typename prec_t, typename fact_t>
-bool ConditionalMCMC<Prec, prec_t, fact_t>::is_inside(const VectorXd & eta){
+bool ConditionalMCMC<Prec, prec_t, fact_t>::is_inside(const VectorXd & point){
   MatrixXd ran = pp_mix->get_ranges();
   bool is_in = true;
   for (int i=0;i<dim_fact&& is_in==true;i++){
-    if (eta(i)<ran(0,i) || eta(i)>ran(1,i)){
+    if (point(i)<ran(0,i) || point(i)>ran(1,i)){
       is_in = false;
     }
   }
@@ -138,32 +138,43 @@ bool ConditionalMCMC<Prec, prec_t, fact_t>::is_inside(const VectorXd & eta){
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::run_one() {
 
-
+  //std::cout<<"sample u"<<std::endl;
   sample_u();
+
+//  std::cout<<"compute psi"<<std::endl;
 
   // compute laplace transform psi in u
   double psi_u = laplace(u);
 
+//  std::cout<<"sample alloca and relabel"<<std::endl;
+
   // sample c | rest and reorganize the all and nall parameters, and c as well
   sample_allocations_and_relabel();
 
+//std::cout<<"sample means na"<<std::endl;
+
   // sample non-allocated variables
   sample_means_na(psi_u);
+  //std::cout<<"sample jumps na"<<std::endl;
 
   sample_jumps_na();
+//  std::cout<<"sample deltsa na"<<std::endl;
 
   sample_deltas_na();
+//  std::cout<<"sample means a"<<std::endl;
 
   // sample allocated variables
   sample_means_a();
+  //std::cout<<"sample deltas a"<<std::endl;
 
   sample_deltas_a();
+//  std::cout<<"sample jumps a"<<std::endl;
 
   sample_jumps_a();
 
   // sample etas
   sample_etas();
-/*
+
   // sample Sigma bar
   sample_sigma_bar();
 
@@ -174,7 +185,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::run_one() {
   sample_Lambda();
 
   // print_debug_string();
-  */
+
   return;
 }
 
@@ -232,23 +243,26 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_means_a()
     VectorXd prop =
         stan::math::multi_normal_rng(currmean, cov_prop, Rng::Instance().get());
 
-    currlik = lpdf_given_clus_multi(etas_by_clus[i], currmean, a_deltas[i]);
-    proplik = lpdf_given_clus_multi(etas_by_clus[i], prop, a_deltas[i]);
+    if (is_inside(prop)){ // if not, just keep the current mean and go to the next a_mean
+        currlik = lpdf_given_clus_multi(etas_by_clus[i], currmean, a_deltas[i]);
+        proplik = lpdf_given_clus_multi(etas_by_clus[i], prop, a_deltas[i]);
 
-    lik_ratio = proplik - currlik;
-    others = delete_row(allmeans, i);
+        lik_ratio = proplik - currlik;
+        others = delete_row(allmeans, i);
 
-    prior_ratio =
-        pp_mix->papangelou(prop, others) - pp_mix->papangelou(currmean, others);
+        prior_ratio =
+            pp_mix->papangelou(prop, others) - pp_mix->papangelou(currmean, others);
 
-    arate = lik_ratio + prior_ratio;
+        arate = lik_ratio + prior_ratio;
 
-    bool accepted = false;
-    if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < arate) {
-      accepted = true; // for printing in verbose mode
-      a_means.row(i) = prop.transpose();
-      acc_sampled_a_means += 1;
+        bool accepted = false;
+        if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < arate) {
+          accepted = true; // for printing in verbose mode
+          a_means.row(i) = prop.transpose();
+          acc_sampled_a_means += 1;
+        }
     }
+
     /*
     if (verbose) {
       std::cout << "Component: " << i << std::endl;
@@ -469,7 +483,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_sigma_bar() {
 
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::sample_Psi() {
-  std::cout<<"sample Psi"<<std::endl;
+//  std::cout<<"sample Psi"<<std::endl;
   // make it parallel omp
   for (int j=0; j< dim_data; j++)
     for(int h=0; h< dim_fact; h++)
@@ -481,7 +495,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_Psi() {
 
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::sample_tau() {
-  std::cout<<"sample tau"<<std::endl;
+  //std::cout<<"sample tau"<<std::endl;
   tau = GIG::rgig(dim_data*dim_fact*(_a_phi-1), 2*(Lambda.array().abs()/Phi.array()).sum() , 1);
   return;
 }
@@ -489,7 +503,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_tau() {
 
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::sample_Phi() {
-  std::cout<<"sample Phi"<<std::endl;
+//  std::cout<<"sample Phi"<<std::endl;
   for (int j=0; j < dim_data; j++)
     for (int h=0; h < dim_fact; h++)
       Phi(j,h)=GIG::rgig( _a_phi-1 , 2.0*std::abs(Lambda(j,h)), 1);
