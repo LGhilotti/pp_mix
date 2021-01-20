@@ -17,8 +17,8 @@ CFLAGS = \
 	-D_REENTRANT -fPIC \
 	-O3 -march=native -msse2 -funroll-loops -ftree-vectorize -fopenmp -Wfatal-errors
 LDLIBS = \
- 	$(shell pkg-config --libs protobuf) -L$(STAN_ROOT_DIR)/lib/tbb -ltbb \
-	-lgsl -lgslcblas -lpthread -Wl,-rpath,"$(STAN_ROOT_DIR)/lib/tbb"
+ 	$(shell pkg-config --libs protobuf) -L$(STAN_ROOT_DIR)/lib/tbb \
+	-lgsl -lgslcblas -lpthread -ltbb -Wl,-rpath,"$(STAN_ROOT_DIR)/lib/tbb"
 LDFLAGS = -D_REENTRANT -O3 -fopenmp
 
 PROTO_SRCS = $(wildcard $(PROTO_DIR)/cpp/*.cpp)
