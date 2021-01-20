@@ -178,7 +178,7 @@ void BaseDeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const M
   if (std::log(rsecond) < birth_prob) {
     // BIRTH MOVE
     VectorXd xi = phi_star_rng();
-    //std::cout<<"birth"<<std::endl;
+    //std::cout<<"Birth"<<std::endl;
     // compute prob of acceptance of the new birth
     MatrixXd aux(active.rows() + npoints, dim);
   //  std::cout<<"defined aux"<<std::endl;
@@ -193,15 +193,15 @@ void BaseDeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const M
 
     double rthird = uniform_rng(0, 1, Rng::Instance().get());
     if (std::log(rthird) < birth_arate) {
-    //  std::cout<<"entered"<<std::endl;
+      //std::cout<<"Accepted birth"<<std::endl;
       non_active->conservativeResize(npoints + 1, dim);
-    //  std::cout<<"done conservative"<<std::endl;
       non_active->row(npoints) = xi;
     }
+    //else std::cout<<"Rejected birth"<<std::endl;
   } else {
     // Death Move
     if (npoints == 0) return;
-    //std::cout<<"death"<<std::endl;
+    //std::cout<<"Death"<<std::endl;
     VectorXd probas = VectorXd::Ones(npoints) / npoints;
     int ind = categorical_rng(probas, Rng::Instance().get()) - 1;
 

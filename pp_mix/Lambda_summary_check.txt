@@ -22,12 +22,7 @@ sigma_bar = VectorXd::Constant(p, 100.0);
 
 // we will consider 120 observations, first 40 from group 0, then 40 from group 1, last 40 from group 2.
 
-#### (1)
-LambdaBlock hyperparameter: a (dir) = 1
-
-# Proposal Lambda sigma = 0.001
-
-Initialization:
+Typical Initialization:
     1.71192    -2.62508
     1.35453     1.44389
    0.047984   -0.231999
@@ -230,6 +225,11 @@ Initialization:
    0.336811    0.184268
 mean first 100 rows:   0.246812 -0.0325564
 mean second 100 rows: -0.0233784   -0.07657
+
+#### (1)
+LambdaBlock hyperparameter: a (dir) = 1
+
+# Proposal Lambda sigma = 0.001
 
 # Lambda acceptance rate = 0.40503
 

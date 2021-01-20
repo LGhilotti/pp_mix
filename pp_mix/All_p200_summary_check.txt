@@ -55,8 +55,10 @@ Proposal means sigma: 0.0001
 Proposal lambda sigma: 0.001
 #### Means Acceptance rate: 0.793074
 #### Lambda Acceptance rate: 0.53514
+
 Average nclus after 50000 iterations:
-1.00014
+1.00014  // Bad!
+
 Average sigma bar:
    1.60468
     1.7572
@@ -108,38 +110,44 @@ Proposal means sigma: 0.0001
 Proposal lambda sigma: 0.01
 #### Means Acceptance rate: 0.785706
 #### Lambda Acceptance rate: 0.17139
+
 Average nclus after 50000 iterations:
-1.00002
+1.00002 // Bad!
 
 ##### (3)
 Proposal means sigma: 0.001
 Proposal lambda sigma: 0.001
 #### Means Acceptance rate: 0.47913
 #### Lambda Acceptance rate: 0.54426
-Average nclus after 50000 iterations:
-1.00002
 
-##### (4)
+Average nclus after 50000 iterations:
+1.00002 // Bad!
+
+##### (4) // increasing sigmas
 Proposal means sigma: 0.001
 Proposal lambda sigma: 0.01
 #### Means Acceptance rate: 0.625401
 #### Lambda Acceptance rate: 0.16676
+
 Average nclus after 50000 iterations:
-1.66692
+1.66692 // Better..
 
 Final iteration parameters:
 number of clusters: 2
 
-// inizia a migliorare verso nclus=3 (last iter accorpa due cluster)
-// magari colpa della cattiva esplorazione della catena?
-
-##### (5)
+##### (5) // Still increasing sigmas
 Proposal means sigma: 0.01
 Proposal lambda sigma: 0.01
 #### Means Acceptance rate: 0.418323
 #### Lambda Acceptance rate: 0.12282
+
 Average nclus after 50000 iterations:
 1.9746 // The best I got
 
 Final iteration parameters:
 number of clusters: 2
+
+
+// inizia a migliorare verso nclus=3 (l'ultima iterazione accorpa due cluster in uno solo)
+// Gli acceptance rates non sono bassi, però può essere che non stiamo esplorando bene
+// la distribuzione di Lambda e quindi non convergiamo alla posterior (dopo 50000 iterazioni) ?

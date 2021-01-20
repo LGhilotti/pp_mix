@@ -1,5 +1,5 @@
-#ifndef CONDITIONAL_MCMC_IMP_HPP
-#define CONDITIONAL_MCMC_IMP_HPP
+#ifndef TMP_CONDITIONAL_MCMC_IMP_HPP
+#define TMP_CONDITIONAL_MCMC_IMP_HPP
 
 namespace Test {
 template <class Prec, typename prec_t, typename fact_t>
@@ -60,7 +60,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::initialize(const MatrixXd& dat) {
   clus_alloc.resize(ndata);
 
   // initial vector s(a) has identical element and sums to nclus/(nclus+1)
-  a_jumps = VectorXd::Ones(nclus) / (nclus + 1);
+  a_jumps = VectorXd::Ones(nclus) / (nclus); // nclus+1 if consider 1 non allocated comp
 
   // initial vector Delta(a) is equal to the mean (scalar or matrix)
   a_deltas.resize(nclus);
@@ -70,15 +70,16 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::initialize(const MatrixXd& dat) {
   }
 
   // initial mu(na) is just one, uniformly selected in ranges
-  na_means = pp_mix->sample_uniform(1);
+  //na_means = pp_mix->sample_uniform(1);
+  na_means.resize(0,dim_fact);
   // initial s(na) (just one value) is 1/(nclus + 1) -> this way the full s vector sums to 1!
-  na_jumps = VectorXd::Ones(na_means.rows()) / (nclus + na_means.rows());
-
+  //na_jumps = VectorXd::Ones(na_means.rows()) / (nclus + na_means.rows());
+  na_jumps.resize(0);
   // initial Delta(na) (just one scalar or matrix) is the mean
   na_deltas.resize(na_means.rows());
-  for (int i = 0; i < na_means.rows(); i++) {
+  /*for (int i = 0; i < na_means.rows(); i++) {
     na_deltas[i] = g->mean();
-  }
+  }*/
   // initial u parameter
   u = 1.0;
 
@@ -189,6 +190,63 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::run_one() {
   return;
 }
 
+
+template <class Prec, typename prec_t, typename fact_t>
+void ConditionalMCMC<Prec, prec_t, fact_t>::run_one_trick() {
+
+  //std::cout<<"sample u"<<std::endl;
+  sample_u();
+
+//  std::cout<<"compute psi"<<std::endl;
+
+  // compute laplace transform psi in u
+  //double psi_u = laplace(u);
+
+//  std::cout<<"sample alloca and relabel"<<std::endl;
+
+  // sample c | rest and reorganize the all and nall parameters, and c as well
+  sample_allocations_and_relabel();
+
+//std::cout<<"sample means na"<<std::endl;
+
+  // sample non-allocated variables
+  //sample_means_na(psi_u);
+  sample_means_na_trick();
+  //std::cout<<"sample jumps na"<<std::endl;
+
+  sample_jumps_na();
+//  std::cout<<"sample deltsa na"<<std::endl;
+
+  sample_deltas_na();
+//  std::cout<<"sample means a"<<std::endl;
+
+  // sample allocated variables
+  sample_means_a();
+  //std::cout<<"sample deltas a"<<std::endl;
+
+  sample_deltas_a();
+//  std::cout<<"sample jumps a"<<std::endl;
+
+  sample_jumps_a();
+
+  // sample etas
+  sample_etas();
+
+  // sample Sigma bar
+  sample_sigma_bar();
+
+  // sample Lambda block
+  sample_Psi();
+  sample_tau();
+  sample_Phi();
+  sample_Lambda();
+
+  // print_debug_string();
+
+  return;
+}
+
+
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::sample_jumps_na()
 {
@@ -223,6 +281,42 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_means_na(double psi_u)
   }
   return;
 }
+
+
+template <class Prec, typename prec_t, typename fact_t>
+void ConditionalMCMC<Prec, prec_t, fact_t>::sample_means_na_trick()
+{
+  MatrixXd allmeans(na_means.rows() + a_means.rows(), dim_fact);
+  allmeans << na_means, a_means;
+
+  for (int i = 0; i < na_means.rows(); i++) {
+    //tot_sampled_a_means += 1;
+    MatrixXd others(allmeans.rows() - 1, dim_fact);
+
+    double prior_ratio;
+    const VectorXd &currmean = na_means.row(i).transpose();
+    const MatrixXd &cov_prop = MatrixXd::Identity(dim_fact, dim_fact) * prop_means_sigma;
+
+    // we PROPOSE a new point from a multivariate normal, with mean equal to the current point
+    // and covariance matrix diagonal
+    VectorXd prop =
+        stan::math::multi_normal_rng(currmean, cov_prop, Rng::Instance().get());
+
+    if (is_inside(prop)){ // if not, just keep the current mean and go to the next a_mean
+        others = delete_row(allmeans, i);
+
+        prior_ratio =
+            pp_mix->papangelou(prop, others) - pp_mix->papangelou(currmean, others);
+
+        if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < prior_ratio) {
+          na_means.row(i) = prop.transpose();
+          //acc_sampled_a_means += 1;
+        }
+    }
+  }
+  return;
+}
+
 
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::sample_means_a()

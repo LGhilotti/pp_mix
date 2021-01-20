@@ -5,19 +5,19 @@
 MultivariateConditionalMCMC::MultivariateConditionalMCMC(BaseDeterminantalPP *pp_mix,
                                                          BasePrec *g,
                                                          const Params &params,
-                                                         const MatrixXd& mus,
-                                                         const VectorXd& SigBar,
-                                                         const MatrixXd& Etas,
-                                                         double p_l_sigma, double p_m_sigma)
+                                                        // const MatrixXd& mus,
+                                                        // const VectorXd& SigBar,
+                                                        // const MatrixXd& Etas,
+                                                         double p_m_sigma, double p_l_sigma)
     : ConditionalMCMC<BaseMultiPrec, PrecMat, VectorXd>() {
   std::cout<<"begin multiMCMC constructor"<<std::endl;
   set_pp_mix(pp_mix);
   set_prec(dynamic_cast<BaseMultiPrec *>(g));
   set_params(params);
-  a_means = mus;
+  /*a_means = mus;
   na_means = MatrixXd(0,a_means.cols());
   sigma_bar = SigBar;
-  etas = Etas;
+  etas = Etas;*/
   prop_lambda_sigma = p_l_sigma;
   prop_means_sigma = p_m_sigma;
 

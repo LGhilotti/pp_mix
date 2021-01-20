@@ -99,7 +99,7 @@ int main() {
 
     // assume burnin = niter
     int log_every = 1;
-    int niter = 10;
+    int niter = 20;
     std::ofstream myfile;
 /*
     myfile.open("./src/spikes/inference_test/inf_multiple_params/test_all_p4_d2_3g_inf.txt", std::ios::app);

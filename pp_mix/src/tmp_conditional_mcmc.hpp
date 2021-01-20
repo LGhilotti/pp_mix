@@ -1,5 +1,5 @@
-#ifndef CONDITIONAL_MCMC
-#define CONDITIONAL_MCMC
+#ifndef TMP_CONDITIONAL_MCMC
+#define TMP_CONDITIONAL_MCMC
 
 #include <omp.h>
 #include <algorithm>
@@ -115,6 +115,7 @@ class ConditionalMCMC {
 
     // it performs the whole step of updatings
     void run_one();
+    void run_one_trick();
 
     // SAMPLING (UPDATE) METHODS
     // REP-PP BLOCK
@@ -124,6 +125,8 @@ class ConditionalMCMC {
     void sample_jumps_a();
     // sample non-allocated means
     void sample_means_na(double psi_u);
+    //sample non-allocated means with trick, without changing number
+    void sample_means_na_trick();
     // sample allocated means
     void sample_means_a();
     // sample non-allocated deltas

@@ -38,9 +38,6 @@ class ConditionalMCMC {
      double _alpha_jump, _beta_jump; // Gamma jump parameters
      double _a_gamma, _b_gamma; // Sigma_bar parameters
 
-     // for each allocated cluster, it contains the vector of indexes of observations:
-     // both useful for data and etas.
-     std::vector<std::vector<int>> obs_by_clus;
      // NOTE: in each iteration (run_one), when updating etas, this structure is no more correct,
      // since it is not updated. But this structure is no more used in following updates, so
      // it is ok. This will be updated at next iteration in _relabel and used correctly
@@ -49,19 +46,7 @@ class ConditionalMCMC {
      /* STATE */
      // Rep-pp
      double u;
-     VectorXi clus_alloc;
-     VectorXd a_jumps, na_jumps;
-     MatrixXd a_means, na_means;
-     std::vector<prec_t> a_deltas, na_deltas;
-     // etas: n x d matrix
-     MatrixXd etas;
-     //Sigma_bar
-     VectorXd sigma_bar;
 
-     //Lambda-block
-     double tau;
-     MatrixXd Phi;
-     MatrixXd Psi;
 
      // DISTRIBUTIONS
      BaseDeterminantalPP *pp_mix;
@@ -72,6 +57,8 @@ class ConditionalMCMC {
 
      int acc_sampled_a_means = 0;
      int tot_sampled_a_means = 0;
+     int acc_sampled_Lambda = 0;
+     int tot_sampled_Lambda = 0;
 
 
      Params params;
@@ -79,9 +66,23 @@ class ConditionalMCMC {
      double prop_means_sigma, prop_lambda_sigma;
 
  public:
+   VectorXi clus_alloc;
+   VectorXd a_jumps, na_jumps;
+   MatrixXd a_means, na_means;
+   std::vector<prec_t> a_deltas, na_deltas;
+   // etas: n x d matrix
+   MatrixXd etas;
+   //Sigma_bar
+   VectorXd sigma_bar;
+   // for each allocated cluster, it contains the vector of indexes of observations:
+   // both useful for data and etas.
+   std::vector<std::vector<int>> obs_by_clus;
+
+   //Lambda-block
+   double tau;
+   MatrixXd Phi;
+   MatrixXd Psi;
     MatrixXd Lambda;
-    int acc_sampled_Lambda = 0;
-    int tot_sampled_Lambda = 0;
 
      ConditionalMCMC() {}
      ~ConditionalMCMC()
@@ -201,10 +202,10 @@ public:
     MultivariateConditionalMCMC() {}
 
     MultivariateConditionalMCMC(BaseDeterminantalPP *pp_mix, BasePrec *g,
-                                const Params &params,const MatrixXd& mus,
-                                const VectorXd& SigBar,
-                                const MatrixXd& Etas,
-                                double p_l_sigma, double p_m_sigma);
+                                const Params &params,//const MatrixXd& mus,
+                                //const VectorXd& SigBar,
+                                //const MatrixXd& Etas,
+                                double p_m_sigma, double p_l_sigma);
 
     // initializes the etas, projecting the data onto Col(Lambda):
     // it is for both uni/multi factor cases, but implemented differently because of the least square systems.

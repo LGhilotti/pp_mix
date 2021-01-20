@@ -44,7 +44,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::initialize(
 
   Lambda = Map<MatrixXd>(normal_rng( std::vector<double>(dim_data*dim_fact, 0.0),
         std::vector<double>(dim_data*dim_fact, pow(_a_phi,2) ), Rng::Instance().get() ).data() , dim_data,dim_fact );
-  /*
+
   // Initialize Sigma_bar
   sigma_bar = _a_gamma/_b_gamma * VectorXd::Ones(dim_data);
 
@@ -82,7 +82,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::initialize(
   }
   // initial u parameter
   u = 1.0;
-*/
+
   // DECOMPOSE DPP (in MultiDpp also assign the pointer to Lambda)
   pp_mix->set_decomposition(&Lambda);
 /*
@@ -139,7 +139,7 @@ bool ConditionalMCMC<Prec, prec_t, fact_t>::is_inside(const VectorXd & eta){
 template <class Prec, typename prec_t, typename fact_t>
 void ConditionalMCMC<Prec, prec_t, fact_t>::run_one() {
 
-/*
+
   sample_u();
 
   // compute laplace transform psi in u
@@ -167,7 +167,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::run_one() {
 
   // sample Sigma bar
   sample_sigma_bar();
-*/
+
   // sample Lambda block
   sample_Psi();
   sample_tau();
@@ -232,24 +232,26 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_means_a()
     VectorXd prop =
         stan::math::multi_normal_rng(currmean, cov_prop, Rng::Instance().get());
 
-    currlik = lpdf_given_clus_multi(etas_by_clus[i], currmean, a_deltas[i]);
-    proplik = lpdf_given_clus_multi(etas_by_clus[i], prop, a_deltas[i]);
+    if (is_inside(prop)){ // if not, just keep the current mean and go to the next a_mean
+      currlik = lpdf_given_clus_multi(etas_by_clus[i], currmean, a_deltas[i]);
+      proplik = lpdf_given_clus_multi(etas_by_clus[i], prop, a_deltas[i]);
 
-    lik_ratio = proplik - currlik;
-    others = delete_row(allmeans, i);
+      lik_ratio = proplik - currlik;
+      others = delete_row(allmeans, i);
 
-    prior_ratio =
-        pp_mix->papangelou(prop, others) - pp_mix->papangelou(currmean, others);
+      prior_ratio =
+          pp_mix->papangelou(prop, others) - pp_mix->papangelou(currmean, others);
 
-    arate = lik_ratio + prior_ratio;
+      arate = lik_ratio + prior_ratio;
 
-    bool accepted = false;
-    if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < arate) {
-      accepted = true; // for printing in verbose mode
-      a_means.row(i) = prop.transpose();
-      acc_sampled_a_means += 1;
+      bool accepted = false;
+      if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < arate) {
+        accepted = true; // for printing in verbose mode
+        a_means.row(i) = prop.transpose();
+        acc_sampled_a_means += 1;
+      }
     }
-    /*
+      /*
     if (verbose) {
       std::cout << "Component: " << i << std::endl;
       std::cout << "data:" << std::endl;
