@@ -1,5 +1,5 @@
-#ifndef TMP_CONDITIONAL_MCMC
-#define TMP_CONDITIONAL_MCMC
+#ifndef MALA_CONDITIONAL_MCMC
+#define MALA_CONDITIONAL_MCMC
 
 #include <omp.h>
 #include <algorithm>
@@ -8,14 +8,21 @@
 #include <set>
 #include <vector>
 #include <functional>
+#include <cmath>
 
-#include <Eigen/Dense>
+//#include <Eigen/Dense>
+//#include <stan/math/prim.hpp>
+//#include <stan/math.hpp>
+#include <stan/math/fwd.hpp>
+#include <stan/math/mix.hpp>
 #include <stan/math/prim.hpp>
+#include <Eigen/Dense>
+
 #include <google/protobuf/message.h>
 
 #include "gig.hpp"
 #include "rng.hpp"
-#include "point_process/base_determinantalPP.hpp"
+#include "point_process/determinantalPP.hpp"
 #include "precs/base_prec.hpp"
 #include "precs/precmat.hpp"
 #include "utils.hpp"
@@ -24,10 +31,11 @@
 
 
 using namespace Eigen;
+using namespace stan::math;
 
-namespace Test {
-template<class Prec, typename prec_t, typename fact_t>
-class ConditionalMCMC {
+namespace Mala {
+
+class MultivariateConditionalMCMC {
  protected:
      int dim_fact;
      int dim_data;
@@ -48,8 +56,8 @@ class ConditionalMCMC {
      double u;
 
      // DISTRIBUTIONS
-     BaseDeterminantalPP *pp_mix;
-     Prec *g;
+     DeterminantalPP *pp_mix;
+     BaseMultiPrec *g;
 
      // FOR DEBUGGING
      bool verbose = false;
@@ -62,7 +70,7 @@ class ConditionalMCMC {
 
      Params params;
 
-     double prop_means_sigma, prop_lambda_sigma;
+     double prop_means_sigma;
 
  public:
    //Sigma_bar
@@ -81,23 +89,22 @@ class ConditionalMCMC {
    VectorXi clus_alloc;
    VectorXd a_jumps, na_jumps;
    MatrixXd a_means, na_means;
-   std::vector<prec_t> a_deltas, na_deltas;
+   std::vector<PrecMat> a_deltas, na_deltas;
 
-     ConditionalMCMC() {}
-     ~ConditionalMCMC()
+     MultivariateConditionalMCMC() {}
+     ~MultivariateConditionalMCMC()
      {
          delete pp_mix;
          delete g;
     }
 
-    ConditionalMCMC(
-        BaseDeterminantalPP * pp_mix, Prec * g,
-        const Params& params, const MatrixXd& lambda,
-        const MatrixXd& Etas,
-        double p_l_sigma, double p_m_sigma);
+    MultivariateConditionalMCMC(DeterminantalPP *pp_mix, BasePrec *g,
+                                const Params &params,
+                                double p_m_sigma);
 
-    void set_pp_mix(BaseDeterminantalPP* pp_mix) {this->pp_mix = pp_mix;}
-    void set_prec(Prec* g) {this->g = g;}
+
+    void set_pp_mix(DeterminantalPP* pp_mix) {this->pp_mix = pp_mix;}
+    void set_prec(BaseMultiPrec* g) {this->g = g;}
     void set_params(const Params & p);
 
     // initializes some of the members (data, dim, ndata,..) and state of sampler
@@ -106,9 +113,9 @@ class ConditionalMCMC {
 
     // initializes the etas, projecting the data onto Col(Lambda):
     // it is for both uni/multi factor cases, but implemented differently because of the least square systems.
-    virtual void initialize_etas(const MatrixXd &dat) = 0;
+    void initialize_etas(const MatrixXd &dat);
 
-    virtual void initialize_allocated_means() = 0;
+    void initialize_allocated_means();
 
     std::vector<VectorXd> proj_inside();
     bool is_inside(const VectorXd & point);
@@ -145,7 +152,7 @@ class ConditionalMCMC {
     };
 
     // ETAS: virtual because for dim_fact=1, we directly invert scalars, not resolving systems!
-    virtual void sample_etas()=0;
+    void sample_etas();
 
     // SIGMA_BAR: could be virtual because for dim_fact=1, we can exploit that eta^T eta is scalar..
     void sample_sigma_bar();
@@ -167,21 +174,23 @@ class ConditionalMCMC {
     inline double compute_exp_prior(const MatrixXd& lamb) const;
 
     // to store the current state in proto format
-    virtual void get_state_as_proto(google::protobuf::Message *out_) = 0;
+    void get_state_as_proto(google::protobuf::Message *out_);
 
     // to just print the current state for debugging
     void print_debug_string();
 
-
-
     void set_verbose() { verbose = !verbose; }
-
-    virtual double lpdf_given_clus(
-        const VectorXd &x, const VectorXd &mu, const prec_t &sigma)  = 0;
-
-    virtual double lpdf_given_clus_multi(
-        const std::vector<fact_t> &x, const VectorXd &mu,
-        const prec_t &sigma) = 0;
+    
+    double lpdf_given_clus(const VectorXd &x, const VectorXd &mu, const PrecMat &sigma)
+    {
+        return o_multi_normal_prec_lpdf(x, mu, sigma);
+    }
+    
+    double lpdf_given_clus_multi(
+        const std::vector<VectorXd> &x, const VectorXd &mu, const PrecMat &sigma) 
+    {
+        return o_multi_normal_prec_lpdf(x, mu, sigma);
+    }
 
     //virtual VectorXd compute_grad_for_clus(int clus, const VectorXd &mean) = 0;
 
@@ -193,98 +202,60 @@ class ConditionalMCMC {
         return (1.0 * acc_sampled_Lambda) / (1.0 * tot_sampled_Lambda);
     }
 
-    virtual void print_data_by_clus(int clus) = 0;
-};
-
-
-class MultivariateConditionalMCMC: public ConditionalMCMC<
-    BaseMultiPrec, PrecMat, VectorXd> {
-
-public:
-    MultivariateConditionalMCMC() {}
-
-    MultivariateConditionalMCMC(BaseDeterminantalPP *pp_mix, BasePrec *g,
-                                const Params &params, //const MatrixXd& lambda,
-                                //const VectorXd& SigBar,
-                                //const MatrixXd& Etas,
-                                double p_m_sigma, double p_l_sigma);
-
-    // initializes the etas, projecting the data onto Col(Lambda):
-    // it is for both uni/multi factor cases, but implemented differently because of the least square systems.
-    void initialize_etas(const MatrixXd &dat) override;
-
-    // initialize 10 (or less) allocated means: if <10 data, take the means on
-    // the data, otherwise choose the means on randomly selected data
-    void initialize_allocated_means() override;
-
-
-    //ETAS
-    void sample_etas() override;
-    // LAMBDA
-    void sample_Lambda() override;
-
-    void get_state_as_proto(google::protobuf::Message *out_) override;
-
-    double lpdf_given_clus(
-        const VectorXd &x, const VectorXd &mu, const PrecMat &sigma)
-    {
-        return o_multi_normal_prec_lpdf(x, mu, sigma);
-    }
-
-    double lpdf_given_clus_multi(
-        const std::vector<VectorXd> &x, const VectorXd &mu, const PrecMat &sigma) override
-    {
-        return o_multi_normal_prec_lpdf(x, mu, sigma);
-    }
-
-    //VectorXd compute_grad_for_clus(int clus, const VectorXd &mean) override;
-
-    void print_data_by_clus(int clus);
-
-};
-
-class UnivariateConditionalMCMC : public ConditionalMCMC<
-    BaseUnivPrec, double, double>
-{
-public:
-    UnivariateConditionalMCMC() {}
-
-    UnivariateConditionalMCMC(BaseDeterminantalPP *pp_mix, BasePrec *g,
-                              const Params &params);
-
-    // initializes the etas, projecting the data onto Col(Lambda):
-    // it is for both uni/multi factor cases, but implemented differently because of the least square systems.
-    void initialize_etas(const MatrixXd &dat) override;
-
-    void initialize_allocated_means() override;
-
-    //ETAS
-    void sample_etas() override;
-    // LAMBDA
-    void sample_Lambda() override;
-
-    void get_state_as_proto(google::protobuf::Message *out_) override;
-
-    double lpdf_given_clus(
-        const VectorXd &x, const VectorXd &mu, const double &sigma)
-    {
-        return stan::math::normal_lpdf(x(0), mu(0), 1.0 / sqrt(sigma));
-    }
-
-    double lpdf_given_clus_multi(
-        const std::vector<double> &x, const VectorXd &mu, const double &sigma) override
-    {
-        return stan::math::normal_lpdf(x, mu(0), 1.0 / sqrt(sigma));
-    }
-
-
-    //VectorXd compute_grad_for_clus(int clus, const VectorXd& mean) override;
-
     void print_data_by_clus(int clus);
 };
 
+
+class ClassicalMultiMCMC : public MultivariateConditionalMCMC {
+private:
+  double prop_lambda_sigma;
+
+public:
+  ClassicalMultiMCMC(DeterminantalPP *pp_mix, BasePrec *g,
+                              const Params &params,
+                              double p_m_sigma, double p_l_sigma);
+
+  void sample_Lambda() override;
+
 };
 
-#include "tmp_conditional_mcmc_imp.hpp"
+
+class MalaMultiMCMC : public MultivariateConditionalMCMC {
+private:
+  double mala_p;
+    
+// TARGET FUNCTION OBJECT : must implement logfunction (as required in Mala)
+    class target_function {
+    private:
+        MalaMultiMCMC* m_mcmc;
+        /*int dim_data;
+        int dim_fact;
+        const VectorXd& sigma_bar;
+        const MatrixXd& data;
+        const MatrixXd& etas;*/
+        
+    public:
+        target_function(){};
+
+        void set_mala(MalaMultiMCMC* mala){ m_mcmc = mala; };
+
+        template<typename T> T
+        operator()(const Eigen::Matrix<T,Eigen::Dynamic,1> & lamb) const ;
+    } target_fun;
+
+public:
+  MalaMultiMCMC(DeterminantalPP *pp_mix, BasePrec *g,
+                              const Params &params,
+                              double p_m_sigma, double mala_p);
+
+  void sample_Lambda() override;
+
+  
+
+};
+
+};
+
+#include "mala_conditional_mcmc_imp.hpp"
 
 #endif

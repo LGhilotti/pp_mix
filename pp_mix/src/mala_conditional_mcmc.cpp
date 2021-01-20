@@ -1,21 +1,24 @@
-#ifndef TMP_CONDITIONAL_MCMC_IMP_HPP
-#define TMP_CONDITIONAL_MCMC_IMP_HPP
+#include "mala_conditional_mcmc.hpp"
 
-namespace Test {
-template <class Prec, typename prec_t, typename fact_t>
-ConditionalMCMC<Prec, prec_t, fact_t>::ConditionalMCMC(BaseDeterminantalPP *pp_mix,
-                                                  Prec *g,
-                                                  const Params &params,const MatrixXd& lambda,
-                                                  const MatrixXd& Etas,
-                                                  double p_l_sigma, double p_m_sigma)
-    : pp_mix(pp_mix), g(g) {
+#include "mala_conditional_mcmc_imp.hpp"
 
-      set_params(params);
-      return;
-    }
+namespace Mala {
 
-template <class Prec, typename prec_t, typename fact_t>
-void ConditionalMCMC<Prec, prec_t, fact_t>::set_params(const Params & p){
+MultivariateConditionalMCMC::MultivariateConditionalMCMC(DeterminantalPP *pp_mix,
+                                                         BasePrec *g,
+                                                         const Params &params,
+                                                         double p_m_sigma)
+    : pp_mix(pp_mix), prop_means_sigma(p_m_sigma) {
+  std::cout<<"begin multiMCMC constructor"<<std::endl;
+  //set_pp_mix(pp_mix);
+  set_prec(dynamic_cast<BaseMultiPrec *>(g));
+  set_params(params);
+  //prop_means_sigma = p_m_sigma;
+
+}
+
+
+void MultivariateConditionalMCMC::set_params(const Params & p){
 
   this->params = p;
   this->dim_fact = params.dimf();
@@ -28,8 +31,8 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::set_params(const Params & p){
   return;
 }
 
-template <class Prec, typename prec_t, typename fact_t>
-void ConditionalMCMC<Prec, prec_t, fact_t>::initialize(const MatrixXd& dat) {
+
+void MultivariateConditionalMCMC::initialize(const MatrixXd& dat) {
 
   std::cout<<"begin initialize MCMC"<<std::endl;
   this->data = dat;
@@ -111,8 +114,39 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::initialize(const MatrixXd& dat) {
   std::cout << "initialize done" << std::endl;
 }
 
-template <class Prec, typename prec_t, typename fact_t>
-std::vector<VectorXd> ConditionalMCMC<Prec, prec_t, fact_t>::proj_inside() {
+
+void MultivariateConditionalMCMC::initialize_etas(const MatrixXd &dat) {
+
+  LLT<MatrixXd> M (Lambda.transpose() * Lambda);
+
+  etas = (M.solve((dat*Lambda).transpose())).transpose();
+
+  return;
+
+}
+
+
+void MultivariateConditionalMCMC::initialize_allocated_means() {
+  int init_n_clus = 10;
+  std::vector<VectorXd> in = proj_inside();
+
+  if (init_n_clus >= in.size()) {
+    a_means.resize(in.size(), dim_fact);
+    for (int i=0; i < in.size(); i++)
+      a_means.row(i) = in[i].transpose();
+  } else {
+    a_means.resize(init_n_clus, dim_fact);
+    std::vector<int> index(in.size());
+    std::iota(index.begin(), index.end(), 0);
+    std::random_shuffle(index.begin(), index.begin() + in.size());
+    for (int i=0; i < init_n_clus; i++) {
+      a_means.row(i) = in[index[i]].transpose();
+    }
+  }
+  return;
+}
+
+std::vector<VectorXd> MultivariateConditionalMCMC::proj_inside() {
 
   std::vector<VectorXd> inside;
   for (int i=0; i<ndata;i++){
@@ -123,8 +157,7 @@ std::vector<VectorXd> ConditionalMCMC<Prec, prec_t, fact_t>::proj_inside() {
   return inside;
 }
 
-template <class Prec, typename prec_t, typename fact_t>
-bool ConditionalMCMC<Prec, prec_t, fact_t>::is_inside(const VectorXd & point){
+bool MultivariateConditionalMCMC::is_inside(const VectorXd & point){
   MatrixXd ran = pp_mix->get_ranges();
   bool is_in = true;
   for (int i=0;i<dim_fact&& is_in==true;i++){
@@ -135,9 +168,7 @@ bool ConditionalMCMC<Prec, prec_t, fact_t>::is_inside(const VectorXd & point){
   return is_in;
 }
 
-
-template <class Prec, typename prec_t, typename fact_t>
-void ConditionalMCMC<Prec, prec_t, fact_t>::run_one() {
+void MultivariateConditionalMCMC::run_one() {
 
   //std::cout<<"sample u"<<std::endl;
   sample_u();
@@ -191,8 +222,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::run_one() {
 }
 
 
-template <class Prec, typename prec_t, typename fact_t>
-void ConditionalMCMC<Prec, prec_t, fact_t>::run_one_trick() {
+void MultivariateConditionalMCMC::run_one_trick() {
 
   //std::cout<<"sample u"<<std::endl;
   sample_u();
@@ -247,8 +277,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::run_one_trick() {
 }
 
 
-template <class Prec, typename prec_t, typename fact_t>
-void ConditionalMCMC<Prec, prec_t, fact_t>::sample_jumps_na()
+void MultivariateConditionalMCMC::sample_jumps_na()
 {
 
     na_jumps.conservativeResize(na_means.rows(), 1);
@@ -259,8 +288,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_jumps_na()
 }
 
 
-template <class Prec, typename prec_t, typename fact_t>
-void ConditionalMCMC<Prec, prec_t, fact_t>::sample_jumps_a()
+void MultivariateConditionalMCMC::sample_jumps_a()
 {
 
     //#pragma omp parallel for
@@ -270,8 +298,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_jumps_a()
     return;
 }
 
-template <class Prec, typename prec_t, typename fact_t>
-void ConditionalMCMC<Prec, prec_t, fact_t>::sample_means_na(double psi_u)
+void MultivariateConditionalMCMC::sample_means_na(double psi_u)
 {
   for (int i=0; i < 10; i++) {
     int na_points = na_means.rows();
@@ -283,8 +310,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_means_na(double psi_u)
 }
 
 
-template <class Prec, typename prec_t, typename fact_t>
-void ConditionalMCMC<Prec, prec_t, fact_t>::sample_means_na_trick()
+void MultivariateConditionalMCMC::sample_means_na_trick()
 {
   MatrixXd allmeans(na_means.rows() + a_means.rows(), dim_fact);
   allmeans << na_means, a_means;
@@ -318,8 +344,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_means_na_trick()
 }
 
 
-template <class Prec, typename prec_t, typename fact_t>
-void ConditionalMCMC<Prec, prec_t, fact_t>::sample_means_a()
+void MultivariateConditionalMCMC::sample_means_a()
 {
   MatrixXd allmeans(a_means.rows() + na_means.rows(), dim_fact);
   allmeans << a_means, na_means;
@@ -357,31 +382,11 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_means_a()
         }
     }
 
-    /*
-    if (verbose) {
-      std::cout << "Component: " << i << std::endl;
-      std::cout << "data:" << std::endl;
-      print_data_by_clus(i);
-      std::cout << "currmean: " << currmean.transpose()
-                << ", currlik: " << currlik << std::endl;
-      std::cout << "prop: " << prop.transpose() << ", proplik: " << proplik
-                << std::endl;
-      std::cout << "prior_ratio: " << prior_ratio << std::endl;
-      std::cout << "prop_papangelou: " << pp_mix->papangelou(prop, others)
-                << ", curr_papangelou: " << pp_mix->papangelou(currmean, others)
-                << std::endl;
-      std::cout << "lik_ratio: " << lik_ratio << std::endl;
-      // std::cout << "prop_ratio: " << prop_ratio << std::endl;
-      std::cout << "ACCEPTED: " << accepted << std::endl;
-      std::cout << "**********" << std::endl;
-    }
-    */
   }
 }
 
 
-template <class Prec, typename prec_t, typename fact_t>
-void ConditionalMCMC<Prec, prec_t, fact_t>::sample_deltas_na() {
+void MultivariateConditionalMCMC::sample_deltas_na() {
 
   na_deltas.resize(na_means.rows());
   for (int i = 0; i < na_means.rows(); i++) {
@@ -391,8 +396,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_deltas_na() {
 }
 
 
-template <class Prec, typename prec_t, typename fact_t>
-void ConditionalMCMC<Prec, prec_t, fact_t>::sample_deltas_a() {
+void MultivariateConditionalMCMC::sample_deltas_a() {
 
   //#pragma omp parallel for
   for (int i = 0; i < a_means.rows(); i++) {
@@ -404,8 +408,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_deltas_a() {
 
 
 
-template <class Prec, typename prec_t, typename fact_t>
-void ConditionalMCMC<Prec, prec_t, fact_t>::sample_allocations_and_relabel() {
+void MultivariateConditionalMCMC::sample_allocations_and_relabel() {
   int Ma = a_means.rows();
   int Mna = na_means.rows();
   // current number of components (a + na)
@@ -415,8 +418,8 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_allocations_and_relabel() {
 
   const MatrixXd &curr_a_means = a_means;
   const MatrixXd &curr_na_means = na_means;
-  const std::vector<prec_t> &curr_a_deltas = a_deltas;
-  const std::vector<prec_t> &curr_na_deltas = na_deltas;
+  const std::vector<PrecMat> &curr_a_deltas = a_deltas;
+  const std::vector<PrecMat> &curr_na_deltas = na_deltas;
   const VectorXd &curr_a_jumps = a_jumps;
   const VectorXd &curr_na_jumps = na_jumps;
 
@@ -452,8 +455,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_allocations_and_relabel() {
   _relabel();
 }
 
-template <class Prec, typename prec_t, typename fact_t>
-void ConditionalMCMC<Prec, prec_t, fact_t>::_relabel() {
+void MultivariateConditionalMCMC::_relabel() {
   std::set<int> na2a;  // non active that become active
   std::set<int> a2na;  // active that become non active
 
@@ -474,7 +476,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::_relabel() {
   std::vector<int> a2na_vec(a2na.begin(), a2na.end());
   int n_new_na = a2na.size();
   MatrixXd new_na_means(n_new_na, dim_fact);
-  std::vector<prec_t> new_na_deltas(n_new_na);
+  std::vector<PrecMat> new_na_deltas(n_new_na);
   VectorXd new_na_jumps(n_new_na);
 
   for (int i = 0; i < n_new_na; i++) {
@@ -487,7 +489,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::_relabel() {
   std::vector<int> na2a_vec(na2a.begin(), na2a.end());
   int n_new_a = na2a_vec.size();
   MatrixXd new_a_means(n_new_a, dim_fact);
-  std::vector<prec_t> new_a_deltas(n_new_a);
+  std::vector<PrecMat> new_a_deltas(n_new_a);
   VectorXd new_a_jumps(n_new_a);
 
   for (int i = 0; i < n_new_a; i++) {
@@ -557,8 +559,48 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::_relabel() {
 }
 
 
-template <class Prec, typename prec_t, typename fact_t>
-void ConditionalMCMC<Prec, prec_t, fact_t>::sample_sigma_bar() {
+void MultivariateConditionalMCMC::sample_etas() {
+
+    MatrixXd M0(Lambda.transpose() * sigma_bar.asDiagonal());
+    MatrixXd M1( M0 * Lambda);
+    std::vector<MatrixXd> Sn_bar(a_means.rows());
+    // type LLT for solving systems of equations
+    std::vector<LLT<MatrixXd>> Sn_bar_cho (a_means.rows());
+
+    for (int i=0; i < a_means.rows(); i++){
+      Sn_bar[i]=M1+a_deltas[i].get_prec();
+      Sn_bar_cho[i]= LLT<MatrixXd>(Sn_bar[i]);
+    }
+
+    MatrixXd M2(M0*data.transpose());
+    MatrixXd G(ndata,dim_fact);
+    
+    // known terms of systems is depending on the single data
+    for (int i=0; i < a_means.rows(); i++){
+      MatrixXd B(dim_fact,obs_by_clus[i].size());
+      B = (a_deltas[i].get_prec() * a_means.row(i).transpose()).replicate(1,B.cols());
+      for (int j = 0; j < obs_by_clus[i].size(); j++){
+        B.col(j) += M2.col(obs_by_clus[i][j]);
+      }
+      //B +=M2(all,obs_by_clus[i]);
+      // each modified row has solution for points in the cluster.
+      MatrixXd sol((Sn_bar_cho[i].solve(B)).transpose());
+      for (int j = 0; j < obs_by_clus[i].size(); j++){
+        G.row(obs_by_clus[i][j]) = sol.row(j);
+      }
+      //G(obs_by_clus[i],all)=(Sn_bar_cho[i].solve(B)).transpose();
+    }
+
+    // Here, G contains (in each row) mean of full-cond, while precisions have to be taken from Sn_bar
+    // Now, I sample each eta from the full-cond multi-normal
+    for (int i=0; i < ndata; i++){
+      etas.row(i)=multi_normal_prec_rng(G.row(i).transpose(), Sn_bar[clus_alloc(i)], Rng::Instance().get());
+    }
+    return;
+}
+
+
+void MultivariateConditionalMCMC::sample_sigma_bar() {
 
   //std::cout<<"sample sigma bar"<<std::endl;
   VectorXd betas = VectorXd::Constant(dim_data, _b_gamma);
@@ -575,8 +617,7 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_sigma_bar() {
 }
 
 
-template <class Prec, typename prec_t, typename fact_t>
-void ConditionalMCMC<Prec, prec_t, fact_t>::sample_Psi() {
+void MultivariateConditionalMCMC::sample_Psi() {
 //  std::cout<<"sample Psi"<<std::endl;
   // make it parallel omp
   for (int j=0; j< dim_data; j++)
@@ -587,16 +628,14 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_Psi() {
 }
 
 
-template <class Prec, typename prec_t, typename fact_t>
-void ConditionalMCMC<Prec, prec_t, fact_t>::sample_tau() {
+void MultivariateConditionalMCMC::sample_tau() {
   //std::cout<<"sample tau"<<std::endl;
   tau = GIG::rgig(dim_data*dim_fact*(_a_phi-1), 2*(Lambda.array().abs()/Phi.array()).sum() , 1);
   return;
 }
 
 
-template <class Prec, typename prec_t, typename fact_t>
-void ConditionalMCMC<Prec, prec_t, fact_t>::sample_Phi() {
+void MultivariateConditionalMCMC::sample_Phi() {
 //  std::cout<<"sample Phi"<<std::endl;
   for (int j=0; j < dim_data; j++)
     for (int h=0; h < dim_fact; h++)
@@ -606,25 +645,88 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::sample_Phi() {
   return;
 }
 
+/*
+VectorXd MultivariateConditionalMCMC::compute_grad_for_clus(
+    int clus, const VectorXd &mean) {
+  VectorXd grad = VectorXd::Zero(dim_data);
+  for (const VectorXd datum : data_by_clus[clus]) grad += datum - mean;
+  // TODO FIXME
+  // grad += a_deltas[clus].get_prec() * (datum - mean);
 
+  return grad;
+}
+*/
 
-template <class Prec, typename prec_t, typename fact_t>
-double ConditionalMCMC<Prec, prec_t, fact_t>::compute_exp_lik(const MatrixXd& lamb) const {
+double MultivariateConditionalMCMC::compute_exp_lik(const MatrixXd& lamb) const {
 
   return (sigma_bar.array().sqrt().matrix().asDiagonal()*(data.transpose() - lamb*etas.transpose())).colwise().squaredNorm().sum();
 
 }
 
-template <class Prec, typename prec_t, typename fact_t>
-double ConditionalMCMC<Prec, prec_t, fact_t>::compute_exp_prior(const MatrixXd& lamb) const {
+double MultivariateConditionalMCMC::compute_exp_prior(const MatrixXd& lamb) const {
 
   return (lamb.array().square()/(Psi.array()*Phi.array().square())).sum() * (- 0.5 / (tau*tau));
 
 }
 
+void MultivariateConditionalMCMC::get_state_as_proto(
+    google::protobuf::Message *out_) {
+  using namespace google::protobuf::internal;
 
-template <class Prec, typename prec_t, typename fact_t>
-void ConditionalMCMC<Prec, prec_t, fact_t>::print_debug_string() {
+  MultivariateMixtureState *out = down_cast<MultivariateMixtureState *>(out_);
+  out->set_ma(a_means.rows());
+  out->set_mna(na_means.rows());
+  out->set_mtot(a_means.rows() + na_means.rows());
+
+  for (int i = 0; i < a_means.rows(); i++) {
+    EigenVector *mean;
+    EigenMatrix *prec;
+    mean = out->add_a_means();
+    prec = out->add_a_deltas();
+
+    to_proto(a_means.row(i).transpose(), mean);
+    to_proto(a_deltas[i].get_prec(), prec);
+  }
+
+  for (int i = 0; i < na_means.rows(); i++) {
+    EigenVector *mean;
+    EigenMatrix *prec;
+    mean = out->add_na_means();
+    prec = out->add_na_deltas();
+
+    to_proto(na_means.row(i).transpose(), mean);
+    to_proto(na_deltas[i].get_prec(), prec);
+  }
+
+  to_proto(a_jumps, out->mutable_a_jumps());
+  to_proto(na_jumps, out->mutable_na_jumps());
+
+  *out->mutable_clus_alloc() = {clus_alloc.data(), clus_alloc.data() + ndata};
+
+  out->set_u(u);
+
+  for (int i = 0; i < ndata; i++) {
+    EigenVector * eta;
+    eta = out->add_etas();
+
+    to_proto(etas.row(i).transpose(), eta);
+  }
+
+  to_proto(sigma_bar, out->mutable_sigma_bar());
+
+  LambdaBlock lb;
+  lb.set_tau(tau);
+  to_proto(Phi, lb.mutable_phi());
+  to_proto(Psi, lb.mutable_psi());
+  to_proto(Lambda, lb.mutable_lambda());
+  out->mutable_lamb_block()->CopyFrom(lb);
+
+  return;
+
+
+}
+
+void MultivariateConditionalMCMC::print_debug_string() {
   std::cout << "*********** DEBUG STRING***********" << std::endl;
   std::cout << "#### ACTIVE: Number actives: " << a_means.rows() << std::endl;
 
@@ -653,19 +755,156 @@ void ConditionalMCMC<Prec, prec_t, fact_t>::print_debug_string() {
   std::cout << "#### Phi: " << Phi << std::endl;
 
   std::cout << "#### Allocations and  ETAS by cluster: " << std::endl;
+  std::vector<int> aux(dim_fact);
+  std::iota(aux.begin(),aux.end(),0);
+
   for (int i=0; i < a_means.rows() ; i++ ){
     std::cout<<"Cluster "<<i<<std::endl;
     std::cout<<"observations: "<<std::endl;
     for (auto j : obs_by_clus[i] ){
       std::cout<<j<<std::endl;
     }
-    std::cout<<"etas of cluster"<<std::endl;
-    std::cout<<etas(obs_by_clus[i],all)<<std::endl;
   }
 
   std::cout<<"#### SIGMA BAR: "<<sigma_bar<<std::endl;
 
 }
 
-};
-#endif
+
+void MultivariateConditionalMCMC::print_data_by_clus(int clus) {
+  for (const int &d : obs_by_clus[clus])
+    std::cout << data.row(d).transpose() << std::endl;
+}
+
+
+//////////////////////////////////////
+/// ClassicalMultiMCMC /////////
+///////////////////////////////
+ClassicalMultiMCMC::ClassicalMultiMCMC(DeterminantalPP *pp_mix, BasePrec *g,
+                            const Params &params,
+                            double p_m_sigma, double p_l_sigma):
+  MultivariateConditionalMCMC(pp_mix,g,params,p_m_sigma), prop_lambda_sigma(p_l_sigma) {}
+
+
+void ClassicalMultiMCMC::sample_Lambda() {
+  //std::cout<<"sample Lambda"<<std::endl;
+  // Current Lambda (here are the means) are expanded to vector<double> column major
+  MatrixXd prop_lambda = Map<MatrixXd>(normal_rng( std::vector<double>(Lambda.data(), Lambda.data() + Lambda.size()) ,
+              std::vector<double>(dim_data*dim_fact, prop_lambda_sigma), Rng::Instance().get()).data() , dim_data, dim_fact);
+  // DEBUG
+  //std::cout<<"Proposal Lambda: \n"<<prop_lambda<<std::endl;
+//  std::cout<<"Proposed Lambda"<<std::endl;
+
+  tot_sampled_Lambda += 1;
+  // we use log for each term
+  double curr_lik, prop_lik;
+  curr_lik = -0.5 * compute_exp_lik(Lambda);
+  prop_lik = -0.5 * compute_exp_lik(prop_lambda);
+  // DEBUG
+  //std::cout<<"curr_lik = "<<curr_lik<<"  ; prop_lik = "<<prop_lik<<std::endl;
+
+  double curr_prior_cond_process, prop_prior_cond_process;
+  MatrixXd means(a_means.rows()+na_means.rows(),dim_fact);
+  means << a_means, na_means;
+
+  pp_mix->decompose_proposal(prop_lambda);
+
+  curr_prior_cond_process = pp_mix->dens_cond(means, true);
+  prop_prior_cond_process = pp_mix->dens_cond_in_proposal(means, true);
+  // DEBUG
+  //std::cout<<"curr_p_c_p = "<<curr_prior_cond_process<<"  ; prop_p_c_p = "<<prop_prior_cond_process<<std::endl;
+
+  double curr_prior_lambda, prop_prior_lambda;
+  curr_prior_lambda = compute_exp_prior(Lambda);
+  prop_prior_lambda = compute_exp_prior(prop_lambda);
+  // DEBUG
+ //std::cout<<"curr_prior_lambda = "<<curr_prior_lambda<<" ; prop_prior_lambda = "<<prop_prior_lambda<<std::endl;
+
+  double curr_dens, prop_dens, log_ratio;
+  curr_dens = curr_lik + curr_prior_cond_process + curr_prior_lambda;
+  prop_dens = prop_lik + prop_prior_cond_process + prop_prior_lambda;
+  // DEBUG
+//  std::cout<<"curr_dens = "<<curr_dens<<" ; prop_dens = "<<prop_dens<<std::endl;
+
+  log_ratio = prop_dens - curr_dens;
+  // DEBUG
+  //std::cout<<"log_ratio: "<<log_ratio<<std::endl;
+
+  if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < log_ratio){
+    //ACCEPTED
+    acc_sampled_Lambda += 1;
+    Lambda.swap(prop_lambda);
+    pp_mix->update_decomposition_from_proposal();
+    //std::cout<<"accepted Lambda"<<std::endl;
+  }
+
+  return;
+}
+
+
+//////////////////////////////////////
+/// MalaMultiMCMC /////////
+///////////////////////////////
+
+MalaMultiMCMC::MalaMultiMCMC(DeterminantalPP *pp_mix, BasePrec *g,
+                            const Params &params,
+                            double p_m_sigma, double mala_p):
+  MultivariateConditionalMCMC(pp_mix,g,params,p_m_sigma), mala_p(mala_p) {
+
+    target_fun.set_mala(this);
+    return;
+  }
+
+
+void MalaMultiMCMC::sample_Lambda() {
+  //std::cout<<"sample Lambda"<<std::endl;
+  // Current Lambda (here are the means) are expanded to vector<double> column major
+  double ln_px_curr;
+  VectorXd grad_ln_px_curr;
+  VectorXd Lambda_curr = Map<VectorXd>(Lambda.data(), dim_data*dim_fact); // column-major
+  stan::math::gradient(target_fun, Lambda_curr, ln_px_curr, grad_ln_px_curr);
+  // Proposal according MALA
+  VectorXd prop_lambda_vec = Lambda_curr + mala_p*grad_ln_px_curr +
+                    std::sqrt(2*mala_p)*Map<VectorXd>(normal_rng(std::vector<double>(dim_data*dim_fact, 0.),
+                  std::vector<double>(dim_data*dim_fact,1.), Rng::Instance().get()).data() , dim_data*dim_fact);
+
+
+  double ln_px_prop;
+  VectorXd grad_ln_px_prop;
+  stan::math::gradient(target_fun, prop_lambda_vec, ln_px_prop, grad_ln_px_prop);
+
+  MatrixXd prop_lambda = Map<MatrixXd>(prop_lambda_vec.data(), dim_data, dim_fact);
+
+  // DEBUG
+  //std::cout<<"Proposal Lambda: \n"<<prop_lambda<<std::endl;
+//  std::cout<<"Proposed Lambda"<<std::endl;
+
+  tot_sampled_Lambda += 1;
+  // COMPUTE ACCEPTANCE PROBABILITY
+  // (log) TARGET DENSITY TERMS
+  double ln_ratio_target;
+  ln_ratio_target = ln_px_prop - ln_px_curr;
+  // DEBUG
+  //std::cout<<"log_ratio: "<<log_ratio<<std::endl;
+
+  //(log) PROPOSAL DENSITY TERMS
+  double ln_q_num, ln_q_den;
+  ln_q_num = - (Lambda_curr - prop_lambda_vec - mala_p*grad_ln_px_prop).squaredNorm() /(4*mala_p);
+  ln_q_den = - (prop_lambda_vec - Lambda_curr - mala_p*grad_ln_px_curr).squaredNorm() /(4*mala_p);
+
+  // -> acceptance probability
+  double ln_ratio = ln_ratio_target + ln_q_num - ln_q_den;
+
+  if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < ln_ratio){
+    //ACCEPTED
+    acc_sampled_Lambda += 1;
+    pp_mix->decompose_proposal(prop_lambda);
+    Lambda.swap(prop_lambda);
+    pp_mix->update_decomposition_from_proposal();
+    //std::cout<<"accepted Lambda"<<std::endl;
+  }
+
+  return;
+}
+
+}

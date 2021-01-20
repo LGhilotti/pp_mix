@@ -1,11 +1,11 @@
 #include "factory.hpp"
 
+
 // DPP
-BaseDeterminantalPP* make_dpp(const Params &params, const MatrixXd& ranges) {
-  if (ranges.cols()==1)
-    return new UniDpp(ranges, params.dpp().n(), params.dpp().c(), params.dpp().s() );
-  else
-    return new MultiDpp(ranges, params.dpp().n(), params.dpp().c(), params.dpp().s() );
+DeterminantalPP* make_dpp(const Params& params, const MatrixXd& ranges){
+
+    return new DeterminantalPP(ranges, params.dpp().n(), params.dpp().c(), params.dpp().s() );
+    
 }
 
 

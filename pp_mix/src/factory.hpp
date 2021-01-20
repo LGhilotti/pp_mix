@@ -8,17 +8,12 @@
 #include "precs/delta_wishart.hpp"
 #include "precs/delta_gamma.hpp"
 
-#include "point_process/base_determinantalPP.hpp"
-#include "point_process/multi_factor_dpp.hpp"
-#include "point_process/uni_factor_dpp.hpp"
-
-//#include "conditional_mcmc.hpp"
+#include "point_process/determinantalPP.hpp"
 
 #include "../protos/cpp/params.pb.h"
 
 // DPP
-BaseDeterminantalPP* make_dpp(const Params& params, const MatrixXd& ranges);
-
+DeterminantalPP* make_dpp(const Params& params, const MatrixXd& ranges);
 
 // Delta Precision
 BasePrec* make_delta(const Params& params);

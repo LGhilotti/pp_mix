@@ -1,4 +1,4 @@
-#include "base_determinantalPP.hpp"
+#include "determinantalPP.hpp"
 
 #include <numeric>
 
@@ -6,10 +6,10 @@ using stan::math::LOG_SQRT_PI;
 double PI = stan::math::pi();
 
 
-BaseDeterminantalPP::BaseDeterminantalPP(const MatrixXd &ranges, int N, double c, double s):
+DeterminantalPP::DeterminantalPP(const MatrixXd &ranges, int N, double c, double s):
   ranges(ranges), N(N), c(c), s(s) {
 
-  std::cout << "BaseDeterminantalPP constructor!"<<std::endl;
+  std::cout << "DeterminantalPP constructor!"<<std::endl;
   dim = ranges.cols();
   diff_range = (ranges.row(1) - ranges.row(0)).transpose();
   vol_range = diff_range.prod();
@@ -20,6 +20,14 @@ BaseDeterminantalPP::BaseDeterminantalPP(const MatrixXd &ranges, int N, double c
     A(i, i) = 1.0 / (ranges(1, i) - ranges(0, i));
     b(i) = -A(i, i) * (ranges(1, i) + ranges(0, i)) / 2.0;
   }
+
+  compute_Kappas();
+  phis.resize(Kappas.rows());
+  phi_tildes.resize(Kappas.rows());
+  phis_tmp.resize(Kappas.rows());
+  phi_tildes_tmp.resize(Kappas.rows());
+  std::cout<<"end DPP constructor"<<std::endl;
+
   /*
   std::cout << "ranges: "<<this->ranges<<std::endl;
   std::cout << "N: "<<this->N<<std::endl;
@@ -34,7 +42,100 @@ BaseDeterminantalPP::BaseDeterminantalPP(const MatrixXd &ranges, int N, double c
 }
 
 
-double BaseDeterminantalPP::dens_cond(const MatrixXd& x, bool log) {
+void DeterminantalPP::set_decomposition(const MatrixXd * lambda) {
+
+  Lambda = lambda;
+  compute_eigen_and_cstar(&Ds, &phis, &phi_tildes, &c_star, lambda);
+  return;
+
+}
+
+
+void DeterminantalPP::compute_eigen_and_cstar(double * D_, VectorXd * Phis_, VectorXd * Phi_tildes_, double * C_star_, const MatrixXd * lambda){
+
+
+  *D_ = 0.0;
+  *C_star_ = 0.0;
+
+  LLT<MatrixXd> M ((*lambda).transpose() * (*lambda));
+  // compute determinant of Lambda^T Lambda
+  double det = std::pow(M.matrixL().determinant(),2);
+
+  double esp_fact = -2*std::pow(stan::math::pi(),2)*std::pow(det,1.0/dim)*std::pow(c,-2.0/dim);
+  for (int i = 0; i < Kappas.rows(); i++) {
+    VectorXd sol = M.solve(Kappas.row(i).transpose());
+    double dot_prod = (Kappas.row(i)).dot(sol);
+    (*Phis_)(i) = s*std::exp(esp_fact*dot_prod);
+
+    (*Phi_tildes_)(i) = (*Phis_)(i) / (1 - (*Phis_)(i));
+    *D_ += std::log(1 + (*Phi_tildes_)(i));
+    *C_star_ += (*Phi_tildes_)(i);
+  }
+
+  return;
+
+}
+
+
+void DeterminantalPP::decompose_proposal(const MatrixXd& lambda) {
+
+  compute_eigen_and_cstar(&Ds_tmp, &phis_tmp, &phi_tildes_tmp, &c_star_tmp, &lambda);
+  return;
+
+}
+
+
+void DeterminantalPP::update_decomposition_from_proposal() {
+
+  std::swap(Ds, Ds_tmp);
+  phis.swap(phis_tmp);
+  phi_tildes.swap(phi_tildes_tmp);
+  std::swap(c_star, c_star_tmp);
+  return;
+}
+
+// compute just once the grid for summation over Z^dim
+void DeterminantalPP::compute_Kappas() {
+
+  std::cout << "compute Kappas!" <<std::endl;
+
+  std::vector<double> k(2 * N + 1);
+  for (int n = -N; n <= N; n++) {
+    k[n + N] = n;
+  }
+  std::vector<std::vector<double>> kappas;
+  if (dim == 1) {
+    kappas.resize(k.size());
+    for (int i = 0; i < k.size(); i++) kappas[i].push_back(k[i]);
+  } else {
+    kappas = cart_product(k, dim);
+  }
+
+  Kappas.resize(kappas.size(), dim);
+  for (int i = 0; i < kappas.size(); i++) {
+    Kappas.row(i) = Map<VectorXd>(kappas[i].data(), dim).transpose();
+  }
+
+
+  return;
+
+}
+
+
+
+double DeterminantalPP::dens_cond_in_proposal(const MatrixXd& x, bool log) {
+
+  double out = ln_dens_process(x, Ds_tmp, phis_tmp, phi_tildes_tmp, c_star_tmp);
+  out -= std::log(1-std::exp(-Ds_tmp));
+
+  if (!log) out=std::exp(out);
+
+  return out;
+
+}
+
+
+double DeterminantalPP::dens_cond(const MatrixXd& x, bool log) {
 
   double out = ln_dens_process(x, Ds, phis, phi_tildes, c_star);
   out -= std::log(1-std::exp(-Ds));
@@ -45,7 +146,7 @@ double BaseDeterminantalPP::dens_cond(const MatrixXd& x, bool log) {
 
 }
 
-double BaseDeterminantalPP::dens(const MatrixXd &x, bool log) {
+double DeterminantalPP::dens(const MatrixXd &x, bool log) {
 
   double out = ln_dens_process(x, Ds, phis, phi_tildes, c_star);
 
@@ -56,7 +157,7 @@ double BaseDeterminantalPP::dens(const MatrixXd &x, bool log) {
 }
 
 
-double BaseDeterminantalPP::ln_dens_process(const MatrixXd& x, double Ds_p, const VectorXd& phis_p,
+double DeterminantalPP::ln_dens_process(const MatrixXd& x, double Ds_p, const VectorXd& phis_p,
             const VectorXd& phi_tildes_p, double c_star_p){
 
   double out;
@@ -100,7 +201,7 @@ double BaseDeterminantalPP::ln_dens_process(const MatrixXd& x, double Ds_p, cons
 }
 
 
-double BaseDeterminantalPP::log_det_Ctilde(const MatrixXd &x, const VectorXd& phi_tildes_p) {
+double DeterminantalPP::log_det_Ctilde(const MatrixXd &x, const VectorXd& phi_tildes_p) {
   MatrixXd Ctilde(x.rows(), x.rows());
 
   // TODO: Ctilde is symmetric! Also the diagonal elements are identical!
@@ -118,7 +219,7 @@ double BaseDeterminantalPP::log_det_Ctilde(const MatrixXd &x, const VectorXd& ph
 }
 
 
-double BaseDeterminantalPP::papangelou(const VectorXd& xi, const MatrixXd &x, bool log) {
+double DeterminantalPP::papangelou(const VectorXd& xi, const MatrixXd &x, bool log) {
   int n = 1 + x.rows();
   MatrixXd all( n , x.cols());
   all << x, xi.transpose();
@@ -137,7 +238,7 @@ double BaseDeterminantalPP::papangelou(const VectorXd& xi, const MatrixXd &x, bo
 
 
 
-MatrixXd BaseDeterminantalPP::sample_uniform(int npoints) {
+MatrixXd DeterminantalPP::sample_uniform(int npoints) {
   MatrixXd out(npoints, dim);
   for (int j = 0; j < dim; j++) {
     for (int i = 0; i < npoints; i++) {
@@ -150,7 +251,7 @@ MatrixXd BaseDeterminantalPP::sample_uniform(int npoints) {
 }
 
 
-VectorXd BaseDeterminantalPP::phi_star_rng() {
+VectorXd DeterminantalPP::phi_star_rng() {
   VectorXd out(dim);
   for (int i = 0; i < dim; i++) {
     out(i) = uniform_rng(ranges(0, i), ranges(1, i), Rng::Instance().get());
@@ -158,7 +259,7 @@ VectorXd BaseDeterminantalPP::phi_star_rng() {
   return out;
 }
 
-double BaseDeterminantalPP::phi_star_dens(VectorXd xi, bool log) {
+double DeterminantalPP::phi_star_dens(VectorXd xi, bool log) {
   double out = std::log(c_star) - std::log(vol_range);
   if (!log) out = std::exp(out);
 
@@ -166,7 +267,7 @@ double BaseDeterminantalPP::phi_star_dens(VectorXd xi, bool log) {
 }
 
 
-void BaseDeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const MatrixXd &active,
+void DeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const MatrixXd &active,
                                  double psi_u) {
   int npoints = non_active->rows();
 

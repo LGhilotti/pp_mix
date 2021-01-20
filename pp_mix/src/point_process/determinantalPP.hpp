@@ -1,5 +1,5 @@
-#ifndef BASE_DETERMINANTAL_PP_HPP
-#define BASE_DETERMINANTAL_PP_HPP
+#ifndef DETERMINANTAL_PP_HPP
+#define DETERMINANTAL_PP_HPP
 
 //#include <stdexcept>
 #include <Eigen/Dense>
@@ -13,7 +13,7 @@
 using namespace Eigen;
 using namespace stan::math;
 
-class BaseDeterminantalPP {
+class DeterminantalPP {
 protected:
     MatrixXd ranges; //hyper-Rectangle R
     VectorXd diff_range;
@@ -42,26 +42,40 @@ protected:
     // FOR DEBUGGING
     double birth_prob, birth_arate;
 
+    // FOR PROPOSAL
+     const MatrixXd * Lambda; // const pointer to the Lambda matrix
+
+    double c_star_tmp; // c* of X (DPP) wrt the last passed Lambda
+
+    // eigendecomposition params for last passed Lambda
+    VectorXd phis_tmp;
+    VectorXd phi_tildes_tmp;
+    double Ds_tmp;
+
 public:
 
-    BaseDeterminantalPP(const MatrixXd& ranges, int N, double c, double s);
+    DeterminantalPP(const MatrixXd& ranges, int N, double c, double s);
 
-    virtual ~BaseDeterminantalPP() {}
+    ~DeterminantalPP() {}
 
     // manages the decomposition in Ds, phi,... for the dpp (using or not lambda)
-    virtual void set_decomposition(const MatrixXd * lambda) = 0;
+     // set the pointer to Lambda and performs the initial decomposition
+    void set_decomposition(const MatrixXd * lambda);
 
-    // manages decomposition wrt the passed lambda; ONLY USED FOR MultiDpp
-    // I define it doing nothing, so UniDpp inherits it; override in MultiDpp
-    virtual void decompose_proposal(const MatrixXd& lambda) {} ;
+    // modifies the passed Ds, phis, phi_tildes, c_star according to the dpp defined with lambda
+    void compute_eigen_and_cstar(double * D_, VectorXd * Phis_, VectorXd * Phi_tildes_, double * C_star_, const MatrixXd * lambda);
 
-    virtual void update_decomposition_from_proposal() {} ;
+    // manages decomposition wrt the passed lambda.
+    // it takes the proposed Lambda and performs decomposition, storing it in "tmp" variables
+    void decompose_proposal(const MatrixXd& lambda);
 
-    virtual void compute_Kappas() = 0; // compute just once the grid for summation over Z^dim
+    void update_decomposition_from_proposal();
+
+    void compute_Kappas(); // compute just once the grid for summation over Z^dim
 
     // computes (log default) density in x of cond process wrt the proposed matrix Lambda; USEFUL FOR MultiDpp.
     // For UniDpp it just calls dens_cond (because does not depend on Lambda), for MultiDpp it uses "tmp" variables.
-    virtual double dens_cond_in_proposal(const MatrixXd& x, bool log=true) = 0 ;
+    double dens_cond_in_proposal(const MatrixXd& x, bool log=true);
 
     // computes (log default) density in x of cond process wrt the current decomposition (expressed by the Father variables Ds, phis,...)
     double dens_cond(const MatrixXd& x, bool log=true);
@@ -94,11 +108,20 @@ public:
 
     //void get_state_as_proto(google::protobuf::Message *out) {}
 
+    // GETTERS
+
     MatrixXd get_ranges() const {return ranges;}
 
     double get_vol_range() const {return vol_range;}
 
-    int get_dim() const {return ranges.cols();}
+    int get_dim() const {return dim;}
+
+    double get_c() const {return c;}
+
+    double get_s() const {return s;}
+
+    double get_N() const {return N;}
+
 
     double get_cstar() const { return c_star; }
 
