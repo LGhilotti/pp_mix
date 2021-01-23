@@ -227,17 +227,12 @@ private:
 // TARGET FUNCTION OBJECT : must implement logfunction (as required in Mala)
     class target_function {
     private:
+        //const MalaMultiMCMC& m_mcmc;
         MalaMultiMCMC* m_mcmc;
-        /*int dim_data;
-        int dim_fact;
-        const VectorXd& sigma_bar;
-        const MatrixXd& data;
-        const MatrixXd& etas;*/
-        
+       
     public:
-        target_function(){};
-
-        void set_mala(MalaMultiMCMC* mala){ m_mcmc = mala; };
+   
+        target_function(MalaMultiMCMC* mala): m_mcmc(mala){};
 
         template<typename T> T
         operator()(const Eigen::Matrix<T,Eigen::Dynamic,1> & lamb) const ;

@@ -125,7 +125,11 @@ public:
 
     double get_cstar() const { return c_star; }
 
-    MatrixXd get_kappas() const {return Kappas;}
+    const MatrixXd& get_kappas() const {return Kappas;}
+
+    const MatrixXd& get_A() const {return A;}
+
+    const VectorXd& get_b() const {return b;}
 
 };
 

@@ -22,7 +22,7 @@ LDLIBS = \
 LDFLAGS = -D_REENTRANT -O3 -fopenmp
 
 PROTO_SRCS = $(wildcard $(PROTO_DIR)/cpp/*.cpp)
-SPIKES_SRCS = $(SPIKES_DIR)/MALA/test.cpp
+SPIKES_SRCS = $(SPIKES_DIR)/MALA/test_p50.cpp
 				#$(SPIKES_DIR)/p50_inference_test/test_all_p50_d2_3g_inference.cpp
 				#$(SPIKES_DIR)/first_inference_test/inf_multiple_params/debug_all_p200_d2_3g.cpp
 				#$(SPIKES_DIR)/first_inference_test/test_lambdablock_p4_d2_3g_inference.cpp

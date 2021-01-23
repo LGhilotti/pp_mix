@@ -227,17 +227,17 @@ void MultivariateConditionalMCMC::run_one_trick() {
   //std::cout<<"sample u"<<std::endl;
   sample_u();
 
-//  std::cout<<"compute psi"<<std::endl;
+  //std::cout<<"compute psi"<<std::endl;
 
   // compute laplace transform psi in u
   //double psi_u = laplace(u);
 
-//  std::cout<<"sample alloca and relabel"<<std::endl;
+  //std::cout<<"sample alloca and relabel"<<std::endl;
 
   // sample c | rest and reorganize the all and nall parameters, and c as well
   sample_allocations_and_relabel();
 
-//std::cout<<"sample means na"<<std::endl;
+  //std::cout<<"sample means na"<<std::endl;
 
   // sample non-allocated variables
   //sample_means_na(psi_u);
@@ -245,31 +245,40 @@ void MultivariateConditionalMCMC::run_one_trick() {
   //std::cout<<"sample jumps na"<<std::endl;
 
   sample_jumps_na();
-//  std::cout<<"sample deltsa na"<<std::endl;
+ // std::cout<<"sample deltsa na"<<std::endl;
 
   sample_deltas_na();
-//  std::cout<<"sample means a"<<std::endl;
+  //std::cout<<"sample means a"<<std::endl;
 
   // sample allocated variables
   sample_means_a();
   //std::cout<<"sample deltas a"<<std::endl;
 
   sample_deltas_a();
-//  std::cout<<"sample jumps a"<<std::endl;
+  //std::cout<<"sample jumps a"<<std::endl;
 
   sample_jumps_a();
 
+ // std::cout<<"sample etas"<<std::endl;
   // sample etas
   sample_etas();
-
+  
+ // std::cout<<"sample sigmabar"<<std::endl;
   // sample Sigma bar
   sample_sigma_bar();
-
+  
+ // std::cout<<"sample Psi"<<std::endl;
   // sample Lambda block
   sample_Psi();
+    
+ // std::cout<<"sample tau"<<std::endl;
   sample_tau();
+
+ // std::cout<<"sample Phi"<<std::endl;
   sample_Phi();
+  //std::cout<<"before sampling Lambda"<<std::endl;
   sample_Lambda();
+ // std::cout<<"sample Lambda"<<std::endl;
 
   // print_debug_string();
 
@@ -833,7 +842,9 @@ void ClassicalMultiMCMC::sample_Lambda() {
   if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < log_ratio){
     //ACCEPTED
     acc_sampled_Lambda += 1;
-    Lambda.swap(prop_lambda);
+    pp_mix->decompose_proposal(prop_lambda);
+    //Lambda.swap(prop_lambda);
+    Lambda = prop_lambda;  
     pp_mix->update_decomposition_from_proposal();
     //std::cout<<"accepted Lambda"<<std::endl;
   }
@@ -849,11 +860,7 @@ void ClassicalMultiMCMC::sample_Lambda() {
 MalaMultiMCMC::MalaMultiMCMC(DeterminantalPP *pp_mix, BasePrec *g,
                             const Params &params,
                             double p_m_sigma, double mala_p):
-  MultivariateConditionalMCMC(pp_mix,g,params,p_m_sigma), mala_p(mala_p) {
-
-    target_fun.set_mala(this);
-    return;
-  }
+  MultivariateConditionalMCMC(pp_mix,g,params,p_m_sigma), target_fun(this), mala_p(mala_p) {}
 
 
 void MalaMultiMCMC::sample_Lambda() {
@@ -862,7 +869,9 @@ void MalaMultiMCMC::sample_Lambda() {
   double ln_px_curr;
   VectorXd grad_ln_px_curr;
   VectorXd Lambda_curr = Map<VectorXd>(Lambda.data(), dim_data*dim_fact); // column-major
+ //std::cout<<"before gradient"<<std::endl;
   stan::math::gradient(target_fun, Lambda_curr, ln_px_curr, grad_ln_px_curr);
+  //std::cout<<"after gradient"<<std::endl;
   // Proposal according MALA
   VectorXd prop_lambda_vec = Lambda_curr + mala_p*grad_ln_px_curr +
                     std::sqrt(2*mala_p)*Map<VectorXd>(normal_rng(std::vector<double>(dim_data*dim_fact, 0.),
@@ -876,7 +885,7 @@ void MalaMultiMCMC::sample_Lambda() {
   MatrixXd prop_lambda = Map<MatrixXd>(prop_lambda_vec.data(), dim_data, dim_fact);
 
   // DEBUG
-  //std::cout<<"Proposal Lambda: \n"<<prop_lambda<<std::endl;
+ // std::cout<<"Proposal Lambda: \n"<<prop_lambda<<std::endl;
 //  std::cout<<"Proposed Lambda"<<std::endl;
 
   tot_sampled_Lambda += 1;
@@ -899,7 +908,8 @@ void MalaMultiMCMC::sample_Lambda() {
     //ACCEPTED
     acc_sampled_Lambda += 1;
     pp_mix->decompose_proposal(prop_lambda);
-    Lambda.swap(prop_lambda);
+    //Lambda.swap(prop_lambda);
+    Lambda = prop_lambda;
     pp_mix->update_decomposition_from_proposal();
     //std::cout<<"accepted Lambda"<<std::endl;
   }
