@@ -3,7 +3,7 @@ syntax="proto3";
 message WishartParams {
     double nu = 1;
     bool identity = 2;
-    oneof sigma_ { double sigma = 3; }
+    double sigma = 3; 
     int32 dim = 4;
 }
 

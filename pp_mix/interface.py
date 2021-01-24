@@ -26,19 +26,18 @@ def getDeserialized(serialized, objType):
 
 
 class ConditionalMCMC(object):
-    def __init__(self, params_file="", pp_params=None, prec_params=None):
-        if params_file != "":
-            with open(params_file, 'r') as fp:
-                self.params = Params()
-                text_format.Parse(fp.read(), self.params)
-
-        else:
-            self.params = make_params(pp_params, prec_params)
+    def __init__(self, params_file):
         
+        with open(params_file, 'r') as fp:
+            self.params = Params()
+            text_format.Parse(fp.read(), self.params)
+
         self.serialized_params = self.params.SerializeToString()
 
     def run(self, ntrick, nburn, niter, thin, data, ranges, log_every=200):
+        
         check_params(self.params, data)
+        
         if data.ndim == 1:
             self.dim = 1
         else:
