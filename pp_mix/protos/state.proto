@@ -42,28 +42,3 @@ message MultivariateMixtureState {
     LambdaBlock lamb_block = 14;
 
 }
-
-
-message UnivariateMixtureState {
-    int32 ma = 1;
-    int32 mna = 2;
-    int32 mtot = 3;
-
-    EigenVector a_means = 4;
-    EigenVector na_means = 5;
-
-    EigenVector a_deltas = 6;
-    EigenVector na_deltas = 7;
-
-    EigenVector a_jumps = 8;
-    EigenVector na_jumps = 9;
-
-    repeated int32 clus_alloc = 10;
-    double u = 11;
-
-    EigenVector etas = 12;
-    EigenVector sigma_bar = 13;
-
-    LambdaBlock lamb_block = 14;
-
-}
