@@ -47,4 +47,11 @@ message Params {
     double betajump = 9;
     double agamma = 10;
     double bgamma = 11;
+    
+    double prop_means = 12;
+
+    oneof prop_lambda {
+        double MH_sigma = 13;
+        double mala_step = 14;
+    }
 }

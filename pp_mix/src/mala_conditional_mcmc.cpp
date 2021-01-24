@@ -6,14 +6,11 @@ namespace Mala {
 
 MultivariateConditionalMCMC::MultivariateConditionalMCMC(DeterminantalPP *pp_mix,
                                                          BasePrec *g,
-                                                         const Params &params,
-                                                         double p_m_sigma)
-    : pp_mix(pp_mix), prop_means_sigma(p_m_sigma) {
-  std::cout<<"begin multiMCMC constructor"<<std::endl;
-  //set_pp_mix(pp_mix);
+                                                         const Params &params)
+    : pp_mix(pp_mix) {
+
   set_prec(dynamic_cast<BaseMultiPrec *>(g));
   set_params(params);
-  //prop_means_sigma = p_m_sigma;
 
 }
 
@@ -27,6 +24,7 @@ void MultivariateConditionalMCMC::set_params(const Params & p){
   this->_beta_jump = params.betajump();
   this->_a_gamma = params.agamma();
   this->_b_gamma = params.bgamma();
+  this->prop_means_sigma = params.prop_means();
 
   return;
 }
@@ -790,9 +788,8 @@ void MultivariateConditionalMCMC::print_data_by_clus(int clus) {
 /// ClassicalMultiMCMC /////////
 ///////////////////////////////
 ClassicalMultiMCMC::ClassicalMultiMCMC(DeterminantalPP *pp_mix, BasePrec *g,
-                            const Params &params,
-                            double p_m_sigma, double p_l_sigma):
-  MultivariateConditionalMCMC(pp_mix,g,params,p_m_sigma), prop_lambda_sigma(p_l_sigma) {}
+                            const Params &params)
+  : MultivariateConditionalMCMC(pp_mix,g,params), prop_lambda_sigma(params.MH_sigma()) {}
 
 
 void ClassicalMultiMCMC::sample_Lambda() {
@@ -858,9 +855,8 @@ void ClassicalMultiMCMC::sample_Lambda() {
 ///////////////////////////////
 
 MalaMultiMCMC::MalaMultiMCMC(DeterminantalPP *pp_mix, BasePrec *g,
-                            const Params &params,
-                            double p_m_sigma, double mala_p):
-  MultivariateConditionalMCMC(pp_mix,g,params,p_m_sigma), target_fun(this), mala_p(mala_p) {}
+                            const Params &params)
+  : MultivariateConditionalMCMC(pp_mix,g,params), target_fun(this), mala_p(params.mala_step()) {}
 
 
 void MalaMultiMCMC::sample_Lambda() {

@@ -37,63 +37,64 @@ namespace Mala {
 
 class MultivariateConditionalMCMC {
  protected:
-     int dim_fact;
-     int dim_data;
-     int ndata;
-     MatrixXd data;
-     // fixed hyperparameters
-     double _a_phi; // Dirichlet parameter
-     double _alpha_jump, _beta_jump; // Gamma jump parameters
-     double _a_gamma, _b_gamma; // Sigma_bar parameters
+    int dim_fact;
+    int dim_data;
+    int ndata;
+    MatrixXd data;
+    // fixed hyperparameters
+    double _a_phi; // Dirichlet parameter
+    double _alpha_jump, _beta_jump; // Gamma jump parameters
+    double _a_gamma, _b_gamma; // Sigma_bar parameters
 
-     // NOTE: in each iteration (run_one), when updating etas, this structure is no more correct,
-     // since it is not updated. But this structure is no more used in following updates, so
-     // it is ok. This will be updated at next iteration in _relabel and used correctly
-     std::vector<std::vector<VectorXd>> etas_by_clus;
+    // for each allocated cluster, it contains the vector of indexes of observations:
+    // both useful for data and etas.
+    std::vector<std::vector<int>> obs_by_clus;
 
-     /* STATE */
-     // Rep-pp
-     double u;
+    // NOTE: in each iteration (run_one), when updating etas, this structure is no more correct,
+    // since it is not updated. But this structure is no more used in following updates, so
+    // it is ok. This will be updated at next iteration in _relabel and used correctly
+    std::vector<std::vector<VectorXd>> etas_by_clus;
 
-     // DISTRIBUTIONS
-     DeterminantalPP *pp_mix;
-     BaseMultiPrec *g;
+    /* STATE */
+    // Rep-pp
+    double u;
+    VectorXi clus_alloc;
+    VectorXd a_jumps, na_jumps;
+    MatrixXd a_means, na_means;
+    std::vector<PrecMat> a_deltas, na_deltas;
+    // etas: n x d matrix
+    MatrixXd etas;
+   
+    //Sigma_bar
+    VectorXd sigma_bar;
+    //Lambda-block
+    double tau;
+    MatrixXd Phi;
+    MatrixXd Psi;
+    MatrixXd Lambda;
+      
+    // DISTRIBUTIONS
+    DeterminantalPP *pp_mix;
+    BaseMultiPrec *g;
 
-     // FOR DEBUGGING
-     bool verbose = false;
+    // FOR DEBUGGING
+    bool verbose = false;
 
-     int acc_sampled_a_means = 0;
-     int tot_sampled_a_means = 0;
-     int acc_sampled_Lambda = 0;
-     int tot_sampled_Lambda = 0;
+    int acc_sampled_a_means = 0;
+    int tot_sampled_a_means = 0;
+    int acc_sampled_Lambda = 0;
+    int tot_sampled_Lambda = 0;
 
 
-     Params params;
+    Params params;
 
-     double prop_means_sigma;
+    double prop_means_sigma;
 
  public:
-   //Sigma_bar
-   VectorXd sigma_bar;
-   //Lambda-block
-   double tau;
-   MatrixXd Phi;
-   MatrixXd Psi;
-   MatrixXd Lambda;
-   // etas: n x d matrix
-  MatrixXd etas;
-   // for each allocated cluster, it contains the vector of indexes of observations:
-   // both useful for data and etas.
-   std::vector<std::vector<int>> obs_by_clus;
-
-   VectorXi clus_alloc;
-   VectorXd a_jumps, na_jumps;
-   MatrixXd a_means, na_means;
-   std::vector<PrecMat> a_deltas, na_deltas;
-
-     MultivariateConditionalMCMC() {}
-     ~MultivariateConditionalMCMC()
-     {
+    
+    MultivariateConditionalMCMC() {}
+    ~MultivariateConditionalMCMC()
+    {
          delete pp_mix;
          delete g;
     }
