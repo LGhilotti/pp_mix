@@ -9,7 +9,16 @@ import pp_mix.protos.py.params_pb2 as params_pb2
 from pp_mix.protos.py.params_pb2 import Params
 
 
-def check_params(params, data):
+def check_params(params, ranges):
+    if ranges.shape[1] != params.dimf :
+        raise ValueError(
+            "Ranges columns does not match factor dimension, "
+            "found ranges.shape[1]={0}, dimf={1}".format(ranges.shape[1],params.dimf))
+    if ranges.shape[0] != 2:
+        raise ValueError(
+            "Ranges should have 2 rows, incorrect number of rows, "
+            "found ranges.shape[0]={0}".format(ranges.shape[0]))
+                    
     if params.WhichOneof("prec_params") not in \
             ("fixed_multi_prec", "wishart"):
         raise ValueError(
@@ -18,6 +27,17 @@ def check_params(params, data):
                 "[{0}]".format(", ".join(("fixed_multi_prec", "wishart")))
             ))
 
+    if params.prec_params.HasField("fixed_multi_prec") and params.fixed_multi_prec.dim != params.dimf :
+        raise ValueError(
+            "Parameter dimf should match dimension of precision matrix, "
+            "found dimf={0}, prec_params.dim={1}".format(params.dimf,params.fixed_multi_prec.dim))
+
+    if params.prec_params.HasField("wishart") and params.wishart.dim != params.dimf :
+        raise ValueError(
+            "Parameter dimf should match dimension of precision matrix, "
+            "found dimf={0}, prec_params.dim={1}".format(params.dimf,params.wishart.dim))
+
+                   
     if params.WhichOneof("prec_params") == "wishart":
         if params.wishart.nu < data.shape[1] + 1:
             raise ValueError(
@@ -65,9 +85,6 @@ def check_params(params, data):
             "found prop_means={0} instead".format(params.prop_means))
 
 
-    if params.has:
-        if params.wishart.nu < data.shape[1] + 1:
-            raise ValueError(
-                """Parameter wishart.nu sould be strictly greater than {0} + 1,
-                 found wishart.nu={1} instead""".format(
-                     data.ndim, params.wishart.nu))
+    if (params.prop_lambda.HasField("MH_sigma") and params.MH_sigma <=0) or (params.prop_lambda.HasField("mala_step") and params.mala_step <=0) : 
+        raise ValueError(
+            "Parameter for Lambda update (MH or Mala) should be greater than 0")

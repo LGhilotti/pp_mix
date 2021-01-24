@@ -36,20 +36,12 @@ class ConditionalMCMC(object):
 
     def run(self, ntrick, nburn, niter, thin, data, ranges, log_every=200):
         
-        check_params(self.params, data)
+        check_params(self.params, ranges)
         
-        if data.ndim == 1:
-            self.dim = 1
-        else:
-            self.dim = data.shape[1]
-
         self._serialized_chains = pp_mix_cpp._run_pp_mix(
-            nburn, niter, thin, data, self.serialized_params, bernoulli, log_every)
+            ntrick, nburn, niter, thin, data, self.serialized_params, ranges, log_every)
 
-        if self.dim == 1:
-            objType = UnivariateMixtureState
-        else:
-            objType = MultivariateMixtureState
+        objType = MultivariateMixtureState
 
         self.chains = list(map(
             lambda x: getDeserialized(x, objType), self._serialized_chains))
