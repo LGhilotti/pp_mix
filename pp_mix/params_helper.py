@@ -9,7 +9,7 @@ import pp_mix.protos.py.params_pb2 as params_pb2
 from pp_mix.protos.py.params_pb2 import Params
 
 
-def check_params(params, ranges):
+def check_params(params, data, ranges):
     if ranges.shape[1] != params.dimf :
         raise ValueError(
             "Ranges columns does not match factor dimension, "

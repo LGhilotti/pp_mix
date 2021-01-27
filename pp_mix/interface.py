@@ -36,7 +36,7 @@ class ConditionalMCMC(object):
 
     def run(self, ntrick, nburn, niter, thin, data, ranges, log_every=200):
         
-        check_params(self.params, ranges)
+        check_params(self.params, data, ranges)
         
         self._serialized_chains = pp_mix_cpp._run_pp_mix(
             ntrick, nburn, niter, thin, data, self.serialized_params, ranges, log_every)
