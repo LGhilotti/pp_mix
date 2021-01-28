@@ -1,10 +1,17 @@
-#include <pybind11/eigen.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-
-#include <Eigen/Dense>
+//#include <Eigen/Dense>
 #include <deque>
 #include <string>
+
+#include <stan/math/fwd.hpp>
+#include <stan/math/mix.hpp>
+#include <stan/math/prim.hpp>
+#include <Eigen/Dense>
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+/// COLPA DI QUESTO EIGEN.H
+#include <pybind11/eigen.h>
+
 
 #include "../protos/cpp/params.pb.h"
 #include "../protos/cpp/state.pb.h"

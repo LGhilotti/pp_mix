@@ -2,8 +2,9 @@
 #define DETERMINANTAL_PP_HPP
 
 //#include <stdexcept>
-#include <Eigen/Dense>
 #include <stan/math/prim.hpp>
+#include <Eigen/Dense>
+
 #include <google/protobuf/message.h>
 
 #include "../rng.hpp"

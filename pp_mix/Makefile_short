@@ -8,20 +8,21 @@ CXX = g++
 CFLAGS = \
 	-std=c++1y \
 	-MMD \
-	-I $(STAN_ROOT_DIR) \
-	-I $(STAN_ROOT_DIR)/lib/eigen_*/ \
-	-I $(STAN_ROOT_DIR)/lib/boost_*/ \
-	-I $(STAN_ROOT_DIR)/lib/sundials_*/include \
-	-I $(STAN_ROOT_DIR)/lib/tbb_*/include \
-	-I $(PROTO_DIR) \
+	-I$(STAN_ROOT_DIR) \
+	-I$(STAN_ROOT_DIR)/lib/eigen_*/ \
+	-I$(STAN_ROOT_DIR)/lib/boost_*/  \
+	-I$(STAN_ROOT_DIR)/lib/sundials_*/include  \
+	-I$(STAN_ROOT_DIR)/lib/tbb_2019_U8/include  \
+	-I$(PROTO_DIR) \
 	-D_REENTRANT -fPIC \
-	-O3 -march=native -msse2 -funroll-loops -ftree-vectorize -fopenmp -Wfatal-errorsLDLIBS = \
+	-O3 -march=native -msse2 -funroll-loops -ftree-vectorize -fopenmp -Wfatal-errors
+LDLIBS = \
  	$(shell pkg-config --libs protobuf) -L$(STAN_ROOT_DIR)/lib/tbb \
-	-lgsl -lgslcblas -lpthread -ltbb -Wl,-rpath,"$(STAN_ROOT_DIR)/lib/tbb"
+	-lgsl -lgslcblas -lpthread -ltbb -Wl,-rpath,$(STAN_ROOT_DIR)/lib/tbb
 LDFLAGS = -D_REENTRANT -O3 -fopenmp
 
 PROTO_SRCS = $(wildcard $(PROTO_DIR)/cpp/*.cpp)
-#SPIKES_SRCS = $(SPIKES_DIR)/MALA/test_p50.cpp
+#SPIKES_SRCS = $(SPIKES_DIR)/check_short_aniso.cpp
 				#$(SPIKES_DIR)/p50_inference_test/test_all_p50_d2_3g_inference.cpp
 				#$(SPIKES_DIR)/first_inference_test/inf_multiple_params/debug_all_p200_d2_3g.cpp
 				#$(SPIKES_DIR)/first_inference_test/test_lambdablock_p4_d2_3g_inference.cpp
