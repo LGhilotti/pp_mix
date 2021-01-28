@@ -22,3 +22,7 @@ betajump: 3.0
 agamma: 60.
 
 bgamma: 30.
+
+prop_means: 0.1
+
+mala_step: 0.01

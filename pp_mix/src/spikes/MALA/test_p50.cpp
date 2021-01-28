@@ -97,13 +97,13 @@ int main() {
     Params params = loadTextProto<Params>(params_file);
     // NOTE: We use all params
 
-    double prop_m_sigma = 0.001;
+    //double prop_m_sigma = 0.001;
     //double prop_l_sigma = 0.01;
-    std::vector<double> mala_params {0.00001,0.0001};
+    //std::vector<double> mala_params {0.00001,0.0001};
 
-    int log_every=1000;
-    int ntrick = 15000;
-    int niter=40000;
+    int log_every=10;
+    int ntrick = 10;
+    int niter=10;
     std::ofstream myfile;
     /*
     myfile.open("./src/spikes/MALA/test_mala_p50.txt", std::ios::app);
@@ -116,13 +116,15 @@ int main() {
     myfile <<"original Lambda: \n"<<Lambda<<"\n";
     myfile.close();
     */
-    for (auto mala_p : mala_params){
+    //for (auto mala_p : mala_params){
 
       DeterminantalPP *pp_mix = make_dpp(params, ranges);
 
       BasePrec *g = make_delta(params);
 
-      Mala::MalaMultiMCMC sampler(pp_mix, g, params, prop_m_sigma, mala_p);
+      Mala::MalaMultiMCMC sampler(pp_mix, g, params);
+
+      //Mala::MalaMultiMCMC sampler(pp_mix, g, params);
 
       sampler.initialize(data);
     /*
@@ -156,11 +158,11 @@ int main() {
           std::cout<<"Trick, iter #"<< i + 1<< " / "<< ntrick<<std::endl;
         }
       }
-      myfile.open("./src/spikes/MALA/test_mala_p50_bis.txt", std::ios::app);
+      myfile.open("./src/spikes/MALA/PROVA.txt", std::ios::app);
       myfile << "\nntrick = "<<ntrick<<"\n";
       myfile << "niter = "<<niter<<"\n";
-      myfile << "Proposal means sigma: "<<prop_m_sigma<<"\n";
-      myfile << "Proposal mala step: "<<mala_p<<"\n";
+      myfile << "Proposal means sigma: "<<sampler.prop_means_sigma<<"\n";
+      //myfile << "Proposal mala step: "<<params.mala_step()<<"\n";
       myfile << "##### After settlement phase (current state) \n";
       myfile << "#### Means Acceptance rate: "<< std::fixed<<std::setprecision(5)<<sampler.a_means_acceptance_rate()<<"\n";
       myfile << "#### Lambda Acceptance rate: "<< std::fixed<<std::setprecision(5)<<sampler.Lambda_acceptance_rate()<<"\n";
@@ -215,7 +217,7 @@ int main() {
       myfile.close();
     
       
-    }
+    //}
 
     return 0;
 }

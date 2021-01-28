@@ -58,20 +58,7 @@ class MultivariateConditionalMCMC {
     /* STATE */
     // Rep-pp
     double u;
-    VectorXi clus_alloc;
-    VectorXd a_jumps, na_jumps;
-    MatrixXd a_means, na_means;
-    std::vector<PrecMat> a_deltas, na_deltas;
-    // etas: n x d matrix
-    MatrixXd etas;
-   
-    //Sigma_bar
-    VectorXd sigma_bar;
-    //Lambda-block
-    double tau;
-    MatrixXd Phi;
-    MatrixXd Psi;
-    MatrixXd Lambda;
+    
       
     // DISTRIBUTIONS
     DeterminantalPP *pp_mix;
@@ -88,9 +75,25 @@ class MultivariateConditionalMCMC {
 
     Params params;
 
-    double prop_means_sigma;
 
  public:
+    VectorXi clus_alloc;
+    VectorXd a_jumps, na_jumps;
+    MatrixXd a_means, na_means;
+    std::vector<PrecMat> a_deltas, na_deltas;
+    // etas: n x d matrix
+    MatrixXd etas;
+   
+    //Sigma_bar
+    VectorXd sigma_bar;
+    //Lambda-block
+    double tau;
+    MatrixXd Phi;
+    MatrixXd Psi;
+    MatrixXd Lambda;
+
+    double prop_means_sigma;
+
     
     MultivariateConditionalMCMC() {}
     ~MultivariateConditionalMCMC()
@@ -100,8 +103,7 @@ class MultivariateConditionalMCMC {
     }
 
     MultivariateConditionalMCMC(DeterminantalPP *pp_mix, BasePrec *g,
-                                const Params &params,
-                                double p_m_sigma);
+                                const Params &params);
 
 
     void set_pp_mix(DeterminantalPP* pp_mix) {this->pp_mix = pp_mix;}
@@ -206,20 +208,19 @@ class MultivariateConditionalMCMC {
     void print_data_by_clus(int clus);
 };
 
-
+/*
 class ClassicalMultiMCMC : public MultivariateConditionalMCMC {
 private:
   double prop_lambda_sigma;
 
 public:
   ClassicalMultiMCMC(DeterminantalPP *pp_mix, BasePrec *g,
-                              const Params &params,
-                              double p_m_sigma, double p_l_sigma);
+                              const Params &params);
 
   void sample_Lambda() override;
 
 };
-
+*/
 
 class MalaMultiMCMC : public MultivariateConditionalMCMC {
 private:
@@ -241,8 +242,7 @@ private:
 
 public:
   MalaMultiMCMC(DeterminantalPP *pp_mix, BasePrec *g,
-                              const Params &params,
-                              double p_m_sigma, double mala_p);
+                              const Params &params);
 
   void sample_Lambda() override;
 
