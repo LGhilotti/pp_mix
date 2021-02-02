@@ -787,10 +787,10 @@ void MultivariateConditionalMCMC::print_data_by_clus(int clus) {
 //////////////////////////////////////
 /// ClassicalMultiMCMC /////////
 ///////////////////////////////
-/*
+
 ClassicalMultiMCMC::ClassicalMultiMCMC(DeterminantalPP *pp_mix, BasePrec *g,
                             const Params &params)
-  : MultivariateConditionalMCMC(pp_mix,g,params), prop_lambda_sigma(params.MH_sigma()) {}
+  : MultivariateConditionalMCMC(pp_mix,g,params), prop_lambda_sigma(params.mh_sigma()) {}
 
 
 void ClassicalMultiMCMC::sample_Lambda() {
@@ -849,7 +849,7 @@ void ClassicalMultiMCMC::sample_Lambda() {
 
   return;
 }
-*/
+
 
 //////////////////////////////////////
 /// MalaMultiMCMC /////////

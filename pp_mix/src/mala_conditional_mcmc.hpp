@@ -208,7 +208,7 @@ class MultivariateConditionalMCMC {
     void print_data_by_clus(int clus);
 };
 
-/*
+
 class ClassicalMultiMCMC : public MultivariateConditionalMCMC {
 private:
   double prop_lambda_sigma;
@@ -220,7 +220,7 @@ public:
   void sample_Lambda() override;
 
 };
-*/
+
 
 class MalaMultiMCMC : public MultivariateConditionalMCMC {
 private:

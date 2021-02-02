@@ -10,7 +10,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 /// COLPA DI QUESTO EIGEN.H
-#include <pybind11/eigen.h>
+//#include <pybind11/eigen.h>
 
 
 #include "../protos/cpp/params.pb.h"
@@ -36,9 +36,10 @@ std::deque<py::bytes> _run_pp_mix(int ntrick, int burnin, int niter, int thin,
   DeterminantalPP* pp_mix = make_dpp(params, ranges);
   BasePrec* g = make_delta(params);
 
-  if (params.has_MH_sigma())
+  
+  if (params.step_means_case()==Params::StepMeansCase::kMhSigma)
     Mala::ClassicalMultiMCMC sampler(pp_mix, g, params);
-  else if (params.has_mala_step())
+  else if (params.step_means_case()==Params::StepMeansCase::kMalaStep)
     Mala::MalaMultiMCMC sampler(pp_mix, g, params);
 
   
