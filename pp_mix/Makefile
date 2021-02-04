@@ -47,7 +47,7 @@ all: generate_pybind
 generate_pybind: $(OBJS)
 	$(CXX) -shared $(CFLAGS) `/usr/bin/python3.8 -m pybind11 --includes` \
 		src/python_exports.cpp -o \
-		pp_mix_short`/usr/bin/python3.8-config --extension-suffix` \
+		pp_mix_high`/usr/bin/python3.8-config --extension-suffix` \
 		$(OBJS) $(LDLIBS) -fopenmp
 
 test: $(SPIKES_EXECS)

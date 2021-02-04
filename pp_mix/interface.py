@@ -11,12 +11,12 @@ from scipy.stats import multivariate_normal, norm
 import pp_mix.protos.py.params_pb2 as params_pb2
 from pp_mix.protos.py.state_pb2 import MultivariateMixtureState
 from pp_mix.protos.py.params_pb2 import Params
-from pp_mix.utils import loadChains, writeChains, to_numpy, gen_even_slices
-from pp_mix.params_helper import check_params, make_params
+from pp_mix.utils import loadChains, writeChains, to_numpy, to_proto, gen_even_slices
+from pp_mix.params_helper import check_params
 from pp_mix.precision import PrecMat
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
-import pp_mix_cpp  # noqa
+import pp_mix_high  # noqa
    
    
 def getDeserialized(serialized, objType):
@@ -38,8 +38,11 @@ class ConditionalMCMC(object):
         
         check_params(self.params, data, ranges)
         
-        self._serialized_chains = pp_mix_cpp._run_pp_mix(
-            ntrick, nburn, niter, thin, data, self.serialized_params, ranges, log_every)
+        self.serialized_data = to_proto(data).SerializeToString()
+        self.serialized_ranges = to_proto(ranges).SerializeToString()
+
+        self._serialized_chains = pp_mix_high._run_pp_mix(
+            ntrick, nburn, niter, thin, self.serialized_data, self.serialized_params, self.serialized_ranges, log_every)
 
         objType = MultivariateMixtureState
 

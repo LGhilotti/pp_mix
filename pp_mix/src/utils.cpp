@@ -88,6 +88,27 @@ void to_proto(const VectorXd &vec, EigenVector *out) {
   *out->mutable_data() = {vec.data(), vec.data() + vec.size()};
 }
 
+VectorXd to_eigen(const EigenVector &vec) {
+  int size = vec.size();
+  Eigen::VectorXd out;
+  if (size > 0) {
+    const double *p = &(vec.data())[0];
+    out = Map<const VectorXd>(p, size);
+  }
+  return out;
+}
+
+MatrixXd to_eigen(const EigenMatrix &mat) {
+  int nrow = mat.rows();
+  int ncol = mat.cols();
+  Eigen::MatrixXd out;
+  if (nrow > 0 & ncol > 0) {
+    const double *p = &(mat.data())[0];
+    out = Map<const MatrixXd>(p, nrow, ncol);
+  }
+  return out;
+}
+
 std::vector<VectorXd> to_vector_of_vectors(const MatrixXd &mat) {
   std::vector<VectorXd> out(mat.rows());
   for (int i = 0; i < mat.rows(); i++) out[i] = mat.row(i).transpose();

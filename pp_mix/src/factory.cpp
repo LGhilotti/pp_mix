@@ -1,5 +1,15 @@
 #include "factory.hpp"
 
+// SAMPLER
+Mala::MultivariateConditionalMCMC* make_sampler(const Params& params, DeterminantalPP* pp, BasePrec* g){
+
+    if (params.step_means_case()==Params::StepMeansCase::kMhSigma)
+      return new Mala::ClassicalMultiMCMC(pp, g, params);
+    else if (params.step_means_case()==Params::StepMeansCase::kMalaStep)
+      return new Mala::MalaMultiMCMC(pp, g, params);
+      
+}
+
 
 // DPP
 DeterminantalPP* make_dpp(const Params& params, const MatrixXd& ranges){

@@ -27,12 +27,12 @@ def check_params(params, data, ranges):
                 "[{0}]".format(", ".join(("fixed_multi_prec", "wishart")))
             ))
 
-    if params.prec_params.HasField("fixed_multi_prec") and params.fixed_multi_prec.dim != params.dimf :
+    if params.HasField("fixed_multi_prec") and params.fixed_multi_prec.dim != params.dimf :
         raise ValueError(
             "Parameter dimf should match dimension of precision matrix, "
             "found dimf={0}, prec_params.dim={1}".format(params.dimf,params.fixed_multi_prec.dim))
 
-    if params.prec_params.HasField("wishart") and params.wishart.dim != params.dimf :
+    if params.HasField("wishart") and params.wishart.dim != params.dimf :
         raise ValueError(
             "Parameter dimf should match dimension of precision matrix, "
             "found dimf={0}, prec_params.dim={1}".format(params.dimf,params.wishart.dim))
@@ -85,6 +85,6 @@ def check_params(params, data, ranges):
             "found prop_means={0} instead".format(params.prop_means))
 
 
-    if (params.prop_lambda.HasField("MH_sigma") and params.MH_sigma <=0) or (params.prop_lambda.HasField("mala_step") and params.mala_step <=0) : 
+    if (params.HasField("mh_sigma") and params.mh_sigma <=0) or (params.HasField("mala_step") and params.mala_step <=0) : 
         raise ValueError(
             "Parameter for Lambda update (MH or Mala) should be greater than 0")

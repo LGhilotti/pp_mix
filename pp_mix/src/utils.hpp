@@ -53,6 +53,10 @@ void to_proto(const MatrixXd &mat, EigenMatrix *out);
 
 void to_proto(const VectorXd &vec, EigenVector *out);
 
+Eigen::VectorXd to_eigen(const EigenVector &vec);
+
+Eigen::MatrixXd to_eigen(const EigenMatrix &vec);
+
 std::vector<VectorXd> to_vector_of_vectors(const MatrixXd &mat);
 
 VectorXd softmax(const VectorXd &logs);
