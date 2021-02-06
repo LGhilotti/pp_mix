@@ -725,7 +725,7 @@ void MultivariateConditionalMCMC::get_state_as_proto(
   lb.set_tau(tau);
   to_proto(Phi, lb.mutable_phi());
   to_proto(Psi, lb.mutable_psi());
-  to_proto(Lambda, lb.mutable_lambda());
+  to_proto(Lambda, lb.mutable_lamb());
   out->mutable_lamb_block()->CopyFrom(lb);
 
   return;

@@ -39,21 +39,21 @@ def check_params(params, data, ranges):
 
                    
     if params.WhichOneof("prec_params") == "wishart":
-        if params.wishart.nu < data.shape[1] + 1:
+        if params.wishart.nu <= params.dimf - 1:
             raise ValueError(
-                """Parameter wishart.nu sould be strictly greater than {0} + 1,
+                """Parameter wishart.nu sould be strictly greater than {0} - 1,
                  found wishart.nu={1} instead""".format(
-                     data.ndim, params.wishart.nu))
+                     params.dimf, params.wishart.nu))
 
     if params.wishart.identity is False:
         raise ValueError(
             "Only 'True' is supported for parametr wishart.identity")
 
-    if params.wishart.dim != data.shape[1]:
+    if params.wishart.dim != params.dimf:
         raise ValueError(
             "Parameter wishart.dim should match the dimension of the data, "
-            "found wishart.dim={0}, data.shape[1]={1}".format(
-                params.wishart.dim, data.shape[1]))
+            "found wishart.dim={0}, params.dimf={1}".format(
+                params.wishart.dim, params.dimf))
 
     if params.wishart.sigma <= 0:
         raise ValueError(

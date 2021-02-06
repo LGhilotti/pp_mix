@@ -30,14 +30,18 @@ std::deque<py::bytes> _run_pp_mix(int ntrick, int burnin, int niter, int thin,
                                   int log_every = 200) {
   Params params;
   params.ParseFromString(serialized_params);
-  EigenMatrix data_proto;
-  data_proto.ParseFromString(serialized_data);
-  EigenMatrix ranges_proto;
-  ranges_proto.ParseFromString(serialized_ranges);
+  Eigen::MatrixXd data;
+  Eigen::MatrixXd ranges;  
 
-  Eigen::MatrixXd data = to_eigen(data_proto);
-  Eigen::MatrixXd ranges = to_eigen(ranges_proto); 
-
+  {
+    EigenMatrix data_proto;
+    data_proto.ParseFromString(serialized_data);
+    data = to_eigen(data_proto);
+    EigenMatrix ranges_proto;
+    ranges_proto.ParseFromString(serialized_ranges);
+    ranges = to_eigen(ranges_proto);
+  }
+  
   std::deque<py::bytes> out;
   DeterminantalPP* pp_mix = make_dpp(params, ranges);
   BasePrec* g = make_delta(params);
@@ -74,6 +78,11 @@ std::deque<py::bytes> _run_pp_mix(int ntrick, int burnin, int niter, int thin,
       py::print("Running, iter #", i + 1, " / ", niter);
     }
   }
+  
+  py::object Decimal = py::module_::import("decimal").attr("Decimal");
+
+  py::print("Allocated Means acceptance rate ", Decimal(sampler->a_means_acceptance_rate()));
+  py::print("Lambda acceptance rate ", Decimal(sampler->Lambda_acceptance_rate()));
 
   return out;
 }

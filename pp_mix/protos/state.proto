@@ -15,7 +15,7 @@ message LambdaBlock {
     double tau = 1;
     EigenMatrix phi = 2;
     EigenMatrix psi = 3;
-    EigenMatrix lambda = 4;
+    EigenMatrix lamb = 4;
 }
 
 
