@@ -1,5 +1,5 @@
-#ifndef MALA_CONDITIONAL_MCMC
-#define MALA_CONDITIONAL_MCMC
+#ifndef MULTI_CONDITIONAL_MCMC
+#define MULTI_CONDITIONAL_MCMC
 
 #include <omp.h>
 #include <algorithm>
@@ -22,6 +22,7 @@
 
 #include "gig.hpp"
 #include "rng.hpp"
+#include "factory.hpp"
 #include "point_process/determinantalPP.hpp"
 #include "precs/base_prec.hpp"
 #include "precs/precmat.hpp"
@@ -33,7 +34,7 @@
 using namespace Eigen;
 using namespace stan::math;
 
-namespace Mala {
+namespace MCMCsampler {
 
 class MultivariateConditionalMCMC {
  protected:
@@ -59,19 +60,17 @@ class MultivariateConditionalMCMC {
     // Rep-pp
     double u;
     
-      
+    // Lambda sampling callable object
+    BaseLambdaSampler* sample_lambda;
+    // Allocated means sampling callable object
+    BaseMeansSampler* sample_alloc_means;
+
     // DISTRIBUTIONS
     DeterminantalPP *pp_mix;
     BaseMultiPrec *g;
 
     // FOR DEBUGGING
     bool verbose = false;
-
-    int acc_sampled_a_means = 0;
-    int tot_sampled_a_means = 0;
-    int acc_sampled_Lambda = 0;
-    int tot_sampled_Lambda = 0;
-
 
     Params params;
 
@@ -137,8 +136,8 @@ class MultivariateConditionalMCMC {
     void sample_means_na(double psi_u);
     //sample non-allocated means with trick, without changing number
     void sample_means_na_trick();
-    // sample allocated means
-    void sample_means_a();
+    // sample allocated means: OBJECT FOR MANAGE MALA AND MH
+    //void sample_means_a();
     // sample non-allocated deltas
     void sample_deltas_na();
     // sample allocated deltas
@@ -164,18 +163,15 @@ class MultivariateConditionalMCMC {
     void sample_Psi();
     void sample_tau();
     void sample_Phi();
-    // virtual: in uni cond process does not depend on Lambda
-    virtual void sample_Lambda() = 0;
+    // virtual: in uni cond process does not depend on Lambda: OBJECT TO MANAGE MALA AND MH
+    //virtual void sample_Lambda() = 0;
 
     // will be private
     inline double laplace(double u) const {
         return std::pow(_beta_jump, _alpha_jump) / std::pow(_beta_jump + u, _alpha_jump);
     }
 
-    //will be private:  for update of Lambda! Used in sample_lambda().
-    inline double compute_exp_lik(const MatrixXd& lamb) const;
-    inline double compute_exp_prior(const MatrixXd& lamb) const;
-
+    
     // to store the current state in proto format
     void get_state_as_proto(google::protobuf::Message *out_);
 
@@ -202,7 +198,7 @@ class MultivariateConditionalMCMC {
     }
 
     double Lambda_acceptance_rate() {
-        return (1.0 * acc_sampled_Lambda) / (1.0 * tot_sampled_Lambda);
+      return sample_lambda->Lambda_acc_rate();
     }
 
     void print_data_by_clus(int clus);

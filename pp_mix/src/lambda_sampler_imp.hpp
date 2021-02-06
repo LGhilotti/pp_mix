@@ -1,16 +1,16 @@
-#ifndef MALA_CONDITIONAL_MCMC_IMP_HPP
-#define MALA_CONDITIONAL_MCMC_IMP_HPP
+#ifndef LAMBDA_SAMPLER_IMP_HPP
+#define LAMBDA_SAMPLER_IMP_HPP
 
-namespace Mala {
+namespace MCMCsampler {
 
 // returns the ln of full-cond of Lambda|rest in current Lambda (lamb is vectorized)
 template <typename T>
-T MalaMultiMCMC::target_function::operator()(const Eigen::Matrix<T,Eigen::Dynamic,1> & lamb) const {
+T LambdaSamplerMala::lambda_target_function::operator()(const Eigen::Matrix<T,Eigen::Dynamic,1> & lamb) const {
 
   using std::pow; using std::exp; using std::log;
   //std::cout<<"checkpoint 1"<<std::endl;
   //Matrix<T,Dynamic,Dynamic> lamb_mat(dim_data,dim_fact);
-  Matrix<T,Dynamic,Dynamic> lamb_mat=Map<const Matrix<T,Dynamic,Dynamic>>(lamb.data(),m_mcmc->dim_data,m_mcmc->dim_fact);
+  Matrix<T,Dynamic,Dynamic> lamb_mat=Map<const Matrix<T,Dynamic,Dynamic>>(lamb.data(),m_mcmc.dim_data,m_mcmc.dim_fact);
  
   /*
   for (int j=0 ;j<dim_fact;j++){
@@ -42,7 +42,7 @@ T MalaMultiMCMC::target_function::operator()(const Eigen::Matrix<T,Eigen::Dynami
   std::cout<<"checkpoint 3"<<std::endl;
 */
   
-  output += -0.5 * sum(multiply(m_mcmc->sigma_bar.array().sqrt().matrix().asDiagonal(),subtract(m_mcmc->data.transpose(),multiply(lamb_mat, m_mcmc->etas.transpose()))).colwise().squaredNorm());
+  output += -0.5 * sum(multiply(m_mcmc.sigma_bar.array().sqrt().matrix().asDiagonal(),subtract(m_mcmc.data.transpose(),multiply(lamb_mat, m_mcmc.etas.transpose()))).colwise().squaredNorm());
 
   //output += -0.5 * (m_mcmc->sigma_bar.array().sqrt().matrix().asDiagonal()*(m_mcmc->data.transpose() - lamb_mat*m_mcmc->etas.transpose())).colwise().squaredNorm().sum();
   //output += multiply(lambda_mat,etas.transpose());
@@ -50,13 +50,13 @@ T MalaMultiMCMC::target_function::operator()(const Eigen::Matrix<T,Eigen::Dynami
   // ############# SECOND TERM
   //std::cout<<"checkpoint 4"<<std::endl;
 
-  T esp_fact = -2*pow(stan::math::pi(),2)*pow(exp(log_determinant_spd(crossprod(lamb_mat))),1.0/m_mcmc->dim_fact)*pow(m_mcmc->pp_mix->get_c(),-2.0/m_mcmc->dim_fact);
+  T esp_fact = -2*pow(stan::math::pi(),2)*pow(exp(log_determinant_spd(crossprod(lamb_mat))),1.0/m_mcmc.dim_fact)*pow(m_mcmc.pp_mix->get_c(),-2.0/m_mcmc.dim_fact);
   //std::cout<<"checkpoint 5"<<std::endl;
 
   T Ds(0.);
   Matrix<T,Dynamic,1> phis;
   Matrix<T,Dynamic,1> phi_tildes;
-  const MatrixXd& Kappas = m_mcmc->pp_mix->get_kappas();
+  const MatrixXd& Kappas = m_mcmc.pp_mix->get_kappas();
   phis.resize(Kappas.rows());
   phi_tildes.resize(Kappas.rows());
     //std::cout<<"checkpoint 6"<<std::endl;
@@ -68,16 +68,16 @@ T MalaMultiMCMC::target_function::operator()(const Eigen::Matrix<T,Eigen::Dynami
     T dot_prod = (Kappas.row(i)).dot(sol);
     phis(i) = m_mcmc->pp_mix->get_s()*exp(esp_fact*dot_prod);*/
     
-    phis(i) = m_mcmc->pp_mix->get_s()*exp(esp_fact * dot_product(Kappas.row(i),mdivide_left_spd(crossprod(lamb_mat), Kappas.row(i).transpose() )) );
+    phis(i) = m_mcmc.pp_mix->get_s()*exp(esp_fact * dot_product(Kappas.row(i),mdivide_left_spd(crossprod(lamb_mat), Kappas.row(i).transpose() )) );
 
     phi_tildes(i) = phis(i) / (1 - phis(i));
     Ds += log(1 + phi_tildes(i));
   }
   //std::cout<<"checkpoint 8"<<std::endl;
 
-  MatrixXd mu_trans(m_mcmc->a_means.rows(),m_mcmc->dim_fact);
-  for (int i = 0; i < m_mcmc->a_means.rows(); i++){
-        mu_trans.row(i) = (m_mcmc->pp_mix->get_A() * m_mcmc->a_means.row(i).transpose() + m_mcmc->pp_mix->get_b()).transpose();
+  MatrixXd mu_trans(m_mcmc.a_means.rows(),m_mcmc.dim_fact);
+  for (int i = 0; i < m_mcmc.a_means.rows(); i++){
+        mu_trans.row(i) = (m_mcmc.pp_mix->get_A() * m_mcmc.a_means.row(i).transpose() + m_mcmc.pp_mix->get_b()).transpose();
   }
      //std::cout<<"checkpoint 9"<<std::endl;
 
@@ -105,7 +105,7 @@ T MalaMultiMCMC::target_function::operator()(const Eigen::Matrix<T,Eigen::Dynami
   T f11 = f10.sum();
   T f12 =  f11 * (- 0.5 / (m_mcmc->tau*m_mcmc->tau));*/
 
-  output += (- 0.5 / (m_mcmc->tau*m_mcmc->tau)) * sum(elt_divide(lamb_mat.array().square(),(m_mcmc->Psi.array()) * (m_mcmc->Phi.array().square())));
+  output += (- 0.5 / (m_mcmc.tau*m_mcmc.tau)) * sum(elt_divide(lamb_mat.array().square(),(m_mcmc.Psi.array()) * (m_mcmc.Phi.array().square())));
 
   return output;
 }

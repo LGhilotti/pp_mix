@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "mala_conditional_mcmc.hpp"
+#include "conditional_mcmc.hpp"
 
 #include "precs/base_prec.hpp"
 #include "precs/fixed_prec.hpp"
@@ -15,7 +15,10 @@
 #include "../protos/cpp/params.pb.h"
 
 // SAMPLER
-Mala::MultivariateConditionalMCMC* make_sampler(const Params& params, DeterminantalPP* pp, BasePrec* g);
+MCMCsampler::MultivariateConditionalMCMC* make_sampler(const Params& params, DeterminantalPP* pp, BasePrec* g);
+
+// Lambda sampler
+MCMCsampler::BaseLambdaSampler* make_LambdaSampler(MCMCsampler::MultivariateConditionalMCMC* mcmc, const Params& params);
 
 // DPP
 DeterminantalPP* make_dpp(const Params& params, const MatrixXd& ranges);

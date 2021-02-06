@@ -1,8 +1,6 @@
-#include "mala_conditional_mcmc.hpp"
+#include "conditional_mcmc.hpp"
 
-#include "mala_conditional_mcmc_imp.hpp"
-
-namespace Mala {
+namespace MCMCsampler {
 
 MultivariateConditionalMCMC::MultivariateConditionalMCMC(DeterminantalPP *pp_mix,
                                                          BasePrec *g,
@@ -11,6 +9,8 @@ MultivariateConditionalMCMC::MultivariateConditionalMCMC(DeterminantalPP *pp_mix
 
   set_prec(dynamic_cast<BaseMultiPrec *>(g));
   set_params(params);
+  sample_lambda = make_LambdaSampler(this, params);
+  sample_alloc_means = make_MeansSampler(this, params);
 
 }
 
@@ -194,7 +194,8 @@ void MultivariateConditionalMCMC::run_one() {
 //  std::cout<<"sample means a"<<std::endl;
 
   // sample allocated variables
-  sample_means_a();
+  //sample_means_a();
+  sample_alloc_means();
   //std::cout<<"sample deltas a"<<std::endl;
 
   sample_deltas_a();
@@ -212,7 +213,7 @@ void MultivariateConditionalMCMC::run_one() {
   sample_Psi();
   sample_tau();
   sample_Phi();
-  sample_Lambda();
+  sample_lambda();
 
   // print_debug_string();
 
@@ -249,7 +250,8 @@ void MultivariateConditionalMCMC::run_one_trick() {
   //std::cout<<"sample means a"<<std::endl;
 
   // sample allocated variables
-  sample_means_a();
+  //sample_means_a();
+  sample_alloc_means();
   //std::cout<<"sample deltas a"<<std::endl;
 
   sample_deltas_a();
@@ -275,7 +277,7 @@ void MultivariateConditionalMCMC::run_one_trick() {
  // std::cout<<"sample Phi"<<std::endl;
   sample_Phi();
   //std::cout<<"before sampling Lambda"<<std::endl;
-  sample_Lambda();
+  sample_lambda();
  // std::cout<<"sample Lambda"<<std::endl;
 
   // print_debug_string();
@@ -348,48 +350,6 @@ void MultivariateConditionalMCMC::sample_means_na_trick()
     }
   }
   return;
-}
-
-
-void MultivariateConditionalMCMC::sample_means_a()
-{
-  MatrixXd allmeans(a_means.rows() + na_means.rows(), dim_fact);
-  allmeans << a_means, na_means;
-
-  for (int i = 0; i < a_means.rows(); i++) {
-    tot_sampled_a_means += 1;
-    MatrixXd others(allmeans.rows() - 1, dim_fact);
-
-    double currlik, proplik, prior_ratio, lik_ratio, arate;
-    const VectorXd &currmean = a_means.row(i).transpose();
-    const MatrixXd &cov_prop = MatrixXd::Identity(dim_fact, dim_fact) * prop_means_sigma;
-
-    // we PROPOSE a new point from a multivariate normal, with mean equal to the current point
-    // and covariance matrix diagonal
-    VectorXd prop =
-        stan::math::multi_normal_rng(currmean, cov_prop, Rng::Instance().get());
-
-    if (is_inside(prop)){ // if not, just keep the current mean and go to the next a_mean
-        currlik = lpdf_given_clus_multi(etas_by_clus[i], currmean, a_deltas[i]);
-        proplik = lpdf_given_clus_multi(etas_by_clus[i], prop, a_deltas[i]);
-
-        lik_ratio = proplik - currlik;
-        others = delete_row(allmeans, i);
-
-        prior_ratio =
-            pp_mix->papangelou(prop, others) - pp_mix->papangelou(currmean, others);
-
-        arate = lik_ratio + prior_ratio;
-
-        bool accepted = false;
-        if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < arate) {
-          accepted = true; // for printing in verbose mode
-          a_means.row(i) = prop.transpose();
-          acc_sampled_a_means += 1;
-        }
-    }
-
-  }
 }
 
 
@@ -664,17 +624,7 @@ VectorXd MultivariateConditionalMCMC::compute_grad_for_clus(
 }
 */
 
-double MultivariateConditionalMCMC::compute_exp_lik(const MatrixXd& lamb) const {
 
-  return (sigma_bar.array().sqrt().matrix().asDiagonal()*(data.transpose() - lamb*etas.transpose())).colwise().squaredNorm().sum();
-
-}
-
-double MultivariateConditionalMCMC::compute_exp_prior(const MatrixXd& lamb) const {
-
-  return (lamb.array().square()/(Psi.array()*Phi.array().square())).sum() * (- 0.5 / (tau*tau));
-
-}
 
 void MultivariateConditionalMCMC::get_state_as_proto(
     google::protobuf::Message *out_) {

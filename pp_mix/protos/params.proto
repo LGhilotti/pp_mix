@@ -50,7 +50,7 @@ message Params {
     
     double prop_means = 12;
 
-    oneof step_means {
+    oneof step_lambda {
         double mala_step = 13;
         double mh_sigma = 14;
     }
