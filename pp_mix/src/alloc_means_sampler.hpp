@@ -39,7 +39,8 @@ public:
 class MeansSamplerMala : public BaseMeansSampler {
 private:
     double mala_p_means;
-
+    static int ind_selected_mean;
+    static MatrixXd allmeans;
 public:
     LambdaSamplerMala(MultivariateConditionalMCMC* mcmc, double m_p): BaseLambdaSampler(mcmc), mala_p_means(m_p){}
     void operator() override;
@@ -48,13 +49,13 @@ public:
     class means_target_function {
     private:
         const MultivariateConditionalMCMC& m_mcmc;
-       
+        
     public:
    
         means_target_function(const MultivariateConditionalMCMC& mala): m_mcmc(mala){};
 
         template<typename T> T
-        operator()(const Eigen::Matrix<T,Eigen::Dynamic,1> & lamb) const ;
+        operator()(const Eigen::Matrix<T,Eigen::Dynamic,1> & mean) const ;
     } means_tar_fun;
 };
 

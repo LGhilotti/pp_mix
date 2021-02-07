@@ -128,6 +128,8 @@ public:
 
     const MatrixXd& get_kappas() const {return Kappas;}
 
+    const VectorXd& get_phi_tildes() const {return phi_tildes;}
+
     const MatrixXd& get_A() const {return A;}
 
     const VectorXd& get_b() const {return b;}

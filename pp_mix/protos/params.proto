@@ -48,11 +48,14 @@ message Params {
     double agamma = 10;
     double bgamma = 11;
     
-    double prop_means = 12;
+    oneof step_means {
+        double mala_step_means = 12;
+        double mh_sigma_means = 13;
+    }
 
     oneof step_lambda {
-        double mala_step = 13;
-        double mh_sigma = 14;
+        double mala_step_lambda = 14;
+        double mh_sigma_lambda = 15;
     }
     
 }

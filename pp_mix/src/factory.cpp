@@ -14,12 +14,21 @@ MCMCsampler::MultivariateConditionalMCMC* make_sampler(const Params& params, Det
 // Lambda sampler
 MCMCsampler::BaseLambdaSampler* make_LambdaSampler(MCMCsampler::MultivariateConditionalMCMC* mcmc, const Params& params){
     
-    if (params.step_lambda_case()==Params::StepLambdaCase::kMhSigma)
-      return new MCMCsampler::LambdaSamplerClassic(mcmc, params.mh_sigma());
-    else if (params.step_lambda_case()==Params::StepLambdaCase::kMalaStep)
-      return new MCMCsampler::LambdaSamplerMala(mcmc, params.mala_step());
+    if (params.step_lambda_case()==Params::StepLambdaCase::kMhSigmaLambda)
+      return new MCMCsampler::LambdaSamplerClassic(mcmc, params.mh_sigma_lambda());
+    else if (params.step_lambda_case()==Params::StepLambdaCase::kMalaStepLambda)
+      return new MCMCsampler::LambdaSamplerMala(mcmc, params.mala_step_lambda());
 }
 
+
+// Lambda sampler
+MCMCsampler::BaseMeansSampler* make_MeansSampler(MCMCsampler::MultivariateConditionalMCMC* mcmc, const Params& params){
+    
+    if (params.step_means_case()==Params::StepMeansCase::kMhSigmaMeans)
+      return new MCMCsampler::MeansSamplerClassic(mcmc, params.mh_sigma_means());
+    else if (params.step_means_case()==Params::StepMeansCase::kMalaStepMeans)
+      return new MCMCsampler::MeansSamplerMala(mcmc, params.mala_step_means());
+}
 
 // DPP
 DeterminantalPP* make_dpp(const Params& params, const MatrixXd& ranges){

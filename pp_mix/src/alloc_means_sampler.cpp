@@ -56,60 +56,59 @@ void MeansSamplerClassic::operator() {
 
 
 void MeansSamplerMala::operator() {
-/*
-  //std::cout<<"sample Lambda"<<std::endl;
-  // Current Lambda (here are the means) are expanded to vector<double> column major
-  double ln_px_curr;
-  VectorXd grad_ln_px_curr;
-  VectorXd Lambda_curr = Map<VectorXd>(mcmc->Lambda.data(), mcmc->dim_data*mcmc->dim_fact); // column-major
- //std::cout<<"before gradient"<<std::endl;
-  stan::math::gradient(lambda_tar_fun, Lambda_curr, ln_px_curr, grad_ln_px_curr);
-  //std::cout<<"after gradient"<<std::endl;
-  // Proposal according MALA
-  VectorXd prop_lambda_vec = Lambda_curr + mala_p_lambda*grad_ln_px_curr +
-                    std::sqrt(2*mala_p_lambda)*Map<VectorXd>(normal_rng(std::vector<double>(mcmc->dim_data*mcmc->dim_fact, 0.),
-                  std::vector<double>(mcmc->dim_data*mcmc->dim_fact,1.), Rng::Instance().get()).data() , mcmc->dim_data*mcmc->dim_fact);
+  
+  allmeans.resize(mcmc->a_means.rows() + mcmc->na_means.rows(), mcmc->dim_fact);
+  allmeans << mcmc->a_means, mcmc->na_means;
 
+  for (ind_selected_mean = 0; ind_selected_mean < mcmc->a_means.rows(); ind_selected_mean++) {
+    tot_sampled_a_means += 1;
 
-  double ln_px_prop;
-  VectorXd grad_ln_px_prop;
-  stan::math::gradient(lambda_tar_fun, prop_lambda_vec, ln_px_prop, grad_ln_px_prop);
+    double ln_px_curr;
+    VectorXd grad_ln_px_curr;
+    VectorXd a_mean_curr = allmeans.row(ind_selected_mean).traspose(); 
+  //std::cout<<"before gradient"<<std::endl;
+    stan::math::gradient(means_tar_fun, a_mean_curr, ln_px_curr, grad_ln_px_curr);
+    //std::cout<<"after gradient"<<std::endl;
+    // Proposal according MALA
+    VectorXd prop_a_mean = a_mean_curr + mala_p_means*grad_ln_px_curr +
+                      std::sqrt(2*mala_p_means)*Map<VectorXd>(normal_rng(std::vector<double>(mcmc->dim_fact, 0.),
+                    std::vector<double>(mcmc->dim_fact,1.), Rng::Instance().get()).data() , mcmc->dim_fact);
 
-  MatrixXd prop_lambda = Map<MatrixXd>(prop_lambda_vec.data(), mcmc->dim_data, mcmc->dim_fact);
+    if (mcmc->is_inside(prop_a_mean)){ // if not, just keep the current mean and go to the next a_mean
+      double ln_px_prop;
+      VectorXd grad_ln_px_prop;
+      stan::math::gradient(means_tar_fun, prop_a_mean, ln_px_prop, grad_ln_px_prop);
 
-  // DEBUG
- // std::cout<<"Proposal Lambda: \n"<<prop_lambda<<std::endl;
-//  std::cout<<"Proposed Lambda"<<std::endl;
+      // DEBUG
+    // std::cout<<"Proposal Lambda: \n"<<prop_lambda<<std::endl;
+    //  std::cout<<"Proposed Lambda"<<std::endl;
 
-  tot_sampled_Lambda += 1;
-  // COMPUTE ACCEPTANCE PROBABILITY
-  // (log) TARGET DENSITY TERMS
-  double ln_ratio_target;
-  ln_ratio_target = ln_px_prop - ln_px_curr;
-  // DEBUG
-  //std::cout<<"log_ratio: "<<log_ratio<<std::endl;
+      // COMPUTE ACCEPTANCE PROBABILITY
+      // (log) TARGET DENSITY TERMS
+      double ln_ratio_target;
+      ln_ratio_target = ln_px_prop - ln_px_curr;
+      // DEBUG
+      //std::cout<<"log_ratio: "<<log_ratio<<std::endl;
 
-  //(log) PROPOSAL DENSITY TERMS
-  double ln_q_num, ln_q_den;
-  ln_q_num = - (Lambda_curr - prop_lambda_vec - mala_p_lambda*grad_ln_px_prop).squaredNorm() /(4*mala_p_lambda);
-  ln_q_den = - (prop_lambda_vec - Lambda_curr - mala_p_lambda*grad_ln_px_curr).squaredNorm() /(4*mala_p_lambda);
+      //(log) PROPOSAL DENSITY TERMS
+      double ln_q_num, ln_q_den;
+      ln_q_num = - (a_mean_curr - prop_a_mean - mala_p_means*grad_ln_px_prop).squaredNorm() /(4*mala_p_means);
+      ln_q_den = - (prop_a_mean - a_mean_curr - mala_p_means*grad_ln_px_curr).squaredNorm() /(4*mala_p_means);
 
-  // -> acceptance probability
-  double ln_ratio = ln_ratio_target + ln_q_num - ln_q_den;
+      // -> acceptance probability
+      double ln_ratio = ln_ratio_target + ln_q_num - ln_q_den;
 
-  if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < ln_ratio){
-    //ACCEPTED
-    acc_sampled_Lambda += 1;
-    mcmc->pp_mix->decompose_proposal(prop_lambda);
-    //Lambda.swap(prop_lambda);
-    mcmc->Lambda = prop_lambda;
-    mcmc->pp_mix->update_decomposition_from_proposal();
-    //std::cout<<"accepted Lambda"<<std::endl;
+      if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < ln_ratio){
+        //ACCEPTED
+        acc_sampled_a_means += 1;
+        mcmc->a_means.row(ind_selected_mean) = prop_a_mean.transpose();
+        //std::cout<<"accepted Lambda"<<std::endl;
+      }
+    }
   }
-
   return;
 }
-*/
+
     
 
 }

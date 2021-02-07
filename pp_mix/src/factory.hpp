@@ -20,6 +20,9 @@ MCMCsampler::MultivariateConditionalMCMC* make_sampler(const Params& params, Det
 // Lambda sampler
 MCMCsampler::BaseLambdaSampler* make_LambdaSampler(MCMCsampler::MultivariateConditionalMCMC* mcmc, const Params& params);
 
+// AMeans sampler
+MCMCsampler::BaseMeansSampler* make_MeansSampler(MCMCsampler::MultivariateConditionalMCMC* mcmc, const Params& params);
+
 // DPP
 DeterminantalPP* make_dpp(const Params& params, const MatrixXd& ranges);
 
