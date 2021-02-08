@@ -1,7 +1,8 @@
 #include "alloc_means_sampler.hpp"
+#include "conditional_mcmc.hpp"
 
 namespace MCMCsampler {
-void BaseMeansSampler::Means_acc_rate(){
+double BaseMeansSampler::Means_acc_rate(){
         return (1.0 * acc_sampled_a_means) / (1.0 * tot_sampled_a_means);
 }
 
@@ -9,7 +10,7 @@ void BaseMeansSampler::Means_acc_rate(){
 /// MeansSamplerClassic /////////
 ///////////////////////////////
 
-void MeansSamplerClassic::operator() {
+void MeansSamplerClassic::perform() {
 
   MatrixXd allmeans(mcmc->a_means.rows() + mcmc->na_means.rows(), mcmc->dim_fact);
   allmeans << mcmc->a_means, mcmc->na_means;
@@ -55,7 +56,7 @@ void MeansSamplerClassic::operator() {
 ///////////////////////////////
 
 
-void MeansSamplerMala::operator() {
+void MeansSamplerMala::perform() {
   
   allmeans.resize(mcmc->a_means.rows() + mcmc->na_means.rows(), mcmc->dim_fact);
   allmeans << mcmc->a_means, mcmc->na_means;

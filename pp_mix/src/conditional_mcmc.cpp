@@ -1,4 +1,7 @@
 #include "conditional_mcmc.hpp"
+#include "lambda_sampler.hpp"
+#include "alloc_means_sampler.hpp"
+#include "factory.hpp"
 
 namespace MCMCsampler {
 
@@ -24,7 +27,6 @@ void MultivariateConditionalMCMC::set_params(const Params & p){
   this->_beta_jump = params.betajump();
   this->_a_gamma = params.agamma();
   this->_b_gamma = params.bgamma();
-  this->prop_means_sigma = params.prop_means();
 
   return;
 }
@@ -195,7 +197,7 @@ void MultivariateConditionalMCMC::run_one() {
 
   // sample allocated variables
   //sample_means_a();
-  sample_alloc_means();
+  sample_alloc_means->perform();
   //std::cout<<"sample deltas a"<<std::endl;
 
   sample_deltas_a();
@@ -213,7 +215,7 @@ void MultivariateConditionalMCMC::run_one() {
   sample_Psi();
   sample_tau();
   sample_Phi();
-  sample_lambda();
+  sample_lambda->perform();
 
   // print_debug_string();
 
@@ -251,7 +253,7 @@ void MultivariateConditionalMCMC::run_one_trick() {
 
   // sample allocated variables
   //sample_means_a();
-  sample_alloc_means();
+  sample_alloc_means->perform();
   //std::cout<<"sample deltas a"<<std::endl;
 
   sample_deltas_a();
@@ -277,7 +279,7 @@ void MultivariateConditionalMCMC::run_one_trick() {
  // std::cout<<"sample Phi"<<std::endl;
   sample_Phi();
   //std::cout<<"before sampling Lambda"<<std::endl;
-  sample_lambda();
+  sample_lambda->perform();
  // std::cout<<"sample Lambda"<<std::endl;
 
   // print_debug_string();
@@ -728,140 +730,18 @@ void MultivariateConditionalMCMC::print_debug_string() {
 }
 
 
+double a_means_acceptance_rate() {
+        return sample_alloc_means->a_means_acc_rate();
+}
+
+
+double Lambda_acceptance_rate() {
+      return sample_lambda->Lambda_acc_rate();
+}
+
 void MultivariateConditionalMCMC::print_data_by_clus(int clus) {
   for (const int &d : obs_by_clus[clus])
     std::cout << data.row(d).transpose() << std::endl;
-}
-
-
-//////////////////////////////////////
-/// ClassicalMultiMCMC /////////
-///////////////////////////////
-
-ClassicalMultiMCMC::ClassicalMultiMCMC(DeterminantalPP *pp_mix, BasePrec *g,
-                            const Params &params)
-  : MultivariateConditionalMCMC(pp_mix,g,params), prop_lambda_sigma(params.mh_sigma()) {}
-
-
-void ClassicalMultiMCMC::sample_Lambda() {
-  //std::cout<<"sample Lambda"<<std::endl;
-  // Current Lambda (here are the means) are expanded to vector<double> column major
-  MatrixXd prop_lambda = Map<MatrixXd>(normal_rng( std::vector<double>(Lambda.data(), Lambda.data() + Lambda.size()) ,
-              std::vector<double>(dim_data*dim_fact, prop_lambda_sigma), Rng::Instance().get()).data() , dim_data, dim_fact);
-  // DEBUG
-  //std::cout<<"Proposal Lambda: \n"<<prop_lambda<<std::endl;
-//  std::cout<<"Proposed Lambda"<<std::endl;
-
-  tot_sampled_Lambda += 1;
-  // we use log for each term
-  double curr_lik, prop_lik;
-  curr_lik = -0.5 * compute_exp_lik(Lambda);
-  prop_lik = -0.5 * compute_exp_lik(prop_lambda);
-  // DEBUG
-  //std::cout<<"curr_lik = "<<curr_lik<<"  ; prop_lik = "<<prop_lik<<std::endl;
-
-  double curr_prior_cond_process, prop_prior_cond_process;
-  MatrixXd means(a_means.rows()+na_means.rows(),dim_fact);
-  means << a_means, na_means;
-
-  pp_mix->decompose_proposal(prop_lambda);
-
-  curr_prior_cond_process = pp_mix->dens_cond(means, true);
-  prop_prior_cond_process = pp_mix->dens_cond_in_proposal(means, true);
-  // DEBUG
-  //std::cout<<"curr_p_c_p = "<<curr_prior_cond_process<<"  ; prop_p_c_p = "<<prop_prior_cond_process<<std::endl;
-
-  double curr_prior_lambda, prop_prior_lambda;
-  curr_prior_lambda = compute_exp_prior(Lambda);
-  prop_prior_lambda = compute_exp_prior(prop_lambda);
-  // DEBUG
- //std::cout<<"curr_prior_lambda = "<<curr_prior_lambda<<" ; prop_prior_lambda = "<<prop_prior_lambda<<std::endl;
-
-  double curr_dens, prop_dens, log_ratio;
-  curr_dens = curr_lik + curr_prior_cond_process + curr_prior_lambda;
-  prop_dens = prop_lik + prop_prior_cond_process + prop_prior_lambda;
-  // DEBUG
-//  std::cout<<"curr_dens = "<<curr_dens<<" ; prop_dens = "<<prop_dens<<std::endl;
-
-  log_ratio = prop_dens - curr_dens;
-  // DEBUG
-  //std::cout<<"log_ratio: "<<log_ratio<<std::endl;
-
-  if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < log_ratio){
-    //ACCEPTED
-    acc_sampled_Lambda += 1;
-    pp_mix->decompose_proposal(prop_lambda);
-    //Lambda.swap(prop_lambda);
-    Lambda = prop_lambda;  
-    pp_mix->update_decomposition_from_proposal();
-    //std::cout<<"accepted Lambda"<<std::endl;
-  }
-
-  return;
-}
-
-
-//////////////////////////////////////
-/// MalaMultiMCMC /////////
-///////////////////////////////
-
-MalaMultiMCMC::MalaMultiMCMC(DeterminantalPP *pp_mix, BasePrec *g,
-                            const Params &params)
-  : MultivariateConditionalMCMC(pp_mix,g,params), target_fun(this), mala_p(params.mala_step()) {}
-
-
-void MalaMultiMCMC::sample_Lambda() {
-  //std::cout<<"sample Lambda"<<std::endl;
-  // Current Lambda (here are the means) are expanded to vector<double> column major
-  double ln_px_curr;
-  VectorXd grad_ln_px_curr;
-  VectorXd Lambda_curr = Map<VectorXd>(Lambda.data(), dim_data*dim_fact); // column-major
- //std::cout<<"before gradient"<<std::endl;
-  stan::math::gradient(target_fun, Lambda_curr, ln_px_curr, grad_ln_px_curr);
-  //std::cout<<"after gradient"<<std::endl;
-  // Proposal according MALA
-  VectorXd prop_lambda_vec = Lambda_curr + mala_p*grad_ln_px_curr +
-                    std::sqrt(2*mala_p)*Map<VectorXd>(normal_rng(std::vector<double>(dim_data*dim_fact, 0.),
-                  std::vector<double>(dim_data*dim_fact,1.), Rng::Instance().get()).data() , dim_data*dim_fact);
-
-
-  double ln_px_prop;
-  VectorXd grad_ln_px_prop;
-  stan::math::gradient(target_fun, prop_lambda_vec, ln_px_prop, grad_ln_px_prop);
-
-  MatrixXd prop_lambda = Map<MatrixXd>(prop_lambda_vec.data(), dim_data, dim_fact);
-
-  // DEBUG
- // std::cout<<"Proposal Lambda: \n"<<prop_lambda<<std::endl;
-//  std::cout<<"Proposed Lambda"<<std::endl;
-
-  tot_sampled_Lambda += 1;
-  // COMPUTE ACCEPTANCE PROBABILITY
-  // (log) TARGET DENSITY TERMS
-  double ln_ratio_target;
-  ln_ratio_target = ln_px_prop - ln_px_curr;
-  // DEBUG
-  //std::cout<<"log_ratio: "<<log_ratio<<std::endl;
-
-  //(log) PROPOSAL DENSITY TERMS
-  double ln_q_num, ln_q_den;
-  ln_q_num = - (Lambda_curr - prop_lambda_vec - mala_p*grad_ln_px_prop).squaredNorm() /(4*mala_p);
-  ln_q_den = - (prop_lambda_vec - Lambda_curr - mala_p*grad_ln_px_curr).squaredNorm() /(4*mala_p);
-
-  // -> acceptance probability
-  double ln_ratio = ln_ratio_target + ln_q_num - ln_q_den;
-
-  if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < ln_ratio){
-    //ACCEPTED
-    acc_sampled_Lambda += 1;
-    pp_mix->decompose_proposal(prop_lambda);
-    //Lambda.swap(prop_lambda);
-    Lambda = prop_lambda;
-    pp_mix->update_decomposition_from_proposal();
-    //std::cout<<"accepted Lambda"<<std::endl;
-  }
-
-  return;
 }
 
 }

@@ -1,11 +1,19 @@
-#ifndef LAMBDA_SAMPLER
-#define LAMBDA_SAMPLER
+#ifndef LAMBDA_SAMPLER_HPP
+#define LAMBDA_SAMPLER_HPP
 
+#include <stan/math/fwd.hpp>
+#include <stan/math/mix.hpp>
+#include <stan/math/prim.hpp>
+#include <Eigen/Dense>
 #include "rng.hpp"
-#include "conditional_mcmc.hpp"
 
 using namespace Eigen;
 using namespace stan::math;
+
+namespace MCMCsampler {
+    class MultivariateConditionalMCMC ;
+}
+
 
 namespace MCMCsampler {
 
@@ -21,7 +29,7 @@ public:
     BaseLambdaSampler(MultivariateConditionalMCMC* mcmc): mcmc(mcmc) {}
     virtual ~BaseLambdaSampler(){}
 
-    virtual void operator() = 0;
+    virtual void perform() = 0;
 
     double Lambda_acc_rate();
 };
@@ -37,7 +45,7 @@ private:
 
 public:
     LambdaSamplerClassic(MultivariateConditionalMCMC* mcmc, double p_l_s): BaseLambdaSampler(mcmc), prop_lambda_sigma(p_l_s){}
-    void operator() override;
+    void perform() override;
 };
 
 class LambdaSamplerMala : public BaseLambdaSampler {
@@ -45,8 +53,8 @@ private:
     double mala_p_lambda;
 
 public:
-    LambdaSamplerMala(MultivariateConditionalMCMC* mcmc, double m_p): BaseLambdaSampler(mcmc), mala_p_lambda(m_p){}
-    void operator() override;
+    LambdaSamplerMala(MultivariateConditionalMCMC* mcmc, double m_p): BaseLambdaSampler(mcmc), mala_p_lambda(m_p), lambda_tar_fun(*mcmc){}
+    void perform() override;
     
     // TARGET FUNCTION OBJECT : must implement logfunction (as required in Mala)
     class lambda_target_function {
@@ -62,7 +70,7 @@ public:
     } lambda_tar_fun;
 };
 
-};
+}
 
 #include "lambda_sampler_imp.hpp"
 

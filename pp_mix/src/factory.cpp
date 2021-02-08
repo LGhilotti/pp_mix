@@ -1,15 +1,5 @@
 #include "factory.hpp"
 
-// SAMPLER
-MCMCsampler::MultivariateConditionalMCMC* make_sampler(const Params& params, DeterminantalPP* pp, BasePrec* g){
-
-    if (params.step_means_case()==Params::StepMeansCase::kMhSigma)
-      return new Mala::ClassicalMultiMCMC(pp, g, params);
-    else if (params.step_means_case()==Params::StepMeansCase::kMalaStep)
-      return new Mala::MalaMultiMCMC(pp, g, params);
-      
-}
-
 
 // Lambda sampler
 MCMCsampler::BaseLambdaSampler* make_LambdaSampler(MCMCsampler::MultivariateConditionalMCMC* mcmc, const Params& params){
@@ -21,7 +11,7 @@ MCMCsampler::BaseLambdaSampler* make_LambdaSampler(MCMCsampler::MultivariateCond
 }
 
 
-// Lambda sampler
+// AMeans sampler
 MCMCsampler::BaseMeansSampler* make_MeansSampler(MCMCsampler::MultivariateConditionalMCMC* mcmc, const Params& params){
     
     if (params.step_means_case()==Params::StepMeansCase::kMhSigmaMeans)

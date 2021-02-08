@@ -3,7 +3,12 @@
 
 #include <memory>
 
-#include "conditional_mcmc.hpp"
+#include "lambda_sampler.hpp"
+#include "alloc_means_sampler.hpp"
+
+namespace MCMCsampler {
+    class MultivariateConditionalMCMC ;
+}
 
 #include "precs/base_prec.hpp"
 #include "precs/fixed_prec.hpp"
@@ -13,9 +18,6 @@
 #include "point_process/determinantalPP.hpp"
 
 #include "../protos/cpp/params.pb.h"
-
-// SAMPLER
-MCMCsampler::MultivariateConditionalMCMC* make_sampler(const Params& params, DeterminantalPP* pp, BasePrec* g);
 
 // Lambda sampler
 MCMCsampler::BaseLambdaSampler* make_LambdaSampler(MCMCsampler::MultivariateConditionalMCMC* mcmc, const Params& params);

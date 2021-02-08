@@ -10,29 +10,28 @@
 #include <functional>
 #include <cmath>
 
-//#include <Eigen/Dense>
-//#include <stan/math/prim.hpp>
-//#include <stan/math.hpp>
-#include <stan/math/fwd.hpp>
-#include <stan/math/mix.hpp>
+
+//include <stan/math/fwd.hpp>
+//#include <stan/math/mix.hpp>
 #include <stan/math/prim.hpp>
 #include <Eigen/Dense>
 
 #include <google/protobuf/message.h>
 
-#include "gig.hpp"
 #include "rng.hpp"
-#include "factory.hpp"
 #include "point_process/determinantalPP.hpp"
 #include "precs/base_prec.hpp"
-#include "precs/precmat.hpp"
 #include "utils.hpp"
-#include "../protos/cpp/state.pb.h"
 #include "../protos/cpp/params.pb.h"
-
 
 using namespace Eigen;
 using namespace stan::math;
+
+namespace MCMCsampler {
+    class BaseLambdaSampler ;
+    class BaseMeansSampler ;
+}
+
 
 namespace MCMCsampler {
 
@@ -59,23 +58,6 @@ class MultivariateConditionalMCMC {
     /* STATE */
     // Rep-pp
     double u;
-    
-    // Lambda sampling callable object
-    BaseLambdaSampler* sample_lambda;
-    // Allocated means sampling callable object
-    BaseMeansSampler* sample_alloc_means;
-
-    // DISTRIBUTIONS
-    DeterminantalPP *pp_mix;
-    BaseMultiPrec *g;
-
-    // FOR DEBUGGING
-    bool verbose = false;
-
-    Params params;
-
-
- public:
     VectorXi clus_alloc;
     VectorXd a_jumps, na_jumps;
     MatrixXd a_means, na_means;
@@ -91,7 +73,23 @@ class MultivariateConditionalMCMC {
     MatrixXd Psi;
     MatrixXd Lambda;
 
-    double prop_means_sigma;
+    // Lambda sampling callable object
+    BaseLambdaSampler* sample_lambda;
+    // Allocated means sampling callable object
+    BaseMeansSampler* sample_alloc_means;
+
+   
+    // FOR DEBUGGING
+    bool verbose = false;
+
+    Params params;
+
+
+ public:
+   
+    // DISTRIBUTIONS
+    DeterminantalPP *pp_mix;
+    BaseMultiPrec *g;
 
     
     MultivariateConditionalMCMC() {}
@@ -193,61 +191,47 @@ class MultivariateConditionalMCMC {
 
     //virtual VectorXd compute_grad_for_clus(int clus, const VectorXd &mean) = 0;
 
-    double a_means_acceptance_rate() {
-        return (1.0 * acc_sampled_a_means) / (1.0 * tot_sampled_a_means);
-    }
+    inline double a_means_acceptance_rate();
 
-    double Lambda_acceptance_rate() {
-      return sample_lambda->Lambda_acc_rate();
-    }
+    inline double Lambda_acceptance_rate();
 
     void print_data_by_clus(int clus);
-};
 
+    int get_dim_data() const {return dim_data;}
 
-class ClassicalMultiMCMC : public MultivariateConditionalMCMC {
-private:
-  double prop_lambda_sigma;
+    int get_dim_fact() const {return dim_fact;}
 
-public:
-  ClassicalMultiMCMC(DeterminantalPP *pp_mix, BasePrec *g,
-                              const Params &params);
+    double get_tau() const {return tau;}
 
-  void sample_Lambda() override;
+    MatrixXd get_Psi() const {return Psi;}
 
-};
+    MatrixXd get_Phi() const {return Phi;}
 
+    MatrixXd get_Lambda() const {return Lambda;}
 
-class MalaMultiMCMC : public MultivariateConditionalMCMC {
-private:
-  double mala_p;
+    VectorXd get_sigma_bar() const {return sigma_bar;}
+
+    MatrixXd get_data() const {return data;}
+
+    MatrixXd get_etas() const {return etas;}
+
+    int get_num_a_means() const {return a_means.rows();}
+
+    int get_num_na_means() const {return na_means.rows();}
+
+    RowVectorXd get_single_a_mean(int ind) const {return a_means.row(ind);}
+
+    MatrixXd get_a_means() const {return a_means;}
+
+    MatrixXd get_na_means() const {return na_means;}
+
+    MatrixXd& set_Lambda() {return Lambda;}
     
-// TARGET FUNCTION OBJECT : must implement logfunction (as required in Mala)
-    class target_function {
-    private:
-        //const MalaMultiMCMC& m_mcmc;
-        MalaMultiMCMC* m_mcmc;
-       
-    public:
-   
-        target_function(MalaMultiMCMC* mala): m_mcmc(mala){};
-
-        template<typename T> T
-        operator()(const Eigen::Matrix<T,Eigen::Dynamic,1> & lamb) const ;
-    } target_fun;
-
-public:
-  MalaMultiMCMC(DeterminantalPP *pp_mix, BasePrec *g,
-                              const Params &params);
-
-  void sample_Lambda() override;
-
-  
-
 };
 
-};
 
-#include "mala_conditional_mcmc_imp.hpp"
+
+}
+
 
 #endif
