@@ -221,12 +221,14 @@ class MultivariateConditionalMCMC {
 
     RowVectorXd get_single_a_mean(int ind) const {return a_means.row(ind);}
 
+    MatrixXd get_a_means_except_ind(int ind) const {return delete_row(a_means, ind);}
+
     MatrixXd get_a_means() const {return a_means;}
 
     MatrixXd get_na_means() const {return na_means;}
 
     MatrixXd& set_Lambda() {return Lambda;}
-    
+
 };
 
 
