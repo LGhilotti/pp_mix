@@ -79,12 +79,11 @@ def check_params(params, data, ranges):
             "Gamma parameters for Sigma precision should be greater than 0, "
             "found agamma={0}, bgamma={1}".format(params.agamma,params.bgamma))
 
-    if params.prop_means <= 0 :
+    if (params.HasField("mh_sigma_means") and params.mh_sigma_means <=0) or (params.HasField("mala_step_means") and params.mala_step_means <=0) : 
         raise ValueError(
-            "Parameter prop_means for MH step allocated means should be grater than 0, "
-            "found prop_means={0} instead".format(params.prop_means))
+            "Parameter for allocated means update (MH or Mala) should be grater than 0")
 
 
-    if (params.HasField("mh_sigma") and params.mh_sigma <=0) or (params.HasField("mala_step") and params.mala_step <=0) : 
+    if (params.HasField("mh_sigma_lambda") and params.mh_sigma_lambda <=0) or (params.HasField("mala_step_lambda") and params.mala_step_lambda <=0) : 
         raise ValueError(
             "Parameter for Lambda update (MH or Mala) should be greater than 0")

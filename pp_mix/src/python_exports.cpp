@@ -1,11 +1,10 @@
-//#include <Eigen/Dense>
 #include <deque>
 #include <string>
 
-#include <stan/math/fwd.hpp>
-#include <stan/math/mix.hpp>
-#include <stan/math/prim.hpp>
-#include <Eigen/Dense>
+//#include <stan/math/fwd.hpp>
+//#include <stan/math/mix.hpp>
+//#include <stan/math/prim.hpp>
+//#include <Eigen/Dense>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -18,6 +17,7 @@
 #include "conditional_mcmc.hpp"
 #include "factory.hpp"
 #include "utils.hpp"
+#include <Eigen/Dense>
 
 namespace py = pybind11;
 
@@ -46,7 +46,7 @@ std::deque<py::bytes> _run_pp_mix(int ntrick, int burnin, int niter, int thin,
   DeterminantalPP* pp_mix = make_dpp(params, ranges);
   BasePrec* g = make_delta(params);
 
-  MCMCsampler::MultivariateConditionalMCMC sampler(params, pp_mix, g);
+  MCMCsampler::MultivariateConditionalMCMC sampler(pp_mix, g, params);
   
   sampler.initialize(data);
 

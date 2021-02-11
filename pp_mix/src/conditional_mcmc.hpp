@@ -23,6 +23,8 @@
 #include "precs/base_prec.hpp"
 #include "utils.hpp"
 #include "../protos/cpp/params.pb.h"
+#include "../protos/cpp/state.pb.h"
+
 
 using namespace Eigen;
 using namespace stan::math;
@@ -76,7 +78,7 @@ class MultivariateConditionalMCMC {
     // Lambda sampling callable object
     BaseLambdaSampler* sample_lambda;
     // Allocated means sampling callable object
-    BaseMeansSampler* sample_alloc_means;
+    BaseMeansSampler* sample_means_obj;
 
    
     // FOR DEBUGGING
@@ -191,11 +193,13 @@ class MultivariateConditionalMCMC {
 
     //virtual VectorXd compute_grad_for_clus(int clus, const VectorXd &mean) = 0;
 
-    inline double a_means_acceptance_rate();
+    double a_means_acceptance_rate();
 
-    inline double Lambda_acceptance_rate();
+    double Lambda_acceptance_rate();
 
     void print_data_by_clus(int clus);
+
+    // getters
 
     int get_dim_data() const {return dim_data;}
 
@@ -203,17 +207,19 @@ class MultivariateConditionalMCMC {
 
     double get_tau() const {return tau;}
 
-    MatrixXd get_Psi() const {return Psi;}
+    const MatrixXd& get_Psi() const {return Psi;}
 
-    MatrixXd get_Phi() const {return Phi;}
+    const MatrixXd& get_Phi() const {return Phi;}
 
-    MatrixXd get_Lambda() const {return Lambda;}
+    const MatrixXd& get_Lambda() const {return Lambda;}
 
-    VectorXd get_sigma_bar() const {return sigma_bar;}
+    const VectorXd& get_sigma_bar() const {return sigma_bar;}
 
-    MatrixXd get_data() const {return data;}
+    const MatrixXd& get_data() const {return data;}
 
-    MatrixXd get_etas() const {return etas;}
+    const MatrixXd& get_etas() const {return etas;}
+
+    const std::vector<VectorXd>& get_etas_by_clus(int ind) const {return etas_by_clus[ind];}
 
     int get_num_a_means() const {return a_means.rows();}
 
@@ -221,13 +227,33 @@ class MultivariateConditionalMCMC {
 
     RowVectorXd get_single_a_mean(int ind) const {return a_means.row(ind);}
 
+    RowVectorXd get_single_na_mean(int ind) const {return na_means.row(ind);}
+ 
+    const PrecMat& get_single_a_delta(int ind) const {return a_deltas[ind];}
+
     MatrixXd get_a_means_except_ind(int ind) const {return delete_row(a_means, ind);}
 
-    MatrixXd get_a_means() const {return a_means;}
+    const MatrixXd& get_a_means() const {return a_means;}
 
-    MatrixXd get_na_means() const {return na_means;}
+    const MatrixXd& get_na_means() const {return na_means;}
 
-    MatrixXd& set_Lambda() {return Lambda;}
+    MatrixXd get_all_means() const {
+        MatrixXd out(a_means.rows()+na_means.rows(), dim_fact);
+        out << a_means , na_means;
+        return out;
+    }
+
+    MatrixXd get_all_means_reverse() const {
+        MatrixXd out(na_means.rows()+a_means.rows(), dim_fact);
+        out << na_means , a_means;
+        return out;
+    }
+
+    void set_Lambda(const MatrixXd& prop_lambda) {  Lambda = prop_lambda;}
+
+    void set_single_a_mean(int ind, const VectorXd& prop) { a_means.row(ind) = prop.transpose() ;}
+
+    void set_single_na_mean(int ind, const VectorXd& prop) { na_means.row(ind) = prop.transpose() ;}
 
 };
 

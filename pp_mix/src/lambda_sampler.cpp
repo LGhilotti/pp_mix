@@ -2,7 +2,7 @@
 #include "conditional_mcmc.hpp"
 
 namespace MCMCsampler {
-void BaseLambdaSampler::Lambda_acc_rate(){
+double BaseLambdaSampler::Lambda_acc_rate(){
         return (1.0 * acc_sampled_Lambda) / (1.0 * tot_sampled_Lambda);
 }
 
@@ -12,13 +12,13 @@ void BaseLambdaSampler::Lambda_acc_rate(){
 
 double LambdaSamplerClassic::compute_exp_lik(const MatrixXd& lamb) const {
 
-  return (mcmc->sigma_bar.array().sqrt().matrix().asDiagonal()*(mcmc->data.transpose() - lamb*mcmc->etas.transpose())).colwise().squaredNorm().sum();
+  return (mcmc->get_sigma_bar().array().sqrt().matrix().asDiagonal()*(mcmc->get_data().transpose() - lamb*mcmc->get_etas().transpose())).colwise().squaredNorm().sum();
 
 }
 
 double LambdaSamplerClassic::compute_exp_prior(const MatrixXd& lamb) const {
 
-  return (lamb.array().square()/(mcmc->Psi.array()*mcmc->Phi.array().square())).sum() * (- 0.5 / (mcmc->tau*mcmc->tau));
+  return (lamb.array().square()/(mcmc->get_Psi().array()*mcmc->get_Phi().array().square())).sum() * (- 0.5 / (mcmc->get_tau()*mcmc->get_tau()));
 
 }
 
@@ -26,7 +26,7 @@ double LambdaSamplerClassic::compute_exp_prior(const MatrixXd& lamb) const {
 void LambdaSamplerClassic::perform() {
   //std::cout<<"sample Lambda"<<std::endl;
   // Current Lambda (here are the means) are expanded to vector<double> column major
-  MatrixXd prop_lambda = Map<MatrixXd>(normal_rng( std::vector<double>(mcmc->get_Lambda().data(), mcmc->get_Lambda().data() + mcmc->get_dim_data()*mcmc->get_dim_fact) ,
+  MatrixXd prop_lambda = Map<MatrixXd>(normal_rng( std::vector<double>(mcmc->get_Lambda().data(), mcmc->get_Lambda().data() + mcmc->get_dim_data()*mcmc->get_dim_fact()) ,
               std::vector<double>(mcmc->get_dim_data()*mcmc->get_dim_fact(), prop_lambda_sigma), Rng::Instance().get()).data() , mcmc->get_dim_data(), mcmc->get_dim_fact());
   // DEBUG
   //std::cout<<"Proposal Lambda: \n"<<prop_lambda<<std::endl;
@@ -73,7 +73,7 @@ void LambdaSamplerClassic::perform() {
     mcmc->pp_mix->decompose_proposal(prop_lambda);
     //Lambda.swap(prop_lambda);
     //mcmc->Lambda = prop_lambda;  
-    mcmc->set_Lambda() = prop_lambda;
+    mcmc->set_Lambda(prop_lambda);
     mcmc->pp_mix->update_decomposition_from_proposal();
     //std::cout<<"accepted Lambda"<<std::endl;
   }
@@ -92,7 +92,7 @@ void LambdaSamplerMala::perform() {
   // Current Lambda (here are the means) are expanded to vector<double> column major
   double ln_px_curr;
   VectorXd grad_ln_px_curr;
-  VectorXd Lambda_curr = Map<VectorXd>(mcmc->get_Lambda().data(), mcmc->get_dim_data()*mcmc->get_dim_fact()); // column-major
+  const VectorXd Lambda_curr = Map<const VectorXd>(mcmc->get_Lambda().data(), mcmc->get_dim_data()*mcmc->get_dim_fact()); // column-major
  //std::cout<<"before gradient"<<std::endl;
   stan::math::gradient(lambda_tar_fun, Lambda_curr, ln_px_curr, grad_ln_px_curr);
   //std::cout<<"after gradient"<<std::endl;
@@ -134,7 +134,7 @@ void LambdaSamplerMala::perform() {
     mcmc->pp_mix->decompose_proposal(prop_lambda);
     //Lambda.swap(prop_lambda);
     //mcmc->Lambda = prop_lambda;
-    mcmc->set_Lambda() = prop_lambda;
+    mcmc->set_Lambda(prop_lambda);
     mcmc->pp_mix->update_decomposition_from_proposal();
     //std::cout<<"accepted Lambda"<<std::endl;
   }

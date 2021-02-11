@@ -1,14 +1,9 @@
 #ifndef FACTORY_HPP
 #define FACTORY_HPP
 
-#include <memory>
 
 #include "lambda_sampler.hpp"
 #include "alloc_means_sampler.hpp"
-
-namespace MCMCsampler {
-    class MultivariateConditionalMCMC ;
-}
 
 #include "precs/base_prec.hpp"
 #include "precs/fixed_prec.hpp"

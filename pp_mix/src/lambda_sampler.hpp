@@ -9,11 +9,11 @@
 
 using namespace Eigen;
 using namespace stan::math;
-
+/*
 namespace MCMCsampler {
     class MultivariateConditionalMCMC ;
-}
-
+}*/
+#include "conditional_mcmc.hpp"
 
 namespace MCMCsampler {
 

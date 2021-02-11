@@ -10,18 +10,16 @@ double BaseMeansSampler::Means_acc_rate(){
 /// MeansSamplerClassic /////////
 ///////////////////////////////
 
-void MeansSamplerClassic::perform() {
+void MeansSamplerClassic::perform_update_allocated() {
 
-  MatrixXd allmeans(mcmc->a_means.rows() + mcmc->na_means.rows(), mcmc->dim_fact);
-  allmeans << mcmc->a_means, mcmc->na_means;
+  MatrixXd allmeans = mcmc->get_all_means();
 
-  for (int i = 0; i < mcmc->a_means.rows(); i++) {
+  for (int i = 0; i < mcmc->get_num_a_means(); i++) {
     tot_sampled_a_means += 1;
-    MatrixXd others(allmeans.rows() - 1, mcmc->dim_fact);
 
     double currlik, proplik, prior_ratio, lik_ratio, arate;
-    const VectorXd &currmean = mcmc->a_means.row(i).transpose();
-    const MatrixXd &cov_prop = MatrixXd::Identity(mcmc->dim_fact, mcmc->dim_fact) * prop_means_sigma;
+    const VectorXd &currmean = mcmc->get_single_a_mean(i).transpose();
+    const MatrixXd &cov_prop = MatrixXd::Identity(mcmc->get_dim_fact(), mcmc->get_dim_fact()) * prop_means_sigma;
 
     // we PROPOSE a new point from a multivariate normal, with mean equal to the current point
     // and covariance matrix diagonal
@@ -29,10 +27,12 @@ void MeansSamplerClassic::perform() {
         stan::math::multi_normal_rng(currmean, cov_prop, Rng::Instance().get());
 
     if (mcmc->is_inside(prop)){ // if not, just keep the current mean and go to the next a_mean
-        currlik = mcmc->lpdf_given_clus_multi(mcmc->etas_by_clus[i], currmean, mcmc->a_deltas[i]);
-        proplik = mcmc->lpdf_given_clus_multi(mcmc->etas_by_clus[i], prop, mcmc->a_deltas[i]);
+        currlik = mcmc->lpdf_given_clus_multi(mcmc->get_etas_by_clus(i), currmean, mcmc->get_single_a_delta(i));
+        proplik = mcmc->lpdf_given_clus_multi(mcmc->get_etas_by_clus(i), prop, mcmc->get_single_a_delta(i));
 
         lik_ratio = proplik - currlik;
+        
+        MatrixXd others(allmeans.rows() - 1, mcmc->get_dim_fact());
         others = delete_row(allmeans, i);
 
         prior_ratio =
@@ -41,7 +41,7 @@ void MeansSamplerClassic::perform() {
         arate = lik_ratio + prior_ratio;
 
         if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < arate) {
-          mcmc->a_means.row(i) = prop.transpose();
+          mcmc->set_single_a_mean(i, prop);
           acc_sampled_a_means += 1;
         }
     }
@@ -51,34 +51,71 @@ void MeansSamplerClassic::perform() {
 }
 
 
+
+
+void MeansSamplerClassic::perform_update_trick_na() {
+
+  MatrixXd allmeans = mcmc->get_all_means_reverse();
+
+  for (int i = 0; i < mcmc->get_num_na_means(); i++) {
+    //tot_sampled_a_means += 1;
+
+    double prior_ratio;
+    const VectorXd &currmean = mcmc->get_single_na_mean(i).transpose();
+    const MatrixXd &cov_prop = MatrixXd::Identity(mcmc->get_dim_fact(), mcmc->get_dim_fact()) * prop_means_sigma;
+
+    // we PROPOSE a new point from a multivariate normal, with mean equal to the current point
+    // and covariance matrix diagonal
+    VectorXd prop =
+        stan::math::multi_normal_rng(currmean, cov_prop, Rng::Instance().get());
+
+    if (mcmc->is_inside(prop)){ // if not, just keep the current mean and go to the next a_mean
+                
+        MatrixXd others(allmeans.rows() - 1, mcmc->get_dim_fact());
+        others = delete_row(allmeans, i);
+
+        prior_ratio =
+            mcmc->pp_mix->papangelou(prop, others) - mcmc->pp_mix->papangelou(currmean, others);
+
+
+        if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < prior_ratio) {
+          mcmc->set_single_na_mean(i, prop);
+          //acc_sampled_a_means += 1;
+        }
+    }
+
+  }
+  return;
+}
+
 //////////////////////////////////////
 /// MeansSamplerMala /////////
 ///////////////////////////////
 
 
-void MeansSamplerMala::perform() {
+void MeansSamplerMala::perform_update_allocated() {
   
-  allmeans.resize(mcmc->a_means.rows() + mcmc->na_means.rows(), mcmc->dim_fact);
-  allmeans << mcmc->a_means, mcmc->na_means;
+  allmeans = mcmc->get_all_means();
 
-  for (ind_selected_mean = 0; ind_selected_mean < mcmc->a_means.rows(); ind_selected_mean++) {
+  for (int i = 0; i < mcmc->get_num_a_means(); i++) {
+    ind_mean = i;
     tot_sampled_a_means += 1;
 
     double ln_px_curr;
     VectorXd grad_ln_px_curr;
-    VectorXd a_mean_curr = allmeans.row(ind_selected_mean).traspose(); 
+    VectorXd a_mean_curr = allmeans.row(i).transpose(); 
   //std::cout<<"before gradient"<<std::endl;
-    stan::math::gradient(means_tar_fun, a_mean_curr, ln_px_curr, grad_ln_px_curr);
+    stan::math::gradient(alloc_means_tar_fun, a_mean_curr, ln_px_curr, grad_ln_px_curr);
     //std::cout<<"after gradient"<<std::endl;
     // Proposal according MALA
     VectorXd prop_a_mean = a_mean_curr + mala_p_means*grad_ln_px_curr +
-                      std::sqrt(2*mala_p_means)*Map<VectorXd>(normal_rng(std::vector<double>(mcmc->dim_fact, 0.),
-                    std::vector<double>(mcmc->dim_fact,1.), Rng::Instance().get()).data() , mcmc->dim_fact);
+                      std::sqrt(2*mala_p_means)*Map<VectorXd>(normal_rng(std::vector<double>(mcmc->get_dim_fact(), 0.),
+                    std::vector<double>(mcmc->get_dim_fact(),1.), Rng::Instance().get()).data() , mcmc->get_dim_fact());
 
     if (mcmc->is_inside(prop_a_mean)){ // if not, just keep the current mean and go to the next a_mean
       double ln_px_prop;
       VectorXd grad_ln_px_prop;
-      stan::math::gradient(means_tar_fun, prop_a_mean, ln_px_prop, grad_ln_px_prop);
+      stan::math::gradient(alloc_means_tar_fun, prop_a_mean, ln_px_prop, grad_ln_px_prop);
 
       // DEBUG
     // std::cout<<"Proposal Lambda: \n"<<prop_lambda<<std::endl;
@@ -102,7 +139,7 @@ void MeansSamplerMala::perform() {
       if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < ln_ratio){
         //ACCEPTED
         acc_sampled_a_means += 1;
-        mcmc->a_means.row(ind_selected_mean) = prop_a_mean.transpose();
+        mcmc->set_single_a_mean(i, prop_a_mean);
         //std::cout<<"accepted Lambda"<<std::endl;
       }
     }
@@ -110,6 +147,60 @@ void MeansSamplerMala::perform() {
   return;
 }
 
+
+void MeansSamplerMala::perform_update_trick_na() {
+  
+  allmeans = mcmc->get_all_means_reverse();
+
+  for (int i = 0; i < mcmc->get_num_na_means(); i++) {
+    ind_mean = i;
+    //tot_sampled_a_means += 1;
+
+    double ln_px_curr;
+    VectorXd grad_ln_px_curr;
+    VectorXd na_mean_curr = allmeans.row(i).transpose(); 
+  //std::cout<<"before gradient"<<std::endl;
+    stan::math::gradient(trick_na_means_tar_fun, na_mean_curr, ln_px_curr, grad_ln_px_curr);
+    //std::cout<<"after gradient"<<std::endl;
+    // Proposal according MALA
+    VectorXd prop_na_mean = na_mean_curr + mala_p_means*grad_ln_px_curr +
+                      std::sqrt(2*mala_p_means)*Map<VectorXd>(normal_rng(std::vector<double>(mcmc->get_dim_fact(), 0.),
+                    std::vector<double>(mcmc->get_dim_fact(),1.), Rng::Instance().get()).data() , mcmc->get_dim_fact());
+
+    if (mcmc->is_inside(prop_na_mean)){ // if not, just keep the current mean and go to the next a_mean
+      double ln_px_prop;
+      VectorXd grad_ln_px_prop;
+      stan::math::gradient(trick_na_means_tar_fun, prop_na_mean, ln_px_prop, grad_ln_px_prop);
+
+      // DEBUG
+    // std::cout<<"Proposal Lambda: \n"<<prop_lambda<<std::endl;
+    //  std::cout<<"Proposed Lambda"<<std::endl;
+
+      // COMPUTE ACCEPTANCE PROBABILITY
+      // (log) TARGET DENSITY TERMS
+      double ln_ratio_target;
+      ln_ratio_target = ln_px_prop - ln_px_curr;
+      // DEBUG
+      //std::cout<<"log_ratio: "<<log_ratio<<std::endl;
+
+      //(log) PROPOSAL DENSITY TERMS
+      double ln_q_num, ln_q_den;
+      ln_q_num = - (na_mean_curr - prop_na_mean - mala_p_means*grad_ln_px_prop).squaredNorm() /(4*mala_p_means);
+      ln_q_den = - (prop_na_mean - na_mean_curr - mala_p_means*grad_ln_px_curr).squaredNorm() /(4*mala_p_means);
+
+      // -> acceptance probability
+      double ln_ratio = ln_ratio_target + ln_q_num - ln_q_den;
+
+      if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < ln_ratio){
+        //ACCEPTED
+        //acc_sampled_a_means += 1;
+        mcmc->set_single_na_mean(i, prop_na_mean);
+        //std::cout<<"accepted Lambda"<<std::endl;
+      }
+    }
+  }
+  return;
+}
     
 
 }

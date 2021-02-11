@@ -2,6 +2,7 @@
 #include "lambda_sampler.hpp"
 #include "alloc_means_sampler.hpp"
 #include "factory.hpp"
+#include "gig.hpp"
 
 namespace MCMCsampler {
 
@@ -13,7 +14,7 @@ MultivariateConditionalMCMC::MultivariateConditionalMCMC(DeterminantalPP *pp_mix
   set_prec(dynamic_cast<BaseMultiPrec *>(g));
   set_params(params);
   sample_lambda = make_LambdaSampler(this, params);
-  sample_alloc_means = make_MeansSampler(this, params);
+  sample_means_obj = make_MeansSampler(this, params);
 
 }
 
@@ -197,7 +198,7 @@ void MultivariateConditionalMCMC::run_one() {
 
   // sample allocated variables
   //sample_means_a();
-  sample_alloc_means->perform();
+  sample_means_obj->perform_update_allocated();
   //std::cout<<"sample deltas a"<<std::endl;
 
   sample_deltas_a();
@@ -242,7 +243,7 @@ void MultivariateConditionalMCMC::run_one_trick() {
 
   // sample non-allocated variables
   //sample_means_na(psi_u);
-  sample_means_na_trick();
+  sample_means_obj->perform_update_trick_na();
   //std::cout<<"sample jumps na"<<std::endl;
 
   sample_jumps_na();
@@ -253,7 +254,7 @@ void MultivariateConditionalMCMC::run_one_trick() {
 
   // sample allocated variables
   //sample_means_a();
-  sample_alloc_means->perform();
+  sample_means_obj->perform_update_allocated();
   //std::cout<<"sample deltas a"<<std::endl;
 
   sample_deltas_a();
@@ -320,7 +321,7 @@ void MultivariateConditionalMCMC::sample_means_na(double psi_u)
   return;
 }
 
-
+/*
 void MultivariateConditionalMCMC::sample_means_na_trick()
 {
   MatrixXd allmeans(na_means.rows() + a_means.rows(), dim_fact);
@@ -353,7 +354,7 @@ void MultivariateConditionalMCMC::sample_means_na_trick()
   }
   return;
 }
-
+*/
 
 void MultivariateConditionalMCMC::sample_deltas_na() {
 
@@ -730,12 +731,12 @@ void MultivariateConditionalMCMC::print_debug_string() {
 }
 
 
-double a_means_acceptance_rate() {
-        return sample_alloc_means->a_means_acc_rate();
+double MultivariateConditionalMCMC::a_means_acceptance_rate() {
+        return sample_means_obj->Means_acc_rate();
 }
 
 
-double Lambda_acceptance_rate() {
+double MultivariateConditionalMCMC::Lambda_acceptance_rate() {
       return sample_lambda->Lambda_acc_rate();
 }
 

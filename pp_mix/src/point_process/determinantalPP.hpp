@@ -5,11 +5,9 @@
 #include <stan/math/prim.hpp>
 #include <Eigen/Dense>
 
-#include <google/protobuf/message.h>
 
 #include "../rng.hpp"
 #include "../utils.hpp"
-//#include "../../protos/cpp/state.pb.h"
 
 using namespace Eigen;
 using namespace stan::math;
@@ -107,7 +105,6 @@ public:
     void sample_nonalloc_fullcond(
          MatrixXd *non_active, const MatrixXd &active, double psi_u);
 
-    //void get_state_as_proto(google::protobuf::Message *out) {}
 
     // GETTERS
 
