@@ -94,7 +94,7 @@ void MeansSamplerClassic::perform_update_trick_na() {
 
 
 void MeansSamplerMala::perform_update_allocated() {
-  
+
   allmeans = mcmc->get_all_means();
 
   for (int i = 0; i < mcmc->get_num_a_means(); i++) {
@@ -104,9 +104,9 @@ void MeansSamplerMala::perform_update_allocated() {
     double ln_px_curr;
     VectorXd grad_ln_px_curr;
     VectorXd a_mean_curr = allmeans.row(i).transpose(); 
-  //std::cout<<"before gradient"<<std::endl;
+
     stan::math::gradient(alloc_means_tar_fun, a_mean_curr, ln_px_curr, grad_ln_px_curr);
-    //std::cout<<"after gradient"<<std::endl;
+
     // Proposal according MALA
     VectorXd prop_a_mean = a_mean_curr + mala_p_means*grad_ln_px_curr +
                       std::sqrt(2*mala_p_means)*Map<VectorXd>(normal_rng(std::vector<double>(mcmc->get_dim_fact(), 0.),

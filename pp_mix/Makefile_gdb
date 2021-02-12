@@ -15,11 +15,11 @@ CFLAGS = \
 	-I $(STAN_ROOT_DIR)/lib/tbb_*/include \
 	-I $(PROTO_DIR) \
 	-D_REENTRANT -fPIC \
-	-O3 -march=native -msse2 -funroll-loops -ftree-vectorize -fopenmp -Wfatal-errors
+	-g -march=native -msse2 -funroll-loops -ftree-vectorize -fopenmp -Wfatal-errors
 LDLIBS = \
  	$(shell pkg-config --libs protobuf) -L$(STAN_ROOT_DIR)/lib/tbb \
 	-lgsl -lgslcblas -lpthread -ltbb -Wl,-rpath,"$(STAN_ROOT_DIR)/lib/tbb"
-LDFLAGS = -D_REENTRANT -O3 -fopenmp
+LDFLAGS = -D_REENTRANT -g -fopenmp
 
 PROTO_SRCS = $(wildcard $(PROTO_DIR)/cpp/*.cpp)
 SPIKES_SRCS = $(SPIKES_DIR)/MALA/run_test.cpp

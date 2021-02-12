@@ -18,6 +18,13 @@ MultivariateConditionalMCMC::MultivariateConditionalMCMC(DeterminantalPP *pp_mix
 
 }
 
+MultivariateConditionalMCMC::~MultivariateConditionalMCMC()
+{
+         delete pp_mix;
+         delete g;
+         delete sample_lambda;
+         delete sample_means_obj;
+}
 
 void MultivariateConditionalMCMC::set_params(const Params & p){
 

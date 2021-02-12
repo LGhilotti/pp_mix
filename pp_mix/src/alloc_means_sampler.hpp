@@ -56,25 +56,32 @@ public:
 class MeansSamplerMala : public BaseMeansSampler {
 private:
     double mala_p_means;
-    static MatrixXd allmeans;
-    static int ind_mean;
+    MatrixXd allmeans;
+    int ind_mean;
 
 public:
-    MeansSamplerMala(MultivariateConditionalMCMC* mcmc, double m_p): BaseMeansSampler(mcmc), mala_p_means(m_p), alloc_means_tar_fun(*mcmc), trick_na_means_tar_fun(*mcmc){}
+    
+    MeansSamplerMala(MultivariateConditionalMCMC* mcmc, double m_p): BaseMeansSampler(mcmc), mala_p_means(m_p),
+    alloc_means_tar_fun(*this), trick_na_means_tar_fun(*this){}
     
     void perform_update_allocated() override;
 
     void perform_update_trick_na() override;
 
-    
+    const MatrixXd& get_allmeans() const {return allmeans;}
+    int get_num_allmeans() const {return allmeans.rows();}
+    int get_ind_mean() const {return ind_mean;}
+
     // ALLOC MEANS TARGET FUNCTION OBJECT : must implement logfunction (as required in Mala)
     class alloc_means_target_function {
     private:
-        const MultivariateConditionalMCMC& m_mcmc;
-        
+        //const MultivariateConditionalMCMC& m_mcmc;
+        //const MatrixXd& all_means;
+        //const int& ind_mean;
+        const MeansSamplerMala& msm;
     public:
    
-        alloc_means_target_function(const MultivariateConditionalMCMC& mala): m_mcmc(mala){};
+        alloc_means_target_function(const MeansSamplerMala& _msm): msm(_msm){};
 
         template<typename T> T
         operator()(const Eigen::Matrix<T,Eigen::Dynamic,1> & mean) const ;
@@ -84,11 +91,13 @@ public:
     // TRICK NA MEANS TARGET FUNCTION OBJECT : must implement logfunction (as required in Mala)
     class trick_na_means_target_function {
     private:
-        const MultivariateConditionalMCMC& m_mcmc;
-        
+        //const MultivariateConditionalMCMC& m_mcmc;
+        //const MatrixXd& all_means;
+        //const int& ind_mean;
+        const MeansSamplerMala& msm;
     public:
    
-        trick_na_means_target_function(const MultivariateConditionalMCMC& mala): m_mcmc(mala){};
+        trick_na_means_target_function(const MeansSamplerMala& _msm): msm(_msm){};
 
         template<typename T> T
         operator()(const Eigen::Matrix<T,Eigen::Dynamic,1> & mean) const ;
