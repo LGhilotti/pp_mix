@@ -9,7 +9,6 @@ double PI = stan::math::pi();
 DeterminantalPP::DeterminantalPP(const MatrixXd &ranges, int N, double c, double s):
   ranges(ranges), N(N), c(c), s(s) {
 
-  std::cout << "DeterminantalPP constructor!"<<std::endl;
   dim = ranges.cols();
   diff_range = (ranges.row(1) - ranges.row(0)).transpose();
   vol_range = diff_range.prod();
@@ -26,7 +25,6 @@ DeterminantalPP::DeterminantalPP(const MatrixXd &ranges, int N, double c, double
   phi_tildes.resize(Kappas.rows());
   phis_tmp.resize(Kappas.rows());
   phi_tildes_tmp.resize(Kappas.rows());
-  std::cout<<"end DPP constructor"<<std::endl;
 
   /*
   std::cout << "ranges: "<<this->ranges<<std::endl;
@@ -96,8 +94,6 @@ void DeterminantalPP::update_decomposition_from_proposal() {
 
 // compute just once the grid for summation over Z^dim
 void DeterminantalPP::compute_Kappas() {
-
-  std::cout << "compute Kappas!" <<std::endl;
 
   std::vector<double> k(2 * N + 1);
   for (int n = -N; n <= N; n++) {

@@ -5,6 +5,9 @@
 //#include <stan/math/mix.hpp>
 //#include <stan/math/prim.hpp>
 //#include <Eigen/Dense>
+#include <stan/math/prim.hpp>
+#include <Eigen/Dense>
+#include <Eigen/SparseCore>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -17,7 +20,7 @@
 #include "conditional_mcmc.hpp"
 #include "factory.hpp"
 #include "utils.hpp"
-#include <Eigen/Dense>
+
 
 namespace py = pybind11;
 
@@ -88,10 +91,61 @@ std::deque<py::bytes> _run_pp_mix(int ntrick, int burnin, int niter, int thin,
 }
 
 
+//params: coll Collector containing the algorithm chain
+//return: Index of the iteration containing the best estimate
+py::bytes cluster_estimate( //const Eigen::MatrixXd &alloc_chain
+            std::string serialized_alloc_chain) {
+  // Initialize objects
+  Eigen::MatrixXd alloc_chain;
+  {
+    EigenMatrix alloc_chain_proto;
+    alloc_chain_proto.ParseFromString(serialized_alloc_chain);
+    alloc_chain = to_eigen(alloc_chain_proto);
+  }
+  unsigned n_iter = alloc_chain.rows();
+  unsigned int n_data = alloc_chain.cols();
+  std::vector<Eigen::SparseMatrix<double> > all_diss;
+  //progresscpp::ProgressBar bar(n_iter, 60);
+
+  // Compute mean
+  std::cout << "(Computing mean dissimilarity... " << std::flush;
+  Eigen::MatrixXd mean_diss = posterior_similarity(alloc_chain);
+  std::cout << "Done)" << std::endl;
+
+  // Compute Frobenius norm error of all iterations
+  Eigen::VectorXd errors(n_iter);
+  for (int k = 0; k < n_iter; k++) {
+    for (int i = 0; i < n_data; i++) {
+      for (int j = 0; j < i; j++) {
+        int x = (alloc_chain(k, i) == alloc_chain(k, j));
+        errors(k) += (x - mean_diss(i, j)) * (x - mean_diss(i, j));
+      }
+    }
+    // Progress bar
+    //++bar;
+    //bar.display();
+  }
+  //bar.done();
+
+  // Find iteration with the least error
+  std::ptrdiff_t ibest;
+  unsigned int min_err = errors.minCoeff(&ibest);
+  Eigen::VectorXd out = alloc_chain.row(ibest).transpose();
+  std::string out_string;
+  EigenVector out_proto;
+  to_proto(out, &out_proto);
+  out_proto.SerializeToString(&out_string);
+
+  return (py::bytes)out_string;
+
+}
+
+
 
 PYBIND11_MODULE(pp_mix_high, m) {
   m.doc() = "aaa";  // optional module docstring
 
   m.def("_run_pp_mix", &_run_pp_mix, "aaa");
 
+  m.def("cluster_estimate", &cluster_estimate, "aaa");
 }

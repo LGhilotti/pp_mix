@@ -1,7 +1,6 @@
 #include "delta_wishart.hpp"
 
 Delta_Wishart::Delta_Wishart(double df, int dim, double sigma): df(df) {
-    std::cout<<"Delta_Wishart constructor"<<std::endl;
     this->psi = Eigen::MatrixXd::Identity(dim, dim) * sigma;
     this->inv_psi = Eigen::MatrixXd::Identity(dim, dim) * 1.0 / sigma;
 }

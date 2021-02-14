@@ -42,7 +42,6 @@ void MultivariateConditionalMCMC::set_params(const Params & p){
 
 void MultivariateConditionalMCMC::initialize(const MatrixXd& dat) {
 
-  std::cout<<"begin initialize MCMC"<<std::endl;
   this->data = dat;
   ndata = data.rows();
   dim_data = data.cols();
@@ -119,7 +118,6 @@ void MultivariateConditionalMCMC::initialize(const MatrixXd& dat) {
     std::cout << "non_alloc deltas: " << na_deltas[i] << std::endl;
   }
 */
-  std::cout << "initialize done" << std::endl;
 }
 
 
@@ -272,15 +270,15 @@ void MultivariateConditionalMCMC::run_one_trick() {
  // std::cout<<"sample etas"<<std::endl;
   // sample etas
   sample_etas();
-  
+
  // std::cout<<"sample sigmabar"<<std::endl;
   // sample Sigma bar
   sample_sigma_bar();
-  
+
  // std::cout<<"sample Psi"<<std::endl;
   // sample Lambda block
   sample_Psi();
-    
+
  // std::cout<<"sample tau"<<std::endl;
   sample_tau();
 
@@ -366,6 +364,7 @@ void MultivariateConditionalMCMC::sample_means_na_trick()
 void MultivariateConditionalMCMC::sample_deltas_na() {
 
   na_deltas.resize(na_means.rows());
+
   for (int i = 0; i < na_means.rows(); i++) {
     na_deltas[i] = g->sample_prior();
   }
@@ -400,7 +399,7 @@ void MultivariateConditionalMCMC::sample_allocations_and_relabel() {
   const VectorXd &curr_a_jumps = a_jumps;
   const VectorXd &curr_na_jumps = na_jumps;
 
-  // #pragma omp parallel for
+  #pragma omp parallel for
   for (int i = 0; i < ndata; i++) {
     VectorXd probas(Mtot);
     // VectorXd mean;
@@ -551,7 +550,7 @@ void MultivariateConditionalMCMC::sample_etas() {
 
     MatrixXd M2(M0*data.transpose());
     MatrixXd G(ndata,dim_fact);
-    
+
     // known terms of systems is depending on the single data
     for (int i=0; i < a_means.rows(); i++){
       MatrixXd B(dim_fact,obs_by_clus[i].size());
@@ -570,6 +569,7 @@ void MultivariateConditionalMCMC::sample_etas() {
 
     // Here, G contains (in each row) mean of full-cond, while precisions have to be taken from Sn_bar
     // Now, I sample each eta from the full-cond multi-normal
+    #pragma omp parallel for
     for (int i=0; i < ndata; i++){
       etas.row(i)=multi_normal_prec_rng(G.row(i).transpose(), Sn_bar[clus_alloc(i)], Rng::Instance().get());
     }
@@ -582,6 +582,7 @@ void MultivariateConditionalMCMC::sample_sigma_bar() {
   //std::cout<<"sample sigma bar"<<std::endl;
   VectorXd betas = VectorXd::Constant(dim_data, _b_gamma);
   betas+=0.5*data.colwise().squaredNorm().transpose() + 0.5*(etas*Lambda.transpose()).colwise().squaredNorm().transpose();
+  #pragma omp parallel for
   for (int j=0; j < dim_data; j++){
     betas(j)-= Lambda.row(j)*etas.transpose()*data.col(j);
   }
@@ -597,6 +598,7 @@ void MultivariateConditionalMCMC::sample_sigma_bar() {
 void MultivariateConditionalMCMC::sample_Psi() {
 //  std::cout<<"sample Psi"<<std::endl;
   // make it parallel omp
+  #pragma omp parallel for
   for (int j=0; j< dim_data; j++)
     for(int h=0; h< dim_fact; h++)
       Psi(j,h)=GIG::rgig(0.5, std::pow(Lambda(j,h)/(Phi(j,h)*tau),2), 1);
@@ -614,6 +616,7 @@ void MultivariateConditionalMCMC::sample_tau() {
 
 void MultivariateConditionalMCMC::sample_Phi() {
 //  std::cout<<"sample Phi"<<std::endl;
+#pragma omp parallel for
   for (int j=0; j < dim_data; j++)
     for (int h=0; h < dim_fact; h++)
       Phi(j,h)=GIG::rgig( _a_phi-1 , 2.0*std::abs(Lambda(j,h)), 1);

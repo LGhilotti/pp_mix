@@ -5,21 +5,21 @@
 
 // Lambda sampler
 MCMCsampler::BaseLambdaSampler* make_LambdaSampler(MCMCsampler::MultivariateConditionalMCMC* mcmc, const Params& params){
-    
+
     if (params.step_lambda_case()==Params::StepLambdaCase::kMhSigmaLambda)
       return new MCMCsampler::LambdaSamplerClassic(mcmc, params.mh_sigma_lambda());
-    
+
     else return new MCMCsampler::LambdaSamplerMala(mcmc, params.mala_step_lambda());
-    
+
 }
 
 
 // AMeans sampler
 MCMCsampler::BaseMeansSampler* make_MeansSampler(MCMCsampler::MultivariateConditionalMCMC* mcmc, const Params& params){
-    
+
     if (params.step_means_case()==Params::StepMeansCase::kMhSigmaMeans)
       return new MCMCsampler::MeansSamplerClassic(mcmc, params.mh_sigma_means());
-    
+
     else return new MCMCsampler::MeansSamplerMala(mcmc, params.mala_step_means());
 }
 
@@ -27,7 +27,7 @@ MCMCsampler::BaseMeansSampler* make_MeansSampler(MCMCsampler::MultivariateCondit
 DeterminantalPP* make_dpp(const Params& params, const MatrixXd& ranges){
 
     return new DeterminantalPP(ranges, params.dpp().n(), params.dpp().c(), params.dpp().s() );
-    
+
 }
 
 
@@ -51,7 +51,7 @@ BasePrec *make_fixed_prec(const FixedMultiPrecParams &params) {
 }
 
 BasePrec *make_wishart(const WishartParams &params) {
-  params.PrintDebugString();
+  //params.PrintDebugString();
   double sigma = 1.0;
   if (params.sigma() > 0) {
     sigma = params.sigma();

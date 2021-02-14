@@ -122,3 +122,18 @@ VectorXd softmax(const VectorXd &logs) {
   // after a "strange" step, what it returns is (p1/P,...,pM/P), where P=sum(pi)
   // what it receives is (ln(p1),...,ln(pM))
 }
+
+
+Eigen::MatrixXd posterior_similarity(
+    const Eigen::MatrixXd &alloc_chain) {
+  unsigned int n_data = alloc_chain.cols();
+  Eigen::MatrixXd mean_diss = Eigen::MatrixXd::Zero(n_data, n_data);
+  // Loop over pairs (i,j) of data points
+  for (int i = 0; i < n_data; i++) {
+    for (int j = 0; j < i; j++) {
+      Eigen::ArrayXd diff = alloc_chain.col(i) - alloc_chain.col(j);
+      mean_diss(i, j) = (diff == 0).count();
+    }
+  }
+  return mean_diss / alloc_chain.rows();
+}

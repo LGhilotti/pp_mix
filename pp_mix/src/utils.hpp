@@ -61,6 +61,7 @@ std::vector<VectorXd> to_vector_of_vectors(const MatrixXd &mat);
 
 VectorXd softmax(const VectorXd &logs);
 
+Eigen::MatrixXd posterior_similarity(const Eigen::MatrixXd &alloc_chain);
 
 template<typename T>
 vector<vector<T>> cart_product(const vector<vector<T>> &v) {
