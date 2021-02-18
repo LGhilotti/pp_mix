@@ -1,6 +1,6 @@
 #include <deque>
 #include <string>
-
+#include <tuple>
 //#include <stan/math/fwd.hpp>
 //#include <stan/math/mix.hpp>
 //#include <stan/math/prim.hpp>
@@ -26,7 +26,8 @@ namespace py = pybind11;
 
 /////////////////////////// This is the main function provided to Python user
 
-std::deque<py::bytes> _run_pp_mix(int ntrick, int burnin, int niter, int thin,
+std::tuple<std::deque<py::bytes>, double , double>
+ _run_pp_mix(int ntrick, int burnin, int niter, int thin,
                                   std::string serialized_data, //const Eigen::MatrixXd &data,
                                   std::string serialized_params,
                                   std::string serialized_ranges, //const Eigen::MatrixXd &ranges,
@@ -34,7 +35,7 @@ std::deque<py::bytes> _run_pp_mix(int ntrick, int burnin, int niter, int thin,
   Params params;
   params.ParseFromString(serialized_params);
   Eigen::MatrixXd data;
-  Eigen::MatrixXd ranges;  
+  Eigen::MatrixXd ranges;
 
   {
     EigenMatrix data_proto;
@@ -44,14 +45,16 @@ std::deque<py::bytes> _run_pp_mix(int ntrick, int burnin, int niter, int thin,
     ranges_proto.ParseFromString(serialized_ranges);
     ranges = to_eigen(ranges_proto);
   }
-  
+
   std::deque<py::bytes> out;
   DeterminantalPP* pp_mix = make_dpp(params, ranges);
   BasePrec* g = make_delta(params);
 
   MCMCsampler::MultivariateConditionalMCMC sampler(pp_mix, g, params);
-  
+
   sampler.initialize(data);
+
+  py::print("Number means in trick phase: ", sampler.get_num_a_means());
 
   for (int i = 0; i < ntrick; i++) {
     sampler.run_one_trick();
@@ -81,13 +84,13 @@ std::deque<py::bytes> _run_pp_mix(int ntrick, int burnin, int niter, int thin,
       py::print("Running, iter #", i + 1, " / ", niter);
     }
   }
-  
+
   py::object Decimal = py::module_::import("decimal").attr("Decimal");
 
   py::print("Allocated Means acceptance rate ", Decimal(sampler.a_means_acceptance_rate()));
   py::print("Lambda acceptance rate ", Decimal(sampler.Lambda_acceptance_rate()));
 
-  return out;
+  return std::make_tuple(out,sampler.a_means_acceptance_rate(),sampler.Lambda_acceptance_rate());
 }
 
 
