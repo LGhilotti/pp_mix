@@ -1,0 +1,441 @@
+--------------------------------------------------------------------------------
+Command:            ./src/spikes/MALA/run_test.out
+Massif arguments:   --massif-out-file=massif.out
+ms_print arguments: massif.out
+--------------------------------------------------------------------------------
+
+
+    MB
+73.85^                                                                     :  
+     |   #:::::::::::::::::::::::::::::@@::::@::::::::@::::::::@@::::::::@::::
+     |   #::: ::::: :: :: :: ::: : ::::@ ::::@: ::: : @: ::::: @ :: :::::@::::
+     |   #::: ::::: :: :: :: ::: : ::::@ ::::@: ::: : @: ::::: @ :: :::::@::::
+     |   #::: ::::: :: :: :: ::: : ::::@ ::::@: ::: : @: ::::: @ :: :::::@::::
+     |   #::: ::::: :: :: :: ::: : ::::@ ::::@: ::: : @: ::::: @ :: :::::@::::
+     |   #::: ::::: :: :: :: ::: : ::::@ ::::@: ::: : @: ::::: @ :: :::::@::::
+     |   #::: ::::: :: :: :: ::: : ::::@ ::::@: ::: : @: ::::: @ :: :::::@::::
+     |   #::: ::::: :: :: :: ::: : ::::@ ::::@: ::: : @: ::::: @ :: :::::@::::
+     |   #::: ::::: :: :: :: ::: : ::::@ ::::@: ::: : @: ::::: @ :: :::::@::::
+     |   #::: ::::: :: :: :: ::: : ::::@ ::::@: ::: : @: ::::: @ :: :::::@::::
+     |   #::: ::::: :: :: :: ::: : ::::@ ::::@: ::: : @: ::::: @ :: :::::@::::
+     |   #::: ::::: :: :: :: ::: : ::::@ ::::@: ::: : @: ::::: @ :: :::::@::::
+     |   #::: ::::: :: :: :: ::: : ::::@ ::::@: ::: : @: ::::: @ :: :::::@::::
+     |   #::: ::::: :: :: :: ::: : ::::@ ::::@: ::: : @: ::::: @ :: :::::@::::
+     | ::#::: ::::: :: :: :: ::: : ::::@ ::::@: ::: : @: ::::: @ :: :::::@::::
+     | ::#::: ::::: :: :: :: ::: : ::::@ ::::@: ::: : @: ::::: @ :: :::::@::::
+     | ::#::: ::::: :: :: :: ::: : ::::@ ::::@: ::: : @: ::::: @ :: :::::@::::
+     | ::#::: ::::: :: :: :: ::: : ::::@ ::::@: ::: : @: ::::: @ :: :::::@::::
+     | ::#::: ::::: :: :: :: ::: : ::::@ ::::@: ::: : @: ::::: @ :: :::::@::::
+   0 +----------------------------------------------------------------------->Gi
+     0                                                                   45.19
+
+Number of snapshots: 62
+ Detailed snapshots: [3 (peak), 27, 32, 38, 45, 55]
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+  0              0                0                0             0            0
+  1    819,380,550       19,360,272       19,325,687        34,585            0
+  2  1,384,677,068       19,363,520       19,328,903        34,617            0
+  3  2,396,289,627       77,396,400       77,228,575       167,825            0
+99.78% (77,228,575B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->43.35% (33,554,432B) 0x272561: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->43.35% (33,554,432B) 0x274305: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|   ->43.35% (33,554,432B) 0x246407: MCMCsampler::LambdaSamplerMala::perform() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|     ->43.35% (33,554,432B) 0x1B870E: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+|       ->43.35% (33,554,432B) 0x2A70A9: main (run_test.cpp:121)
+|         
+->21.68% (16,777,216B) 0x27288A: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->21.68% (16,777,216B) 0x274305: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|   ->21.68% (16,777,216B) 0x246407: MCMCsampler::LambdaSamplerMala::perform() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|     ->21.68% (16,777,216B) 0x1B870E: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+|       ->21.68% (16,777,216B) 0x2A70A9: main (run_test.cpp:121)
+|         
+->18.63% (14,417,920B) 0x17B40D: stan::math::stack_alloc::move_to_next_block(unsigned long) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->11.18% (8,650,752B) 0x166553: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) [clone .part.0] (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->11.18% (8,650,752B) 0x1AFBE9: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->11.18% (8,650,752B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->11.18% (8,650,752B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |       ->11.18% (8,650,752B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |         ->11.18% (8,650,752B) 0x2A70A9: main (run_test.cpp:121)
+| |           
+| ->05.42% (4,194,304B) 0x1664EB: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) [clone .part.0] (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->05.42% (4,194,304B) 0x1AFBE9: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->05.42% (4,194,304B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->05.42% (4,194,304B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |       ->05.42% (4,194,304B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |         ->05.42% (4,194,304B) 0x2A70A9: main (run_test.cpp:121)
+| |           
+| ->01.35% (1,048,576B) 0x16650C: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) [clone .part.0] (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->01.35% (1,048,576B) 0x1AFBE9: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->01.35% (1,048,576B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->01.35% (1,048,576B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |       ->01.35% (1,048,576B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |         ->01.35% (1,048,576B) 0x2A70A9: main (run_test.cpp:121)
+| |           
+| ->00.68% (524,288B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->11.52% (8,912,896B) 0x17C095: void std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::_M_realloc_insert<stan::math::vari_base*>(__gnu_cxx::__normal_iterator<stan::math::vari_base**, std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> > >, stan::math::vari_base*&&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->10.84% (8,388,608B) 0x272331: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->10.84% (8,388,608B) 0x274305: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->10.84% (8,388,608B) 0x246407: MCMCsampler::LambdaSamplerMala::perform() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->10.84% (8,388,608B) 0x1B870E: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+| |       ->10.84% (8,388,608B) 0x2A70A9: main (run_test.cpp:121)
+| |         
+| ->00.68% (524,288B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->02.71% (2,097,152B) 0x1B0F14: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->02.71% (2,097,152B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|   ->02.71% (2,097,152B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|     ->02.71% (2,097,152B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+|       ->02.71% (2,097,152B) 0x2A70A9: main (run_test.cpp:121)
+|         
+->01.90% (1,468,959B) in 228 places, all below massif's threshold (1.00%)
+  
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+  4  3,163,259,256       76,555,240       76,508,447        46,793            0
+  5  3,922,950,043       76,557,704       76,510,863        46,841            0
+  6  4,688,848,125       76,557,432       76,510,607        46,825            0
+  7  5,435,372,672       77,279,776       77,124,447       155,329            0
+  8  6,271,421,870       76,557,496       76,510,675        46,821            0
+  9  6,846,374,633       76,557,320       76,510,515        46,805            0
+ 10  7,705,210,250       76,749,584       76,702,803        46,781            0
+ 11  8,731,221,875       76,556,952       76,510,135        46,817            0
+ 12  9,693,958,976       76,556,920       76,510,103        46,817            0
+ 13 10,365,727,836       76,557,192       76,510,391        46,801            0
+ 14 11,649,382,979       76,557,320       76,510,511        46,809            0
+ 15 12,514,693,372       76,557,488       76,510,735        46,753            0
+ 16 13,861,724,882       76,891,968       76,798,767        93,201            0
+ 17 14,582,408,624       76,555,344       76,508,567        46,777            0
+ 18 15,738,788,859       76,555,344       76,508,567        46,777            0
+ 19 16,294,290,142       77,336,016       77,166,663       169,353            0
+ 20 17,469,670,227       76,557,792       76,510,935        46,857            0
+ 21 18,238,945,624       76,558,064       76,511,207        46,857            0
+ 22 18,816,882,195       76,558,256       76,511,399        46,857            0
+ 23 19,590,715,791       77,338,688       77,168,487       170,201            0
+ 24 20,397,519,932       76,557,624       76,510,743        46,881            0
+ 25 20,975,526,672       76,557,544       76,510,663        46,881            0
+ 26 21,935,722,933       77,335,880       77,166,551       169,329            0
+ 27 22,657,002,122       76,557,256       76,510,455        46,801            0
+99.94% (76,510,455B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->43.83% (33,554,432B) 0x272561: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->43.83% (33,554,432B) 0x274305: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|   ->43.83% (33,554,432B) 0x246407: MCMCsampler::LambdaSamplerMala::perform() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|     ->43.83% (33,554,432B) 0x1B870E: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+|       ->43.83% (33,554,432B) 0x2A70A9: main (run_test.cpp:121)
+|         
+->21.91% (16,777,216B) 0x27288A: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->21.91% (16,777,216B) 0x274305: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|   ->21.91% (16,777,216B) 0x246407: MCMCsampler::LambdaSamplerMala::perform() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|     ->21.91% (16,777,216B) 0x1B870E: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+|       ->21.91% (16,777,216B) 0x2A70A9: main (run_test.cpp:121)
+|         
+->18.83% (14,417,920B) 0x17B40D: stan::math::stack_alloc::move_to_next_block(unsigned long) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->11.30% (8,650,752B) 0x166553: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) [clone .part.0] (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->11.30% (8,650,752B) 0x1AFBE9: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->11.30% (8,650,752B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->11.30% (8,650,752B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |       ->11.30% (8,650,752B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |         ->11.30% (8,650,752B) 0x2A70A9: main (run_test.cpp:121)
+| |           
+| ->05.48% (4,194,304B) 0x1664EB: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) [clone .part.0] (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->05.48% (4,194,304B) 0x1AFBE9: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->05.48% (4,194,304B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->05.48% (4,194,304B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |       ->05.48% (4,194,304B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |         ->05.48% (4,194,304B) 0x2A70A9: main (run_test.cpp:121)
+| |           
+| ->01.37% (1,048,576B) 0x16650C: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) [clone .part.0] (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->01.37% (1,048,576B) 0x1AFBE9: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->01.37% (1,048,576B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->01.37% (1,048,576B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |       ->01.37% (1,048,576B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |         ->01.37% (1,048,576B) 0x2A70A9: main (run_test.cpp:121)
+| |           
+| ->00.68% (524,288B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->11.64% (8,912,896B) 0x17C095: void std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::_M_realloc_insert<stan::math::vari_base*>(__gnu_cxx::__normal_iterator<stan::math::vari_base**, std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> > >, stan::math::vari_base*&&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->10.96% (8,388,608B) 0x272331: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->10.96% (8,388,608B) 0x274305: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->10.96% (8,388,608B) 0x246407: MCMCsampler::LambdaSamplerMala::perform() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->10.96% (8,388,608B) 0x1B870E: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+| |       ->10.96% (8,388,608B) 0x2A70A9: main (run_test.cpp:121)
+| |         
+| ->00.68% (524,288B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->02.74% (2,097,152B) 0x1B0F14: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->02.74% (2,097,152B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|   ->02.74% (2,097,152B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|     ->02.74% (2,097,152B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+|       ->02.74% (2,097,152B) 0x2A70A9: main (run_test.cpp:121)
+|         
+->00.98% (750,839B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 28 23,623,195,676       76,557,776       76,510,951        46,825            0
+ 29 24,393,756,640       76,557,328       76,510,519        46,809            0
+ 30 25,302,130,141       76,751,384       76,704,583        46,801            0
+ 31 25,750,281,473       76,557,688       76,510,851        46,837            0
+ 32 26,712,779,242       76,558,272       76,511,427        46,845            0
+99.94% (76,511,427B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->43.83% (33,554,432B) 0x272561: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->43.83% (33,554,432B) 0x274305: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|   ->43.83% (33,554,432B) 0x246407: MCMCsampler::LambdaSamplerMala::perform() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|     ->43.83% (33,554,432B) 0x1B870E: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+|       ->43.83% (33,554,432B) 0x2A70A9: main (run_test.cpp:121)
+|         
+->21.91% (16,777,216B) 0x27288A: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->21.91% (16,777,216B) 0x274305: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|   ->21.91% (16,777,216B) 0x246407: MCMCsampler::LambdaSamplerMala::perform() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|     ->21.91% (16,777,216B) 0x1B870E: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+|       ->21.91% (16,777,216B) 0x2A70A9: main (run_test.cpp:121)
+|         
+->18.83% (14,417,920B) 0x17B40D: stan::math::stack_alloc::move_to_next_block(unsigned long) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->11.30% (8,650,752B) 0x166553: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) [clone .part.0] (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->11.30% (8,650,752B) 0x1AFBE9: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->11.30% (8,650,752B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->11.30% (8,650,752B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |       ->11.30% (8,650,752B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |         ->11.30% (8,650,752B) 0x2A70A9: main (run_test.cpp:121)
+| |           
+| ->05.48% (4,194,304B) 0x1664EB: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) [clone .part.0] (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->05.48% (4,194,304B) 0x1AFBE9: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->05.48% (4,194,304B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->05.48% (4,194,304B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |       ->05.48% (4,194,304B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |         ->05.48% (4,194,304B) 0x2A70A9: main (run_test.cpp:121)
+| |           
+| ->01.37% (1,048,576B) 0x16650C: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) [clone .part.0] (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->01.37% (1,048,576B) 0x1AFBE9: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->01.37% (1,048,576B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->01.37% (1,048,576B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |       ->01.37% (1,048,576B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |         ->01.37% (1,048,576B) 0x2A70A9: main (run_test.cpp:121)
+| |           
+| ->00.68% (524,288B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->11.64% (8,912,896B) 0x17C095: void std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::_M_realloc_insert<stan::math::vari_base*>(__gnu_cxx::__normal_iterator<stan::math::vari_base**, std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> > >, stan::math::vari_base*&&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->10.96% (8,388,608B) 0x272331: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->10.96% (8,388,608B) 0x274305: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->10.96% (8,388,608B) 0x246407: MCMCsampler::LambdaSamplerMala::perform() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->10.96% (8,388,608B) 0x1B870E: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+| |       ->10.96% (8,388,608B) 0x2A70A9: main (run_test.cpp:121)
+| |         
+| ->00.68% (524,288B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->02.74% (2,097,152B) 0x1B0F14: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->02.74% (2,097,152B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|   ->02.74% (2,097,152B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|     ->02.74% (2,097,152B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+|       ->02.74% (2,097,152B) 0x2A70A9: main (run_test.cpp:121)
+|         
+->00.98% (751,811B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 33 27,483,034,442       76,557,744       76,510,899        46,845            0
+ 34 28,394,226,427       76,558,224       76,511,363        46,861            0
+ 35 29,024,741,693       76,558,320       76,511,475        46,845            0
+ 36 30,126,626,170       76,752,376       76,705,555        46,821            0
+ 37 31,392,749,221       76,557,368       76,510,595        46,773            0
+ 38 32,562,339,211       76,556,464       76,509,755        46,709            0
+99.94% (76,509,755B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->43.83% (33,554,432B) 0x272561: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->43.83% (33,554,432B) 0x274305: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|   ->43.83% (33,554,432B) 0x246407: MCMCsampler::LambdaSamplerMala::perform() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|     ->43.83% (33,554,432B) 0x1B870E: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+|       ->43.83% (33,554,432B) 0x2A70A9: main (run_test.cpp:121)
+|         
+->21.91% (16,777,216B) 0x27288A: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->21.91% (16,777,216B) 0x274305: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|   ->21.91% (16,777,216B) 0x246407: MCMCsampler::LambdaSamplerMala::perform() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|     ->21.91% (16,777,216B) 0x1B870E: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+|       ->21.91% (16,777,216B) 0x2A70A9: main (run_test.cpp:121)
+|         
+->18.83% (14,417,920B) 0x17B40D: stan::math::stack_alloc::move_to_next_block(unsigned long) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->11.30% (8,650,752B) 0x166553: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) [clone .part.0] (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->11.30% (8,650,752B) 0x1AFBE9: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->11.30% (8,650,752B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->11.30% (8,650,752B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |       ->11.30% (8,650,752B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |         ->11.30% (8,650,752B) 0x2A70A9: main (run_test.cpp:121)
+| |           
+| ->05.48% (4,194,304B) 0x1664EB: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) [clone .part.0] (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->05.48% (4,194,304B) 0x1AFBE9: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->05.48% (4,194,304B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->05.48% (4,194,304B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |       ->05.48% (4,194,304B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |         ->05.48% (4,194,304B) 0x2A70A9: main (run_test.cpp:121)
+| |           
+| ->01.37% (1,048,576B) 0x16650C: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) [clone .part.0] (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->01.37% (1,048,576B) 0x1AFBE9: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->01.37% (1,048,576B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->01.37% (1,048,576B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |       ->01.37% (1,048,576B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |         ->01.37% (1,048,576B) 0x2A70A9: main (run_test.cpp:121)
+| |           
+| ->00.68% (524,288B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->11.64% (8,912,896B) 0x17C095: void std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::_M_realloc_insert<stan::math::vari_base*>(__gnu_cxx::__normal_iterator<stan::math::vari_base**, std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> > >, stan::math::vari_base*&&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->10.96% (8,388,608B) 0x272331: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->10.96% (8,388,608B) 0x274305: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->10.96% (8,388,608B) 0x246407: MCMCsampler::LambdaSamplerMala::perform() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->10.96% (8,388,608B) 0x1B870E: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+| |       ->10.96% (8,388,608B) 0x2A70A9: main (run_test.cpp:121)
+| |         
+| ->00.68% (524,288B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->02.74% (2,097,152B) 0x1B0F14: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->02.74% (2,097,152B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|   ->02.74% (2,097,152B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|     ->02.74% (2,097,152B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+|       ->02.74% (2,097,152B) 0x2A70A9: main (run_test.cpp:121)
+|         
+->00.98% (750,139B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 39 33,434,710,566       77,284,296       77,127,819       156,477            0
+ 40 34,373,248,118       77,431,000       77,261,827       169,173            0
+ 41 35,278,120,926       76,556,416       76,509,731        46,685            0
+ 42 35,906,431,257       76,556,816       76,510,075        46,741            0
+ 43 36,859,912,443       76,555,816       76,509,163        46,653            0
+ 44 37,741,049,996       76,556,016       76,509,363        46,653            0
+ 45 38,644,251,137       77,432,224       77,263,155       169,069            0
+99.78% (77,263,155B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->43.33% (33,554,432B) 0x272561: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->43.33% (33,554,432B) 0x274305: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|   ->43.33% (33,554,432B) 0x246407: MCMCsampler::LambdaSamplerMala::perform() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|     ->43.33% (33,554,432B) 0x1B870E: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+|       ->43.33% (33,554,432B) 0x2A70A9: main (run_test.cpp:121)
+|         
+->21.67% (16,777,216B) 0x27288A: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->21.67% (16,777,216B) 0x274305: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|   ->21.67% (16,777,216B) 0x246407: MCMCsampler::LambdaSamplerMala::perform() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|     ->21.67% (16,777,216B) 0x1B870E: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+|       ->21.67% (16,777,216B) 0x2A70A9: main (run_test.cpp:121)
+|         
+->18.62% (14,417,920B) 0x17B40D: stan::math::stack_alloc::move_to_next_block(unsigned long) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->11.17% (8,650,752B) 0x166553: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) [clone .part.0] (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->11.17% (8,650,752B) 0x1AFBE9: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->11.17% (8,650,752B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->11.17% (8,650,752B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |       ->11.17% (8,650,752B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |         ->11.17% (8,650,752B) 0x2A70A9: main (run_test.cpp:121)
+| |           
+| ->05.42% (4,194,304B) 0x1664EB: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) [clone .part.0] (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->05.42% (4,194,304B) 0x1AFBE9: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->05.42% (4,194,304B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->05.42% (4,194,304B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |       ->05.42% (4,194,304B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |         ->05.42% (4,194,304B) 0x2A70A9: main (run_test.cpp:121)
+| |           
+| ->01.35% (1,048,576B) 0x16650C: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) [clone .part.0] (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->01.35% (1,048,576B) 0x1AFBE9: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->01.35% (1,048,576B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->01.35% (1,048,576B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |       ->01.35% (1,048,576B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |         ->01.35% (1,048,576B) 0x2A70A9: main (run_test.cpp:121)
+| |           
+| ->00.68% (524,288B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->11.51% (8,912,896B) 0x17C095: void std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::_M_realloc_insert<stan::math::vari_base*>(__gnu_cxx::__normal_iterator<stan::math::vari_base**, std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> > >, stan::math::vari_base*&&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->10.83% (8,388,608B) 0x272331: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->10.83% (8,388,608B) 0x274305: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->10.83% (8,388,608B) 0x246407: MCMCsampler::LambdaSamplerMala::perform() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->10.83% (8,388,608B) 0x1B870E: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+| |       ->10.83% (8,388,608B) 0x2A70A9: main (run_test.cpp:121)
+| |         
+| ->00.68% (524,288B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->02.71% (2,097,152B) 0x1B0F14: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->02.71% (2,097,152B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|   ->02.71% (2,097,152B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|     ->02.71% (2,097,152B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+|       ->02.71% (2,097,152B) 0x2A70A9: main (run_test.cpp:121)
+|         
+->01.94% (1,503,539B) in 267 places, all below massif's threshold (1.00%)
+  
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 46 39,863,433,955       76,556,192       76,509,539        46,653            0
+ 47 41,015,210,137       76,705,664       76,643,335        62,329            0
+ 48 42,187,912,360       77,337,760       77,168,731       169,029            0
+ 49 42,792,113,922       77,093,896       76,966,975       126,921            0
+ 50 43,240,280,279       77,337,384       77,168,415       168,969            0
+ 51 43,719,515,813       76,751,032       76,704,479        46,553            0
+ 52 44,232,426,719       77,431,304       77,261,375       169,929            0
+ 53 44,913,290,207       76,748,104       76,701,559        46,545            0
+ 54 45,361,445,097       76,557,696       76,511,159        46,537            0
+ 55 45,809,600,712       77,335,904       77,167,023       168,881            0
+99.78% (77,167,023B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->43.39% (33,554,432B) 0x272561: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->43.39% (33,554,432B) 0x274305: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|   ->43.39% (33,554,432B) 0x246407: MCMCsampler::LambdaSamplerMala::perform() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|     ->43.39% (33,554,432B) 0x1B870E: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+|       ->43.39% (33,554,432B) 0x2A70A9: main (run_test.cpp:121)
+|         
+->21.69% (16,777,216B) 0x27288A: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->21.69% (16,777,216B) 0x274305: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|   ->21.69% (16,777,216B) 0x246407: MCMCsampler::LambdaSamplerMala::perform() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|     ->21.69% (16,777,216B) 0x1B870E: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+|       ->21.69% (16,777,216B) 0x2A70A9: main (run_test.cpp:121)
+|         
+->18.64% (14,417,920B) 0x17B40D: stan::math::stack_alloc::move_to_next_block(unsigned long) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->11.19% (8,650,752B) 0x166553: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) [clone .part.0] (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->11.19% (8,650,752B) 0x1AFBE9: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->11.19% (8,650,752B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->11.19% (8,650,752B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |       ->11.19% (8,650,752B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |         ->11.19% (8,650,752B) 0x2A70A9: main (run_test.cpp:121)
+| |           
+| ->05.42% (4,194,304B) 0x1664EB: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) [clone .part.0] (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->05.42% (4,194,304B) 0x1AFBE9: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->05.42% (4,194,304B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->05.42% (4,194,304B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |       ->05.42% (4,194,304B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |         ->05.42% (4,194,304B) 0x2A70A9: main (run_test.cpp:121)
+| |           
+| ->01.36% (1,048,576B) 0x16650C: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) [clone .part.0] (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->01.36% (1,048,576B) 0x1AFBE9: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->01.36% (1,048,576B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->01.36% (1,048,576B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |       ->01.36% (1,048,576B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |         ->01.36% (1,048,576B) 0x2A70A9: main (run_test.cpp:121)
+| |           
+| ->00.68% (524,288B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->11.52% (8,912,896B) 0x17C095: void std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::_M_realloc_insert<stan::math::vari_base*>(__gnu_cxx::__normal_iterator<stan::math::vari_base**, std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> > >, stan::math::vari_base*&&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->10.85% (8,388,608B) 0x272331: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| | ->10.85% (8,388,608B) 0x274305: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |   ->10.85% (8,388,608B) 0x246407: MCMCsampler::LambdaSamplerMala::perform() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| |     ->10.85% (8,388,608B) 0x1B870E: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+| |       ->10.85% (8,388,608B) 0x2A70A9: main (run_test.cpp:121)
+| |         
+| ->00.68% (524,288B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->02.71% (2,097,152B) 0x1B0F14: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+| ->02.71% (2,097,152B) 0x1B1DF1: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|   ->02.71% (2,097,152B) 0x16DDBB: MCMCsampler::MeansSamplerMala::perform_update_allocated() (in /home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/src/spikes/MALA/run_test.out)
+|     ->02.71% (2,097,152B) 0x1B8695: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+|       ->02.71% (2,097,152B) 0x2A70A9: main (run_test.cpp:121)
+|         
+->01.82% (1,407,407B) in 267 places, all below massif's threshold (1.00%)
+  
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 56 46,257,772,370       77,335,520       77,166,503       169,017            0
+ 57 46,732,889,900       77,432,256       77,263,335       168,921            0
+ 58 47,181,064,007       77,336,760       77,167,871       168,889            0
+ 59 47,629,221,563       77,336,480       77,166,503       169,977            0
+ 60 48,077,375,083       76,559,736       76,513,215        46,521            0
+ 61 48,525,547,304       77,336,776       77,167,871       168,905            0

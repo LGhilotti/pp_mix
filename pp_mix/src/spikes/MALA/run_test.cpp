@@ -55,19 +55,17 @@ int main() {
     // we consider p=4, d=2
     // we fix Lambda, M=3 (3 groups), mu1,mu2,mu3 Delta1, Delta2,Delta3 cluster labels, Sigmabar
     // and simulate etas and data.
-    const int p = 4;
+    const int p = 50;
     const int d = 2;
-    MatrixXd Lambda(p,d);
-    Lambda << 0, 1,
-              1, 0,
-              -1, 0,
-              0, -1;
+    MatrixXd Lambda = MatrixXd::Zero(p,d);
+    Lambda.block(0,0,25,1) = VectorXd::Ones(25);
+    Lambda.block(25,1,25,1) = - VectorXd::Ones(25);
 
     const int M = 3;
     VectorXd mu_0(d), mu_1(d), mu_2(d);
-    mu_0 << 5. , 0.;
-    mu_1 << 0 , 10.;
-    mu_2 << -5., -10. ;
+    mu_0 << -5. , 10. ;
+    mu_1 << 0. , -5. ;
+    mu_2 << 5. , -5. ;
     MatrixXd Mus(M,d);
     Mus.row(0)=mu_0;
     Mus.row(1)=mu_1;
@@ -87,14 +85,15 @@ int main() {
     cluster_alloc.segment(40,40) = VectorXi::Ones(40);
     cluster_alloc.tail(40) = VectorXi::Constant(40, 2);
 
-    MatrixXd Etas = generate_etas(Mus, Deltas, cluster_alloc);
+      MatrixXd Etas = generate_etas(Mus, Deltas, cluster_alloc);
 
-    MatrixXd data = generate_data(Lambda, Etas, sigma_bar);
+      MatrixXd data = generate_data(Lambda, Etas, sigma_bar);
 
 
-    Eigen::MatrixXd ranges(2, d);
-    ranges.row(0) = RowVectorXd::Constant(d, -50);
-    ranges.row(1) = RowVectorXd::Constant(d, 50);
+      Eigen::MatrixXd ranges(2, d);
+      ranges.row(0) = RowVectorXd::Constant(d, -50);
+      ranges.row(1) = RowVectorXd::Constant(d, 50);
+
     // UNTILL HERE, JUST GENERATION OF DATA AND LATENTS
 
     std::string params_file = \
@@ -102,13 +101,13 @@ int main() {
     Params params = loadTextProto<Params>(params_file);
     // NOTE: We use all params
 
-    
-    int log_every=1;
-    int ntrick = 4;
-    int burnin = 2;
+
+    int log_every=10;
+    int ntrick = 10;
+    int burnin = 10;
     int niter=10;
     int thin = 1;
-    
+
 
     DeterminantalPP* pp_mix = make_dpp(params, ranges);
 
