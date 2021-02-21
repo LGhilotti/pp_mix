@@ -1,17 +1,17 @@
 dpp {
   c: 20
-  n: 30
+  n: 15
   s: 0.8
 }
 
 wishart {
-  nu: 3
+  nu: 6
   identity: true
   sigma: 0.5
-  dim: 2
+  dim: 4
 }
 
-dimf: 2
+dimf: 4
 
 a: 1.0
 
@@ -23,6 +23,6 @@ agamma: 60.
 
 bgamma: 30.
 
-mala_step_means: 0.001
+mh_sigma_means: 0.05
 
-mh_sigma_lambda: 0.0001
+mala_step_lambda: 0.00001

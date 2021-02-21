@@ -55,17 +55,19 @@ int main() {
     // we consider p=4, d=2
     // we fix Lambda, M=3 (3 groups), mu1,mu2,mu3 Delta1, Delta2,Delta3 cluster labels, Sigmabar
     // and simulate etas and data.
-    const int p = 50;
-    const int d = 2;
+    const int p =6;
+    const int d = 4;
     MatrixXd Lambda = MatrixXd::Zero(p,d);
-    Lambda.block(0,0,25,1) = VectorXd::Ones(25);
-    Lambda.block(25,1,25,1) = - VectorXd::Ones(25);
+    Lambda.block(0,0,2,1) = VectorXd::Ones(2);
+    Lambda.block(2,1,2,1) = - VectorXd::Ones(2);
+    Lambda.block(4,2,1,1) = VectorXd::Ones(1);
+    Lambda.block(5,3,1,1) = - VectorXd::Ones(1);
 
     const int M = 3;
     VectorXd mu_0(d), mu_1(d), mu_2(d);
-    mu_0 << -5. , 10. ;
-    mu_1 << 0. , -5. ;
-    mu_2 << 5. , -5. ;
+    mu_0 << -5. , 10. , 0., 10.;
+    mu_1 << 0. , -5. , 10. , -5.;
+    mu_2 << 5. , -5. , -10., -5. ;
     MatrixXd Mus(M,d);
     Mus.row(0)=mu_0;
     Mus.row(1)=mu_1;
@@ -95,29 +97,35 @@ int main() {
       ranges.row(1) = RowVectorXd::Constant(d, 50);
 
     // UNTILL HERE, JUST GENERATION OF DATA AND LATENTS
-
+    std::cout<< "data are created"<<std::endl;
     std::string params_file = \
-      "/home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/resources/sampler_params.asciipb";
+      "/home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/resources/valgrind/sampler_params_d4.asciipb";
     Params params = loadTextProto<Params>(params_file);
     // NOTE: We use all params
-
+    std::cout<<"params loaded"<<std::endl;
 
     int log_every=10;
-    int ntrick = 10;
-    int burnin = 10;
-    int niter=10;
+    int ntrick = 1;
+    int burnin = 1;
+    int niter=1;
     int thin = 1;
 
+    std::cout<<"make dpp"<<std::endl;
 
     DeterminantalPP* pp_mix = make_dpp(params, ranges);
+    std::cout<<"make delta"<<std::endl;
 
     BasePrec* g = make_delta(params);
+    std::cout<<"construct sampler"<<std::endl;
 
     MCMCsampler::MultivariateConditionalMCMC sampler(pp_mix, g, params);
+    std::cout<<"initialize sampler"<<std::endl;
 
     sampler.initialize(data);
 
     for (int i = 0; i < ntrick; i++) {
+      std::cout<<"run_one_trick"<<std::endl;
+
         sampler.run_one_trick();
         if ((i + 1) % log_every == 0) {
             std::cout<< "Trick, iter #"<< i + 1<< " / "<< ntrick<<std::endl;
@@ -125,6 +133,8 @@ int main() {
     }
 
     for (int i = 0; i < burnin; i++) {
+      std::cout<<"run_one"<<std::endl;
+
         sampler.run_one();
         if ((i + 1) % log_every == 0) {
             std::cout<<"Burnin, iter #"<< i + 1<< " / "<< burnin<<std::endl;

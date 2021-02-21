@@ -23,15 +23,17 @@ void MeansSamplerClassic::perform_update_allocated() {
 
     // we PROPOSE a new point from a multivariate normal, with mean equal to the current point
     // and covariance matrix diagonal
+
     VectorXd prop =
         stan::math::multi_normal_rng(currmean, cov_prop, Rng::Instance().get());
 
     if (mcmc->is_inside(prop)){ // if not, just keep the current mean and go to the next a_mean
+
         currlik = mcmc->lpdf_given_clus_multi(mcmc->get_etas_by_clus(i), currmean, mcmc->get_single_a_delta(i));
         proplik = mcmc->lpdf_given_clus_multi(mcmc->get_etas_by_clus(i), prop, mcmc->get_single_a_delta(i));
 
         lik_ratio = proplik - currlik;
-        
+
         MatrixXd others(allmeans.rows() - 1, mcmc->get_dim_fact());
         others = delete_row(allmeans, i);
 
@@ -70,7 +72,7 @@ void MeansSamplerClassic::perform_update_trick_na() {
         stan::math::multi_normal_rng(currmean, cov_prop, Rng::Instance().get());
 
     if (mcmc->is_inside(prop)){ // if not, just keep the current mean and go to the next a_mean
-                
+
         MatrixXd others(allmeans.rows() - 1, mcmc->get_dim_fact());
         others = delete_row(allmeans, i);
 
@@ -103,7 +105,7 @@ void MeansSamplerMala::perform_update_allocated() {
 
     double ln_px_curr;
     VectorXd grad_ln_px_curr;
-    VectorXd a_mean_curr = allmeans.row(i).transpose(); 
+    VectorXd a_mean_curr = allmeans.row(i).transpose();
 
     stan::math::gradient(alloc_means_tar_fun, a_mean_curr, ln_px_curr, grad_ln_px_curr);
 
@@ -149,7 +151,7 @@ void MeansSamplerMala::perform_update_allocated() {
 
 
 void MeansSamplerMala::perform_update_trick_na() {
-  
+
   allmeans = mcmc->get_all_means_reverse();
 
   for (int i = 0; i < mcmc->get_num_na_means(); i++) {
@@ -158,7 +160,7 @@ void MeansSamplerMala::perform_update_trick_na() {
 
     double ln_px_curr;
     VectorXd grad_ln_px_curr;
-    VectorXd na_mean_curr = allmeans.row(i).transpose(); 
+    VectorXd na_mean_curr = allmeans.row(i).transpose();
   //std::cout<<"before gradient"<<std::endl;
     stan::math::gradient(trick_na_means_tar_fun, na_mean_curr, ln_px_curr, grad_ln_px_curr);
     //std::cout<<"after gradient"<<std::endl;
@@ -201,6 +203,6 @@ void MeansSamplerMala::perform_update_trick_na() {
   }
   return;
 }
-    
+
 
 }

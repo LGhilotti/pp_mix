@@ -248,17 +248,21 @@ void MultivariateConditionalMCMC::run_one_trick() {
 
   // sample non-allocated variables
   //sample_means_na(psi_u);
+  //std::cout<<"perform_update_trick_na"<<std::endl;
+
   sample_means_obj->perform_update_trick_na();
   //std::cout<<"sample jumps na"<<std::endl;
 
   sample_jumps_na();
- // std::cout<<"sample deltsa na"<<std::endl;
+  //std::cout<<"sample deltsa na"<<std::endl;
 
   sample_deltas_na();
   //std::cout<<"sample means a"<<std::endl;
 
   // sample allocated variables
   //sample_means_a();
+  //std::cout<<"perform_update_allocated"<<std::endl;
+
   sample_means_obj->perform_update_allocated();
   //std::cout<<"sample deltas a"<<std::endl;
 
@@ -267,26 +271,26 @@ void MultivariateConditionalMCMC::run_one_trick() {
 
   sample_jumps_a();
 
- // std::cout<<"sample etas"<<std::endl;
+  //std::cout<<"sample etas"<<std::endl;
   // sample etas
   sample_etas();
 
- // std::cout<<"sample sigmabar"<<std::endl;
+  //std::cout<<"sample sigmabar"<<std::endl;
   // sample Sigma bar
   sample_sigma_bar();
 
- // std::cout<<"sample Psi"<<std::endl;
+ //std::cout<<"sample Psi"<<std::endl;
   // sample Lambda block
   sample_Psi();
 
- // std::cout<<"sample tau"<<std::endl;
+// std::cout<<"sample tau"<<std::endl;
   sample_tau();
 
- // std::cout<<"sample Phi"<<std::endl;
+  //std::cout<<"sample Phi"<<std::endl;
   sample_Phi();
   //std::cout<<"before sampling Lambda"<<std::endl;
   sample_lambda->perform();
- // std::cout<<"sample Lambda"<<std::endl;
+ //std::cout<<"sample Lambda"<<std::endl;
 
   // print_debug_string();
 
