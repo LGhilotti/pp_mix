@@ -15,14 +15,14 @@ CFLAGS = \
 	-I $(STAN_ROOT_DIR)/lib/tbb_*/include \
 	-I $(PROTO_DIR) \
 	-D_REENTRANT -fPIC \
-	-g -march=native -msse2 -funroll-loops -ftree-vectorize -fopenmp -Wfatal-errors
+	-O3 -march=native -msse2 -funroll-loops -ftree-vectorize -fopenmp -Wfatal-errors
 LDLIBS = \
  	$(shell pkg-config --libs protobuf) -L$(STAN_ROOT_DIR)/lib/tbb \
 	-lgsl -lgslcblas -lpthread -ltbb -Wl,-rpath,"$(STAN_ROOT_DIR)/lib/tbb"
-LDFLAGS = -D_REENTRANT -g -fopenmp
+LDFLAGS = -D_REENTRANT -O3 -fopenmp
 
 PROTO_SRCS = $(wildcard $(PROTO_DIR)/cpp/*.cpp)
-SPIKES_SRCS = $(SPIKES_DIR)/test_valgrind/run_test_p6_d2.cpp \
+SPIKES_SRCS = $(SPIKES_DIR)/test_valgrind/run_test_p6_d3.cpp \
 				#$(SPIKES_DIR)/test_valgrind/run_test_p6_d4.cpp
 				#$(SPIKES_DIR)/p50_inference_test/test_all_p50_d2_3g_inference.cpp
 				#$(SPIKES_DIR)/first_inference_test/inf_multiple_params/debug_all_p200_d2_3g.cpp
