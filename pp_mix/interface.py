@@ -40,7 +40,7 @@ class ConditionalMCMC(object):
 
         self.serialized_data = to_proto(data).SerializeToString()
         self.serialized_ranges = to_proto(ranges).SerializeToString()
-
+        print("here we are")
         self._serialized_chains, self.means_ar, self.lambda_ar = pp_mix_high._run_pp_mix(
             ntrick, nburn, niter, thin, self.serialized_data, self.serialized_params, self.serialized_ranges, log_every)
 

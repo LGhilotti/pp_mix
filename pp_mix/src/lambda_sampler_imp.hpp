@@ -11,7 +11,7 @@ T LambdaSamplerMala::lambda_target_function::operator()(const Eigen::Matrix<T,Ei
   //std::cout<<"checkpoint 1"<<std::endl;
   //Matrix<T,Dynamic,Dynamic> lamb_mat(dim_data,dim_fact);
   Matrix<T,Dynamic,Dynamic> lamb_mat=Map<const Matrix<T,Dynamic,Dynamic>>(lamb.data(),m_mcmc.get_dim_data(),m_mcmc.get_dim_fact());
- 
+
   /*
   for (int j=0 ;j<dim_fact;j++){
   lamb_mat.col(j) = lamb.segment(j*dim_data,j*dim_data+dim_data);
@@ -20,7 +20,7 @@ T LambdaSamplerMala::lambda_target_function::operator()(const Eigen::Matrix<T,Ei
  T output{0.};
  // std::cout<<"checkpoint 2"<<std::endl;
 
- // ######### FIRST TERM 
+ // ######### FIRST TERM
 
   // TO BE SUBSTITUTED WITH CALL TO TEMPLATE FUNCTION WORKING FOR DOUBLE AND T TYPES
   /*
@@ -41,7 +41,7 @@ T LambdaSamplerMala::lambda_target_function::operator()(const Eigen::Matrix<T,Ei
   T f7(f6.sum());
   std::cout<<"checkpoint 3"<<std::endl;
 */
-  
+
   output += -0.5 * sum(multiply(m_mcmc.get_sigma_bar().array().sqrt().matrix().asDiagonal(),subtract(m_mcmc.get_data().transpose(),multiply(lamb_mat, m_mcmc.get_etas().transpose()))).colwise().squaredNorm());
 
   //output += -0.5 * (m_mcmc->sigma_bar.array().sqrt().matrix().asDiagonal()*(m_mcmc->data.transpose() - lamb_mat*m_mcmc->etas.transpose())).colwise().squaredNorm().sum();
@@ -51,7 +51,6 @@ T LambdaSamplerMala::lambda_target_function::operator()(const Eigen::Matrix<T,Ei
   //std::cout<<"checkpoint 4"<<std::endl;
 
   T esp_fact = -2*pow(stan::math::pi(),2)*pow(exp(log_determinant_spd(crossprod(lamb_mat))),1.0/m_mcmc.get_dim_fact())*pow(m_mcmc.pp_mix->get_c(),-2.0/m_mcmc.get_dim_fact());
-  //std::cout<<"checkpoint 5"<<std::endl;
 
   T Ds(0.);
   Matrix<T,Dynamic,1> phis;
@@ -59,21 +58,16 @@ T LambdaSamplerMala::lambda_target_function::operator()(const Eigen::Matrix<T,Ei
   const MatrixXd& Kappas = m_mcmc.pp_mix->get_kappas();
   phis.resize(Kappas.rows());
   phi_tildes.resize(Kappas.rows());
-    //std::cout<<"checkpoint 6"<<std::endl;
-
+  double s = m_mcmc.pp_mix->get_s();
   for (int i = 0; i < Kappas.rows(); i++) {
      // std::cout<<"checkpoint 7"<<std::endl;
-    /*
-    Matrix<T,Dynamic,1> sol = mdivide_left_spd(multiply(lamb_mat.transpose(),lamb_mat), Kappas.row(i).transpose());
-    T dot_prod = (Kappas.row(i)).dot(sol);
-    phis(i) = m_mcmc->pp_mix->get_s()*exp(esp_fact*dot_prod);*/
-    
-    phis(i) = m_mcmc.pp_mix->get_s()*exp(esp_fact * dot_product(Kappas.row(i),mdivide_left_spd(crossprod(lamb_mat), Kappas.row(i).transpose() )) );
+
+    phis(i) = s*exp(esp_fact * dot_product(Kappas.row(i),mdivide_left_spd(crossprod(lamb_mat), Kappas.row(i).transpose() )) );
 
     phi_tildes(i) = phis(i) / (1 - phis(i));
-    Ds += log(1 + phi_tildes(i));
+
   }
-  //std::cout<<"checkpoint 8"<<std::endl;
+  Ds = sum(log(1 + phi_tildes.array()));
 
   MatrixXd mu_trans(m_mcmc.get_num_a_means(),m_mcmc.get_dim_fact());
   for (int i = 0; i < m_mcmc.get_num_a_means(); i++){
@@ -84,18 +78,19 @@ T LambdaSamplerMala::lambda_target_function::operator()(const Eigen::Matrix<T,Ei
   Matrix<T,Dynamic,Dynamic> Ctilde(mu_trans.rows(), mu_trans.rows());
 
   for (int l = 0; l < mu_trans.rows(); l++) {
-     // std::cout<<"checkpoint 10"<<std::endl;
-
-    for (int m = 0; m < mu_trans.rows(); m++) {
+    for (int m = l; m < mu_trans.rows(); m++) {
       T aux = 0.0;
+      RowVectorXd vec = mu_trans.row(l) - mu_trans.row(m);
       for (int kind = 0; kind < Kappas.rows(); kind++) {
-        double dotprod = Kappas.row(kind).dot(mu_trans.row(l) - mu_trans.row(m));
+        double dotprod = Kappas.row(kind).dot(vec);
         aux += phi_tildes(kind) * cos(2. * stan::math::pi() * dotprod);
       }
       Ctilde(l, m) = aux;
+      if (l!=m) Ctilde(m,l) = aux;
+
     }
   }
-  
+
   output += -Ds - log(1-exp(-Ds)) + log_determinant(Ctilde);
 
   //######## THIRD TERM

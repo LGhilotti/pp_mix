@@ -66,7 +66,7 @@ class MultivariateConditionalMCMC {
     std::vector<PrecMat> a_deltas, na_deltas;
     // etas: n x d matrix
     MatrixXd etas;
-   
+
     //Sigma_bar
     VectorXd sigma_bar;
     //Lambda-block
@@ -80,7 +80,7 @@ class MultivariateConditionalMCMC {
     // Allocated means sampling callable object
     BaseMeansSampler* sample_means_obj;
 
-   
+
     // FOR DEBUGGING
     bool verbose = false;
 
@@ -88,15 +88,15 @@ class MultivariateConditionalMCMC {
 
 
  public:
-   
+
     // DISTRIBUTIONS
     DeterminantalPP *pp_mix;
     BaseMultiPrec *g;
 
-    
+
     MultivariateConditionalMCMC() {}
     ~MultivariateConditionalMCMC() ;
-    
+
     MultivariateConditionalMCMC(DeterminantalPP *pp_mix, BasePrec *g,
                                 const Params &params);
 
@@ -167,7 +167,7 @@ class MultivariateConditionalMCMC {
         return std::pow(_beta_jump, _alpha_jump) / std::pow(_beta_jump + u, _alpha_jump);
     }
 
-    
+
     // to store the current state in proto format
     void get_state_as_proto(google::protobuf::Message *out_);
 
@@ -175,14 +175,14 @@ class MultivariateConditionalMCMC {
     void print_debug_string();
 
     void set_verbose() { verbose = !verbose; }
-    
+
     double lpdf_given_clus(const VectorXd &x, const VectorXd &mu, const PrecMat &sigma)
     {
         return o_multi_normal_prec_lpdf(x, mu, sigma);
     }
-    
+
     double lpdf_given_clus_multi(
-        const std::vector<VectorXd> &x, const VectorXd &mu, const PrecMat &sigma) 
+        const std::vector<VectorXd> &x, const VectorXd &mu, const PrecMat &sigma)
     {
         return o_multi_normal_prec_lpdf(x, mu, sigma);
     }
@@ -224,7 +224,7 @@ class MultivariateConditionalMCMC {
     RowVectorXd get_single_a_mean(int ind) const {return a_means.row(ind);}
 
     RowVectorXd get_single_na_mean(int ind) const {return na_means.row(ind);}
- 
+
     const PrecMat& get_single_a_delta(int ind) const {return a_deltas[ind];}
 
     MatrixXd get_a_means_except_ind(int ind) const {return delete_row(a_means, ind);}
@@ -244,6 +244,8 @@ class MultivariateConditionalMCMC {
         out << na_means , a_means;
         return out;
     }
+
+    VectorXd get_clus_alloc() const { return clus_alloc;  }
 
     void set_Lambda(const MatrixXd& prop_lambda) {  Lambda = prop_lambda;}
 

@@ -60,15 +60,19 @@ void DeterminantalPP::compute_eigen_and_cstar(double * D_, VectorXd * Phis_, Vec
   double det = std::pow(M.matrixL().determinant(),2);
 
   double esp_fact = -2*std::pow(stan::math::pi(),2)*std::pow(det,1.0/dim)*std::pow(c,-2.0/dim);
+  ArrayXd vec_phi(Kappas.rows());
+  //#pragma omp parallel for default(none) shared(vec_phi, Kappas, s,esp_fact,M)
   for (int i = 0; i < Kappas.rows(); i++) {
     VectorXd sol = M.solve(Kappas.row(i).transpose());
     double dot_prod = (Kappas.row(i)).dot(sol);
-    (*Phis_)(i) = s*std::exp(esp_fact*dot_prod);
-
-    (*Phi_tildes_)(i) = (*Phis_)(i) / (1 - (*Phis_)(i));
-    *D_ += std::log(1 + (*Phi_tildes_)(i));
-    *C_star_ += (*Phi_tildes_)(i);
+    vec_phi(i) = s*std::exp(esp_fact*dot_prod);
   }
+
+  *Phis_ = vec_phi.matrix();
+  *Phi_tildes_ = (vec_phi / (1 - vec_phi)).matrix();
+
+  *D_ = log(1 + (*Phi_tildes_).array()).sum();
+  *C_star_ = (*Phi_tildes_).sum();
 
   return;
 
@@ -202,13 +206,19 @@ double DeterminantalPP::log_det_Ctilde(const MatrixXd &x, const VectorXd& phi_ti
 
   // TODO: Ctilde is symmetric! Also the diagonal elements are identical!
   for (int l = 0; l < x.rows(); l++) {
-    for (int m = 0; m < x.rows(); m++) {
+    for (int m = l; m < x.rows(); m++) {
       double aux = 0.0;
+      RowVectorXd vec(x.row(l)-x.row(m));
+      //int nthreads;
+      #pragma omp parallel for default(none) firstprivate(Kappas,vec, phi_tildes_p) reduction(+:aux)
       for (int kind = 0; kind < Kappas.rows(); kind++) {
-        double dotprod = Kappas.row(kind).dot(x.row(l) - x.row(m));
-        aux += phi_tildes_p[kind] * std::cos(2. * PI * dotprod);
+        //nthreads = omp_get_num_threads();
+        //printf("Number of threads = %d\n", nthreads);
+        double dotprod = Kappas.row(kind).dot(vec);
+        aux += phi_tildes_p[kind] * std::cos(2. * stan::math::pi() * dotprod);
       }
       Ctilde(l, m) = aux;
+      if (l!=m) Ctilde(m,l) = aux;
     }
   }
   return 2.0 * std::log(Ctilde.llt().matrixL().determinant());

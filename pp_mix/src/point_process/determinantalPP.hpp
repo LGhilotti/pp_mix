@@ -2,6 +2,7 @@
 #define DETERMINANTAL_PP_HPP
 
 //#include <stdexcept>
+#include <omp.h>
 #include <stan/math/prim.hpp>
 #include <Eigen/Dense>
 

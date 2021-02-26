@@ -1,6 +1,7 @@
 #ifndef LAMBDA_SAMPLER_HPP
 #define LAMBDA_SAMPLER_HPP
 
+#include <omp.h>
 #include <stan/math/fwd.hpp>
 #include <stan/math/mix.hpp>
 #include <stan/math/prim.hpp>
@@ -55,14 +56,14 @@ private:
 public:
     LambdaSamplerMala(MultivariateConditionalMCMC* mcmc, double m_p): BaseLambdaSampler(mcmc), mala_p_lambda(m_p), lambda_tar_fun(*mcmc){}
     void perform() override;
-    
+
     // TARGET FUNCTION OBJECT : must implement logfunction (as required in Mala)
     class lambda_target_function {
     private:
         const MultivariateConditionalMCMC& m_mcmc;
-       
+
     public:
-   
+
         lambda_target_function(const MultivariateConditionalMCMC& mala): m_mcmc(mala){};
 
         template<typename T> T

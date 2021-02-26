@@ -1,6 +1,7 @@
 #ifndef ALLOC_MEANS_SAMPLER
 #define ALLOC_MEANS_SAMPLER
 
+#include <omp.h>
 #include <stan/math/fwd.hpp>
 #include <stan/math/mix.hpp>
 #include <stan/math/prim.hpp>
@@ -22,17 +23,17 @@ class BaseMeansSampler {
 protected:
     MultivariateConditionalMCMC* mcmc;
 
-    // only for allocated 
+    // only for allocated
     int acc_sampled_a_means = 0;
     int tot_sampled_a_means = 0;
-   
+
 
 public:
     BaseMeansSampler(MultivariateConditionalMCMC* mcmc): mcmc(mcmc) {}
     virtual ~BaseMeansSampler(){}
 
     virtual void perform_update_allocated() = 0;
-    
+
     virtual void perform_update_trick_na() = 0;
 
 
@@ -46,7 +47,7 @@ private:
 
 public:
     MeansSamplerClassic(MultivariateConditionalMCMC* mcmc, double p_m_s): BaseMeansSampler(mcmc), prop_means_sigma(p_m_s){}
-    
+
     void perform_update_allocated() override;
 
     void perform_update_trick_na() override;
@@ -60,10 +61,10 @@ private:
     int ind_mean;
 
 public:
-    
+
     MeansSamplerMala(MultivariateConditionalMCMC* mcmc, double m_p): BaseMeansSampler(mcmc), mala_p_means(m_p),
     alloc_means_tar_fun(*this), trick_na_means_tar_fun(*this){}
-    
+
     void perform_update_allocated() override;
 
     void perform_update_trick_na() override;
@@ -80,7 +81,7 @@ public:
         //const int& ind_mean;
         const MeansSamplerMala& msm;
     public:
-   
+
         alloc_means_target_function(const MeansSamplerMala& _msm): msm(_msm){};
 
         template<typename T> T
@@ -96,7 +97,7 @@ public:
         //const int& ind_mean;
         const MeansSamplerMala& msm;
     public:
-   
+
         trick_na_means_target_function(const MeansSamplerMala& _msm): msm(_msm){};
 
         template<typename T> T
