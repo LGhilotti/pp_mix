@@ -97,10 +97,10 @@ cluster_alloc.tail(40) = VectorXi::Constant(40, 2);
     Params params = loadTextProto<Params>(params_file);
     // NOTE: We use all params
 
-    int log_every=5;
-    int ntrick = 10;
-    int burnin = 500;
-    int niter=500;
+    int log_every=1000;
+    int ntrick = 2000;
+    int burnin = 5000;
+    int niter=5000;
     int thin = 100;
 
 
@@ -136,7 +136,9 @@ cluster_alloc.tail(40) = VectorXi::Constant(40, 2);
     myfile.open("./src/spikes/MALA/test_p50.txt", std::ios::app);
     myfile << "#### Means Acceptance rate: "<< std::fixed<<std::setprecision(5)<<sampler.a_means_acceptance_rate()<<"\n";
     myfile << "#### Lambda Acceptance rate: "<< std::fixed<<std::setprecision(5)<<sampler.Lambda_acceptance_rate()<<"\n";
-
+    myfile <<"Lambda: \n"<<sampler.get_Lambda()<<"\n";
+    myfile <<"mus: \n"<<sampler.get_a_means()<<"\n";
+    myfile <<"sigma_bar: \n"<<sampler.get_sigma_bar()<<"\n";
     myfile <<"cluster allocations: \n"<<sampler.get_clus_alloc()<<"\n";
 
     std::cout<<"END!"<<std::endl;
