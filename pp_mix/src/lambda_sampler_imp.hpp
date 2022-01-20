@@ -1,6 +1,6 @@
 #ifndef LAMBDA_SAMPLER_IMP_HPP
 #define LAMBDA_SAMPLER_IMP_HPP
-
+hellllllooooooooooooooooooooooooooooooooooooo
 namespace MCMCsampler {
 
 // returns the ln of full-cond of Lambda|rest in current Lambda (lamb is vectorized)
