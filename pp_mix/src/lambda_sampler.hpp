@@ -24,14 +24,14 @@ protected:
 
     int acc_sampled_Lambda = 0;
     int tot_sampled_Lambda = 0;
-
+    double norm_d_grad=0;
 
 public:
     BaseLambdaSampler(MultivariateConditionalMCMC* mcmc): mcmc(mcmc) {}
     virtual ~BaseLambdaSampler(){}
 
     virtual void perform() = 0;
-
+    double get_norm_d_g(){return norm_d_grad;}
     double Lambda_acc_rate();
 };
 
@@ -52,6 +52,8 @@ public:
 class LambdaSamplerMala : public BaseLambdaSampler {
 private:
     double mala_p_lambda;
+
+    MatrixXd compute_grad_analytic(){};
 
 public:
     LambdaSamplerMala(MultivariateConditionalMCMC* mcmc, double m_p): BaseLambdaSampler(mcmc), mala_p_lambda(m_p), lambda_tar_fun(*mcmc){}

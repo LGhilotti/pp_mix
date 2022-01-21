@@ -72,7 +72,7 @@ void LambdaSamplerClassic::perform() {
     acc_sampled_Lambda += 1;
     mcmc->pp_mix->decompose_proposal(prop_lambda);
     //Lambda.swap(prop_lambda);
-    //mcmc->Lambda = prop_lambda;  
+    //mcmc->Lambda = prop_lambda;
     mcmc->set_Lambda(prop_lambda);
     mcmc->pp_mix->update_decomposition_from_proposal();
     //std::cout<<"accepted Lambda"<<std::endl;
@@ -86,6 +86,70 @@ void LambdaSamplerClassic::perform() {
 /// LambdaSamplerMala /////////
 ///////////////////////////////
 
+MatrixXd LambdaSamplerMala::compute_grad_analytic(){
+
+  MatrixXd grad_log = MatrixXd::Zero(mcmc->get_dim_data(),mcmc->get_dim_fact());
+  //First term
+  MatrixXd A_tmp = mcmc->get_data().transpose() - mcmc->get_Lambda()*(mcmc->get_etas().transpose());
+  for (int i =0; i<mcmc->get_ndata();i++){
+    grad_log += A_tmp.col(i)*mcmc->get_etas().row(i);
+  }
+  grad_log = mcmc->get_sigma_bar().asDiagonal() * grad_log;
+
+  //Second term
+  int n_means=mcmc->get_num_a_means()+mcmc->get_num_na_means();
+  MatrixXd mu_trans(n_means,mcmc->get_dim_fact());
+  for (int i = 0; i < n_means; i++){
+        mu_trans.row(i) = (mcmc->pp_mix->get_A() * mcmc->get_all_means().row(i).transpose() + mcmc->pp_mix->get_b()).transpose();
+  }
+
+  MatrixXd Ctilde(mu_trans.rows(), mu_trans.rows());
+  MatrixXi Kappas (mcmc->pp_mix->get_kappas());
+  for (int l = 0; l < mu_trans.rows(); l++) {
+    for (int m = l; m < mu_trans.rows(); m++) {
+      double aux = 0.0;
+      RowVectorXd vec(mu_trans.row(l)-mu_trans.row(m));
+      //int nthreads;
+      //#pragma omp parallel for default(none) firstprivate(Kappas,vec, phi_tildes_p) reduction(+:aux)
+      for (int kind = 0; kind < Kappas.rows(); kind++) {
+        //nthreads = omp_get_num_threads();
+        //printf("Number of threads = %d\n", nthreads);
+        double dotprod = Kappas.row(kind).dot(vec);
+        aux += mcmc->pp_mix->get_phi_tildes()[kind] * std::cos(2. * stan::math::pi() * dotprod);
+      }
+      Ctilde(l, m) = aux;
+      if (l!=m) Ctilde(m,l) = aux;
+    }
+  }
+
+  LLT<MatrixXd> Ctil (Ctilde);
+
+  int d =  mcmc->get_dim_fact();
+  const MatrixXd& lamb=mcmc->get_Lambda();
+  LLT<MatrixXd> l_t_l (lamb.transpose() * lamb);
+  //MatrixXd l_t_l_inv (l_t_l.inverse());
+  MatrixXd part_g (2 * pow(l_t_l.matrixL().determinant(),2.0/d) * lamb);
+  //Redefine Kappas keeping only the ones with positive or 0 first component
+  Kappas = Kappas.bottomRows(Kappas.rows()/(2*mcmc->pp_mix->get_N() +1) * (mcmc->pp_mix->get_N() +1));
+  for (int kind=0; kind< Kappas.rows(); kind++) {
+    //construct g^k , u_k (real and img)
+    VectorXd sol(l_t_l.solve(Kappas.row(kind).transpose()));
+    // s_part_g contains the entire squared bracket
+    MatrixXd s_part_g =MatrixXd::Constant(d,d, 1.0/d * Kappas.row(kind).dot(sol.transpose()) ) - Kappas.row(kind).transpose()*sol.transpose();
+    // gk is the matrix g^k
+    MatrixXd gk (part_g * t_l_t.solve(s_part_g));
+
+    //define u_k
+    VectorXd arg (2*stan::math::pi()*mu_trans.rowwise().dot(Kappas.row(kind)));
+    VectorXd uR (std::cos(arg));
+    VectorXd uI (std::sin(arg));
+  }
+
+  //Third term
+  grad_log -= mcmc->get_Lambda().cwiseQuotient(mcmc->get_Phi().array().square() * mcmc->get_Psi().array() * mcmc->get_tau()*mcmc->get_tau());
+
+  return grad_log;
+}
 
 void LambdaSamplerMala::perform() {
   //std::cout<<"sample Lambda"<<std::endl;
@@ -94,7 +158,15 @@ void LambdaSamplerMala::perform() {
   VectorXd grad_ln_px_curr;
   const VectorXd Lambda_curr = Map<const VectorXd>(mcmc->get_Lambda().data(), mcmc->get_dim_data()*mcmc->get_dim_fact()); // column-major
  //std::cout<<"before gradient"<<std::endl;
+ // THIS IS THE GRADIENT VIA AUTODIFF
   stan::math::gradient(lambda_tar_fun, Lambda_curr, ln_px_curr, grad_ln_px_curr);
+//  MatrixXd grad_log_ad = Map<MatrixXd>(grad_ln_px_curr.data(), mcmc->get_dim_data(), mcmc->get_dim_fact());
+  //THIS IS THE GRADIENT VIA ANALYTICAL COMPUTATION
+//  MatrixXd grad_log_analytic = compute_grad_analytic();
+
+  // COMPUTE THE NORM OF THE DIFFERENCE
+  //norm_d_grad = (grad_log_ad - grad_log_analytic).squaredNorm();
+
   //std::cout<<"after gradient"<<std::endl;
   // Proposal according MALA
   VectorXd prop_lambda_vec = Lambda_curr + mala_p_lambda*grad_ln_px_curr +

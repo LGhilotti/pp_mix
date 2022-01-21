@@ -26,6 +26,7 @@ protected:
     double c; // >0 , it sets rho_max
     double s; // in (0,1), s.t. rho= s * rho_max
 
+    // c_star is the integral of psi^* (in b&D algo), which is C_tilde(0)=sum(phis_tilde)
     double c_star; // c* of X (DPP): changes when Lambda changes!
 
     // eigendecomposition params: change when Lambda changes!

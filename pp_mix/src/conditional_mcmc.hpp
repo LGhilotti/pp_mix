@@ -196,6 +196,7 @@ class MultivariateConditionalMCMC {
     void print_data_by_clus(int clus);
 
     // getters
+    int get_ndata() const {return ndata;}
 
     int get_dim_data() const {return dim_data;}
 
@@ -253,6 +254,7 @@ class MultivariateConditionalMCMC {
 
     void set_single_na_mean(int ind, const VectorXd& prop) { na_means.row(ind) = prop.transpose() ;}
 
+    double get_norm_diff();
 };
 
 

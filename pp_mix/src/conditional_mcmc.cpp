@@ -754,6 +754,10 @@ double MultivariateConditionalMCMC::Lambda_acceptance_rate() {
       return sample_lambda->Lambda_acc_rate();
 }
 
+double MultivariateConditionalMCMC::get_norm_diff() {
+      return sample_lambda->get_norm_d_g();
+}
+
 void MultivariateConditionalMCMC::print_data_by_clus(int clus) {
   for (const int &d : obs_by_clus[clus])
     std::cout << data.row(d).transpose() << std::endl;

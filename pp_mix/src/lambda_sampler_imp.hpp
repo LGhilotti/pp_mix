@@ -1,6 +1,6 @@
 #ifndef LAMBDA_SAMPLER_IMP_HPP
 #define LAMBDA_SAMPLER_IMP_HPP
-hellllllooooooooooooooooooooooooooooooooooooo
+
 namespace MCMCsampler {
 
 // returns the ln of full-cond of Lambda|rest in current Lambda (lamb is vectorized)
@@ -69,9 +69,10 @@ T LambdaSamplerMala::lambda_target_function::operator()(const Eigen::Matrix<T,Ei
   }
   Ds = sum(log(1 + phi_tildes.array()));
 
-  MatrixXd mu_trans(m_mcmc.get_num_a_means(),m_mcmc.get_dim_fact());
-  for (int i = 0; i < m_mcmc.get_num_a_means(); i++){
-        mu_trans.row(i) = (m_mcmc.pp_mix->get_A() * m_mcmc.get_single_a_mean(i).transpose() + m_mcmc.pp_mix->get_b()).transpose();
+  int n_means=m_mcmc.get_num_a_means()+m_mcmc.get_num_na_means();
+  MatrixXd mu_trans(n_means,m_mcmc.get_dim_fact());
+  for (int i = 0; i < n_means; i++){
+        mu_trans.row(i) = (m_mcmc.pp_mix->get_A() * m_mcmc.get_all_means().row(i).transpose() + m_mcmc.pp_mix->get_b()).transpose();
   }
      //std::cout<<"checkpoint 9"<<std::endl;
 
