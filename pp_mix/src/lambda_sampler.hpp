@@ -25,6 +25,8 @@ protected:
     int acc_sampled_Lambda = 0;
     int tot_sampled_Lambda = 0;
     double norm_d_grad=0;
+    MatrixXd grad_log_ad;
+    MatrixXd grad_log_analytic;
 
 public:
     BaseLambdaSampler(MultivariateConditionalMCMC* mcmc): mcmc(mcmc) {}
@@ -32,6 +34,9 @@ public:
 
     virtual void perform() = 0;
     double get_norm_d_g(){return norm_d_grad;}
+    const MatrixXd& get_grad_log_ad(){return grad_log_ad;}
+    const MatrixXd& get_grad_log_analytic(){return grad_log_analytic;} 
+
     double Lambda_acc_rate();
 };
 

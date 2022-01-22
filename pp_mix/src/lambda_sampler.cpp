@@ -169,9 +169,9 @@ void LambdaSamplerMala::perform() {
  //std::cout<<"before gradient"<<std::endl;
  // THIS IS THE GRADIENT VIA AUTODIFF
   stan::math::gradient(lambda_tar_fun, Lambda_curr, ln_px_curr, grad_ln_px_curr);
-//  MatrixXd grad_log_ad = Map<MatrixXd>(grad_ln_px_curr.data(), mcmc->get_dim_data(), mcmc->get_dim_fact());
+  grad_log_ad = Map<MatrixXd>(grad_ln_px_curr.data(), mcmc->get_dim_data(), mcmc->get_dim_fact());
   //THIS IS THE GRADIENT VIA ANALYTICAL COMPUTATION
-//  MatrixXd grad_log_analytic = compute_grad_analytic();
+  grad_log_analytic = compute_grad_analytic();
 
   // COMPUTE THE NORM OF THE DIFFERENCE
   //norm_d_grad = (grad_log_ad - grad_log_analytic).squaredNorm();

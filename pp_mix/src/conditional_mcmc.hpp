@@ -255,6 +255,11 @@ class MultivariateConditionalMCMC {
     void set_single_na_mean(int ind, const VectorXd& prop) { na_means.row(ind) = prop.transpose() ;}
 
     double get_norm_diff();
+
+    const MatrixXd& get_grad_log_ad();
+
+    const MatrixXd& get_grad_log_analytic();
+
 };
 
 

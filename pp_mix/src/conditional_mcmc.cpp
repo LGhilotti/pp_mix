@@ -758,6 +758,14 @@ double MultivariateConditionalMCMC::get_norm_diff() {
       return sample_lambda->get_norm_d_g();
 }
 
+const MatrixXd& MultivariateConditionalMCMC::get_grad_log_ad() {
+      return sample_lambda->get_grad_log_ad();
+}
+
+const MatrixXd& MultivariateConditionalMCMC::get_grad_log_analytic() {
+      return sample_lambda->get_grad_log_analytic();
+}
+
 void MultivariateConditionalMCMC::print_data_by_clus(int clus) {
   for (const int &d : obs_by_clus[clus])
     std::cout << data.row(d).transpose() << std::endl;
