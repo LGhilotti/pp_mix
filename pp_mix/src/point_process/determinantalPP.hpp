@@ -129,6 +129,10 @@ public:
 
     const VectorXd& get_phi_tildes() const {return phi_tildes;}
 
+    const VectorXd& get_phis() const {return phis;}
+
+    double get_Ds() const {return Ds;}
+
     const MatrixXd& get_A() const {return A;}
 
     const VectorXd& get_b() const {return b;}

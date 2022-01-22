@@ -6,7 +6,7 @@ STAN_ROOT_DIR := $(if $(STAN_ROOT_DIR),$(STAN_ROOT_DIR),/home/mario/dev/bayesmix
 
 CXX = g++
 CFLAGS = \
-	-std=c++1y \
+	-std=c++14 \
 	-MMD \
 	-I $(STAN_ROOT_DIR) \
 	-I $(STAN_ROOT_DIR)/lib/eigen_*/ \

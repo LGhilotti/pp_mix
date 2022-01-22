@@ -53,7 +53,7 @@ class LambdaSamplerMala : public BaseLambdaSampler {
 private:
     double mala_p_lambda;
 
-    MatrixXd compute_grad_analytic(){};
+    MatrixXd compute_grad_analytic();
 
 public:
     LambdaSamplerMala(MultivariateConditionalMCMC* mcmc, double m_p): BaseLambdaSampler(mcmc), mala_p_lambda(m_p), lambda_tar_fun(*mcmc){}
