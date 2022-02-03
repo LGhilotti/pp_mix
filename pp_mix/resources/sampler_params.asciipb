@@ -1,6 +1,6 @@
 dpp {
   c: 60
-  n: 15
+  n: 3
   s: 0.8
 }
 
@@ -23,6 +23,6 @@ agamma: 60.
 
 bgamma: 30.
 
-mala_step_means: 0.005
+mh_sigma_means: 0.005
 
 mala_step_lambda: 0.00005

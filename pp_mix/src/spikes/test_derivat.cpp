@@ -54,7 +54,7 @@ int main() {
     // we fix Lambda, M=3 (3 groups), mu1,mu2,mu3 Delta1, Delta2,Delta3 cluster labels, Sigmabar
     // and simulate etas and data.
     const int p = 4;
-    const int d = 2;
+    int d = 2;
     MatrixXd Lambda(p,d);
     Lambda << 0, 1,
               1, 0,
@@ -80,16 +80,16 @@ int main() {
     VectorXd sigma_bar (VectorXd::Constant(p, 2.0));
 
     // we will consider 120 observations
-    VectorXi cluster_alloc(120);
-    cluster_alloc.head(40) = VectorXi::Zero(40);
-    cluster_alloc.segment(40,40) = VectorXi::Ones(40);
-    cluster_alloc.tail(40) = VectorXi::Constant(40, 2);
+    VectorXi cluster_alloc(30);
+    cluster_alloc.head(10) = VectorXi::Zero(10);
+    cluster_alloc.segment(10,10) = VectorXi::Ones(10);
+    cluster_alloc.tail(10) = VectorXi::Constant(10, 2);
 
     MatrixXd Etas = generate_etas(Mus, Deltas, cluster_alloc);
 
     MatrixXd data = generate_data(Lambda, Etas, sigma_bar);
 
-
+    //d=1;
     Eigen::MatrixXd ranges(2, d);
     ranges.row(0) = RowVectorXd::Constant(d, -50);
     ranges.row(1) = RowVectorXd::Constant(d, 50);
@@ -100,9 +100,9 @@ int main() {
     // NOTE: We use all params
 
     int log_every=1;
-    int ntrick = 10;
-    int burnin = 10;
-    int niter=10;
+    int ntrick = 2;
+    int burnin = 2;
+    int niter=2;
     int thin = 1;
 
 
@@ -117,20 +117,28 @@ int main() {
     std::ofstream myfile;
     myfile.open("./src/spikes/test_derivatives.txt", std::ios::app);
 
+    myfile<< "Initial Lambda: \n"<< sampler.get_Lambda()<<"\n";
+
+
     for (int i = 0; i < ntrick; i++) {
         sampler.run_one_trick();
         if ((i + 1) % log_every == 0) {
             myfile<< "Trick, iter #"<< i + 1<< " / "<< ntrick<<"\n";
+            //myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
             myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
             myfile<< "Grad_log_analytic: \n"<< sampler.get_grad_log_analytic()<<"\n";
 
         }
     }
 
+
+
     for (int i = 0; i < burnin; i++) {
         sampler.run_one();
         if ((i + 1) % log_every == 0) {
             myfile<<"Burnin, iter #"<< i + 1<< " / "<< burnin<<"\n";
+            //myfile<< "Means_na: \n"<< sampler.get_na_means()<<"\n";
+            //myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
             myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
             myfile<< "Grad_log_analytic: \n"<< sampler.get_grad_log_analytic()<<"\n";
           }
@@ -140,12 +148,17 @@ int main() {
         sampler.run_one();
         if ((i + 1) % log_every == 0) {
             myfile<<"Running, iter #"<< i + 1<< " / "<< niter<<"\n";
+            //myfile<< "Means_na: \n"<< sampler.get_na_means()<<"\n";
+            //myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
             myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
             myfile<< "Grad_log_analytic: \n"<< sampler.get_grad_log_analytic()<<"\n";
           }
     }
 
     myfile.close();
+    std::cout<<"acceptance lambda: "<<sampler.Lambda_acceptance_rate()<<std::endl;
+
+
     std::cout<<"END!"<<std::endl;
     return 0;
 

@@ -202,6 +202,8 @@ class MultivariateConditionalMCMC {
 
     int get_dim_fact() const {return dim_fact;}
 
+    double get_u() const {return u;}
+
     double get_tau() const {return tau;}
 
     const MatrixXd& get_Psi() const {return Psi;}
@@ -228,6 +230,8 @@ class MultivariateConditionalMCMC {
 
     const PrecMat& get_single_a_delta(int ind) const {return a_deltas[ind];}
 
+    const PrecMat& get_single_na_delta(int ind) const {return na_deltas[ind];}
+
     MatrixXd get_a_means_except_ind(int ind) const {return delete_row(a_means, ind);}
 
     const MatrixXd& get_a_means() const {return a_means;}
@@ -246,7 +250,11 @@ class MultivariateConditionalMCMC {
         return out;
     }
 
-    VectorXd get_clus_alloc() const { return clus_alloc;  }
+    VectorXi get_clus_alloc() const { return clus_alloc;  }
+
+    VectorXd get_a_jumps() const { return a_jumps;  }
+
+    VectorXd get_na_jumps() const { return na_jumps;  }
 
     void set_Lambda(const MatrixXd& prop_lambda) {  Lambda = prop_lambda;}
 

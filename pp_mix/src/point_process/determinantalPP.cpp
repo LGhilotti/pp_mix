@@ -210,7 +210,7 @@ double DeterminantalPP::log_det_Ctilde(const MatrixXd &x, const VectorXd& phi_ti
       double aux = 0.0;
       RowVectorXd vec(x.row(l)-x.row(m));
       //int nthreads;
-      #pragma omp parallel for default(none) firstprivate(Kappas,vec, phi_tildes_p) reduction(+:aux)
+      //#pragma omp parallel for default(none) firstprivate(Kappas,vec, phi_tildes_p) reduction(+:aux)
       for (int kind = 0; kind < Kappas.rows(); kind++) {
         //nthreads = omp_get_num_threads();
         //printf("Number of threads = %d\n", nthreads);
@@ -229,14 +229,15 @@ double DeterminantalPP::papangelou(const VectorXd& xi, const MatrixXd &x, bool l
   int n = 1 + x.rows();
   MatrixXd all( n , x.cols());
   all << x, xi.transpose();
-
+  //std::cout<<"all: "<<all<<std::endl;
   // Transform data points to be in the unit cube centered in 0
   MatrixXd alltrans(n,all.cols());
   for (int i = 0; i < n; i++)
     alltrans.row(i) = (A * all.row(i).transpose() + b).transpose();
 
+  //std::cout<<"alltrans: "<<alltrans<<std::endl;
   double out = -1.0*std::log(vol_range)+ log_det_Ctilde(alltrans, phi_tildes) - log_det_Ctilde(alltrans.topRows(n-1), phi_tildes);
-
+  //std::cout<<"out: "<<out<<std::endl;
   if (!log) out = std::exp(out);
 
   return out;
@@ -276,7 +277,6 @@ double DeterminantalPP::phi_star_dens(VectorXd xi, bool log) {
 void DeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const MatrixXd &active,
                                  double psi_u) {
   int npoints = non_active->rows();
-
   double c_star_na = c_star * psi_u;
   birth_prob = std::log(c_star_na) - std::log(c_star_na + npoints);
 
@@ -294,10 +294,9 @@ void DeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const Matri
   //  std::cout<<"rows= "<<aux.rows()<<std::endl;
   //  std::cout<<"cols= "<<aux.cols()<<std::endl;
 
-    double pap = papangelou(xi, aux);
+    double pap = papangelou(xi, aux, true);
     //std::cout<<"done papan"<<std::endl;
     birth_arate = pap - phi_star_dens(xi);
-
     double rthird = uniform_rng(0, 1, Rng::Instance().get());
     if (std::log(rthird) < birth_arate) {
       //std::cout<<"Accepted birth"<<std::endl;

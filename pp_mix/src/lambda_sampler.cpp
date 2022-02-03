@@ -90,6 +90,7 @@ MatrixXd LambdaSamplerMala::compute_grad_analytic(){
 
   MatrixXd grad_log = MatrixXd::Zero(mcmc->get_dim_data(),mcmc->get_dim_fact());
   //First term
+  /*
   MatrixXd A_tmp = mcmc->get_data().transpose() - mcmc->get_Lambda()*(mcmc->get_etas().transpose());
   for (int i =0; i<mcmc->get_ndata();i++){
     grad_log += A_tmp.col(i)*mcmc->get_etas().row(i);
@@ -97,6 +98,7 @@ MatrixXd LambdaSamplerMala::compute_grad_analytic(){
   grad_log = mcmc->get_sigma_bar().asDiagonal() * grad_log;
 
   //Second term
+
   int n_means=mcmc->get_num_a_means()+mcmc->get_num_na_means();
   MatrixXd mu_trans(n_means,mcmc->get_dim_fact());
   for (int i = 0; i < n_means; i++){
@@ -106,6 +108,7 @@ MatrixXd LambdaSamplerMala::compute_grad_analytic(){
   MatrixXd Ctilde(mu_trans.rows(), mu_trans.rows());
   MatrixXd Kappas (mcmc->pp_mix->get_kappas());
   VectorXd Phis (mcmc->pp_mix->get_phis());
+
   for (int l = 0; l < mu_trans.rows(); l++) {
     for (int m = l; m < mu_trans.rows(); m++) {
       double aux = 0.0;
@@ -122,7 +125,62 @@ MatrixXd LambdaSamplerMala::compute_grad_analytic(){
       if (l!=m) Ctilde(m,l) = aux;
     }
   }
+*/
+  // *** BEGIN TEST
+  /*
+  int d =  mcmc->get_dim_fact();
+  const MatrixXd& lamb=mcmc->get_Lambda();
+  LLT<MatrixXd> l_t_l (lamb.transpose() * lamb);
+  MatrixXd part_g (2.0 * pow(l_t_l.matrixL().determinant(),2.0/d) * lamb);
+  std::cout<<"part_g: \n"<<part_g<<std::endl;
+  for (int kind=0; kind< Kappas.rows(); kind++) {
+    VectorXd sol(l_t_l.solve(Kappas.row(kind).transpose()));
+    std::cout<<"sol: \n"<<sol<<std::endl;
+    MatrixXd s_part_g =MatrixXd::Constant(d,d, 1.0/d * Kappas.row(kind).dot(sol.transpose()) ) - Kappas.row(kind).transpose()*sol.transpose();
+    std::cout<<"s_part_g: \n"<<s_part_g<<std::endl;
+    MatrixXd gk (part_g *l_t_l.solve(s_part_g));
+    std::cout<<"gk: \n"<<gk<<std::endl;
 
+    grad_log += Phis[kind]/(1-Phis[kind]) * gk;
+    std::cout<<"grad_log: \n"<<grad_log<<std::endl;
+
+  }
+  grad_log = 2*std::pow(stan::math::pi(),2.0)*std::pow(mcmc->pp_mix->get_c(),-2.0/d)*grad_log;
+
+  // HERE, THE TEST FOR THE B MATRIX (look overleaf in the steps)
+  LLT<MatrixXd> Ctil (Ctilde);
+
+  int d =  mcmc->get_dim_fact();
+  const MatrixXd& lamb=mcmc->get_Lambda();
+  LLT<MatrixXd> l_t_l (lamb.transpose() * lamb);
+  //MatrixXd l_t_l_inv (l_t_l.inverse());
+  MatrixXd part_g (2.0 * pow(l_t_l.matrixL().determinant(),2.0/d) * lamb);
+  //Redefine Kappas keeping only the ones with positive or 0 first component
+  Kappas = Kappas.bottomRows(Kappas.rows()/(2*mcmc->pp_mix->get_N() +1) * (mcmc->pp_mix->get_N() +1));
+  Phis = Phis.bottomRows(Phis.rows()/(2*mcmc->pp_mix->get_N() +1) * (mcmc->pp_mix->get_N() +1));
+  MatrixXd SecTerm = MatrixXd::Zero(mcmc->get_dim_data(),d);
+  for (int kind=0; kind< Kappas.rows(); kind++) {
+    //construct g^k , u_k (real and img)
+    VectorXd sol(l_t_l.solve(Kappas.row(kind).transpose()));
+    // s_part_g contains the entire squared bracket
+    MatrixXd s_part_g =MatrixXd::Constant(d,d, 1.0/d * Kappas.row(kind).dot(sol.transpose()) ) - Kappas.row(kind).transpose()*sol.transpose();
+    // gk is the matrix g^k
+    MatrixXd gk (part_g *l_t_l.solve(s_part_g));
+
+    //define u_k
+    VectorXd arg (2*stan::math::pi()* mu_trans * Kappas.row(kind).transpose());
+    VectorXd uR (arg.array().cos());
+    VectorXd uI (arg.array().sin());
+    // scal is the scalar after g^k
+    double scal = Phis[kind]/std::pow(1-Phis[kind],2.0)*(Ctil.solve(uR).dot(uR)+Ctil.solve(uI).dot(uI));
+
+    SecTerm += scal * gk;
+  }
+
+  grad_log += -4*std::pow(stan::math::pi(),2.0)*std::pow(mcmc->pp_mix->get_c(),-2.0/d) * SecTerm;
+*/
+  // *** END TEST
+/*
   LLT<MatrixXd> Ctil (Ctilde);
 
   int d =  mcmc->get_dim_fact();
@@ -153,9 +211,10 @@ MatrixXd LambdaSamplerMala::compute_grad_analytic(){
   }
 
   grad_log += 4*std::pow(stan::math::pi(),2.0)*std::pow(mcmc->pp_mix->get_c(),-2.0/d) * SecTerm;
-
+*/
   //Third term
   grad_log -= (mcmc->get_Lambda().array() / (mcmc->get_Phi().array().square() * mcmc->get_Psi().array() * mcmc->get_tau()*mcmc->get_tau())).matrix();
+
 
   return grad_log;
 }
@@ -166,7 +225,6 @@ void LambdaSamplerMala::perform() {
   double ln_px_curr;
   VectorXd grad_ln_px_curr;
   const VectorXd Lambda_curr = Map<const VectorXd>(mcmc->get_Lambda().data(), mcmc->get_dim_data()*mcmc->get_dim_fact()); // column-major
- //std::cout<<"before gradient"<<std::endl;
  // THIS IS THE GRADIENT VIA AUTODIFF
   stan::math::gradient(lambda_tar_fun, Lambda_curr, ln_px_curr, grad_ln_px_curr);
   grad_log_ad = Map<MatrixXd>(grad_ln_px_curr.data(), mcmc->get_dim_data(), mcmc->get_dim_fact());
@@ -176,7 +234,6 @@ void LambdaSamplerMala::perform() {
   // COMPUTE THE NORM OF THE DIFFERENCE
   //norm_d_grad = (grad_log_ad - grad_log_analytic).squaredNorm();
 
-  //std::cout<<"after gradient"<<std::endl;
   // Proposal according MALA
   VectorXd prop_lambda_vec = Lambda_curr + mala_p_lambda*grad_ln_px_curr +
                     std::sqrt(2*mala_p_lambda)*Map<VectorXd>(normal_rng(std::vector<double>(mcmc->get_dim_data()*mcmc->get_dim_fact(), 0.),

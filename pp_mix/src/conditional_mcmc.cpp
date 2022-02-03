@@ -3,6 +3,7 @@
 #include "alloc_means_sampler.hpp"
 #include "factory.hpp"
 #include "gig.hpp"
+#include "rng.hpp"
 
 namespace MCMCsampler {
 
@@ -68,7 +69,6 @@ void MultivariateConditionalMCMC::initialize(const MatrixXd& dat) {
   double nclus = a_means.rows();
   // Initialize cluster allocations
   clus_alloc.resize(ndata);
-
   // initial vector s(a) has identical element and sums to nclus/(nclus+1)
   a_jumps = VectorXd::Ones(nclus) / (nclus); // nclus+1 if consider 1 non allocated comp
 
@@ -85,6 +85,7 @@ void MultivariateConditionalMCMC::initialize(const MatrixXd& dat) {
   // initial s(na) (just one value) is 1/(nclus + 1) -> this way the full s vector sums to 1!
   //na_jumps = VectorXd::Ones(na_means.rows()) / (nclus + na_means.rows());
   na_jumps.resize(0);
+
   // initial Delta(na) (just one scalar or matrix) is the mean
   na_deltas.resize(na_means.rows());
   /*for (int i = 0; i < na_means.rows(); i++) {
@@ -144,7 +145,7 @@ void MultivariateConditionalMCMC::initialize_allocated_means() {
     a_means.resize(init_n_clus, dim_fact);
     std::vector<int> index(in.size());
     std::iota(index.begin(), index.end(), 0);
-    std::random_shuffle(index.begin(), index.begin() + in.size());
+    std::shuffle(index.begin(), index.begin() + in.size(),std::default_random_engine(1234) );
     for (int i=0; i < init_n_clus; i++) {
       a_means.row(i) = in[index[i]].transpose();
     }
@@ -221,6 +222,7 @@ void MultivariateConditionalMCMC::run_one() {
   sample_Psi();
   sample_tau();
   sample_Phi();
+  
   sample_lambda->perform();
 
   // print_debug_string();
@@ -324,6 +326,7 @@ void MultivariateConditionalMCMC::sample_means_na(double psi_u)
   for (int i=0; i < 10; i++) {
     int na_points = na_means.rows();
     pp_mix->sample_nonalloc_fullcond(&na_means, a_means, psi_u);
+    //std::cout<<"rep "<<i<<": "<<na_means<<std::endl;
     if (na_means.rows() != na_points)
       break;
   }
