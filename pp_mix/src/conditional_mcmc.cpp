@@ -176,7 +176,7 @@ bool MultivariateConditionalMCMC::is_inside(const VectorXd & point){
 }
 
 void MultivariateConditionalMCMC::run_one() {
-
+/*
   //std::cout<<"sample u"<<std::endl;
   sample_u();
 
@@ -222,7 +222,7 @@ void MultivariateConditionalMCMC::run_one() {
   sample_Psi();
   sample_tau();
   sample_Phi();
-  
+  */
   sample_lambda->perform();
 
   // print_debug_string();
@@ -757,8 +757,12 @@ double MultivariateConditionalMCMC::Lambda_acceptance_rate() {
       return sample_lambda->Lambda_acc_rate();
 }
 
-double MultivariateConditionalMCMC::get_norm_diff() {
-      return sample_lambda->get_norm_d_g();
+double MultivariateConditionalMCMC::get_ln_dens_ad() {
+      return sample_lambda->get_ln_dens_ad();
+}
+
+double MultivariateConditionalMCMC::get_ln_dens_analytic() {
+      return sample_lambda->get_ln_dens_analytic();
 }
 
 const MatrixXd& MultivariateConditionalMCMC::get_grad_log_ad() {

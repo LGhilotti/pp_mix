@@ -133,6 +133,12 @@ public:
 
     double get_Ds() const {return Ds;}
 
+    const VectorXd& get_phi_tildes_tmp() const {return phi_tildes_tmp;}
+
+    const VectorXd& get_phis_tmp() const {return phis_tmp;}
+
+    double get_Ds_tmp() const {return Ds_tmp;}
+
     const MatrixXd& get_A() const {return A;}
 
     const VectorXd& get_b() const {return b;}

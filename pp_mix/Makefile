@@ -22,7 +22,8 @@ LDLIBS = \
 LDFLAGS = -D_REENTRANT -g -fopenmp
 
 PROTO_SRCS = $(wildcard $(PROTO_DIR)/cpp/*.cpp)
-SPIKES_SRCS = $(SPIKES_DIR)/test_derivat.cpp \
+SPIKES_SRCS = $(SPIKES_DIR)/sim_autodiff_analit/main.cpp \
+				#$(SPIKES_DIR)/test_derivatives/test_derivat.cpp
 				#$(SPIKES_DIR)/test_valgrind/run_test_p6_d4.cpp
 				#$(SPIKES_DIR)/p50_inference_test/test_all_p50_d2_3g_inference.cpp
 				#$(SPIKES_DIR)/first_inference_test/inf_multiple_params/debug_all_p200_d2_3g.cpp

@@ -11,11 +11,11 @@
 #include <stan/math/prim.hpp>
 #include <Eigen/Dense>
 
-#include "../conditional_mcmc.hpp"
-#include "../factory.hpp"
-#include "../precs/delta_gamma.hpp"
-#include "../precs/delta_wishart.hpp"
-#include "../point_process/determinantalPP.hpp"
+#include "../../conditional_mcmc.hpp"
+#include "../../factory.hpp"
+#include "../../precs/delta_gamma.hpp"
+#include "../../precs/delta_wishart.hpp"
+#include "../../point_process/determinantalPP.hpp"
 
 using namespace Eigen;
 using namespace stan::math;
@@ -100,7 +100,7 @@ int main() {
     // NOTE: We use all params
 
     int log_every=1;
-    int ntrick = 2;
+    int ntrick = 0;
     int burnin = 2;
     int niter=2;
     int thin = 1;
@@ -115,7 +115,7 @@ int main() {
     sampler.initialize(data);
 
     std::ofstream myfile;
-    myfile.open("./src/spikes/test_derivatives.txt", std::ios::app);
+    myfile.open("./src/spikes/test_derivatives/test_der.txt", std::ios::app);
 
     myfile<< "Initial Lambda: \n"<< sampler.get_Lambda()<<"\n";
 
@@ -139,6 +139,9 @@ int main() {
             myfile<<"Burnin, iter #"<< i + 1<< " / "<< burnin<<"\n";
             //myfile<< "Means_na: \n"<< sampler.get_na_means()<<"\n";
             //myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
+            myfile<< "diff_log_dens_ad: \n"<< sampler.get_ln_dens_ad()<<"\n";
+            myfile<< "diff_log_dens_analytic: \n"<< sampler.get_ln_dens_analytic()<<"\n";
+
             myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
             myfile<< "Grad_log_analytic: \n"<< sampler.get_grad_log_analytic()<<"\n";
           }
@@ -150,6 +153,9 @@ int main() {
             myfile<<"Running, iter #"<< i + 1<< " / "<< niter<<"\n";
             //myfile<< "Means_na: \n"<< sampler.get_na_means()<<"\n";
             //myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
+            myfile<< "diff_log_dens_ad: \n"<< sampler.get_ln_dens_ad()<<"\n";
+            myfile<< "diff_log_dens_analytic: \n"<< sampler.get_ln_dens_analytic()<<"\n";
+
             myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
             myfile<< "Grad_log_analytic: \n"<< sampler.get_grad_log_analytic()<<"\n";
           }

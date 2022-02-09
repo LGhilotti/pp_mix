@@ -182,6 +182,7 @@ double DeterminantalPP::ln_dens_process(const MatrixXd& x, double Ds_p, const Ve
     if (check_range) {
       out = -1.0 * n * std::log(vol_range) - Ds_p;
 
+
       // Transform data points to be in the unit cube centered in 0
       MatrixXd xtrans(n,x.cols());
 
@@ -190,6 +191,7 @@ double DeterminantalPP::ln_dens_process(const MatrixXd& x, double Ds_p, const Ve
 
       // std::cout << "xtrans " << xtrans.transpose() << std::endl;
       out += log_det_Ctilde(xtrans, phi_tildes_p);
+
     } else {
       out = stan::math::NEGATIVE_INFTY;
     }
