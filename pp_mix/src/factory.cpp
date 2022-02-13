@@ -30,6 +30,15 @@ DeterminantalPP* make_dpp(const Params& params, const MatrixXd& ranges){
 
 }
 
+DeterminantalPP* make_dpp(const Params& params){
+
+    Eigen::MatrixXd ranges(2, params.dimf());
+    ranges.row(0) = RowVectorXd::Constant(params.dimf(), -50);
+    ranges.row(1) = RowVectorXd::Constant(params.dimf(), 50);
+
+    return new DeterminantalPP(ranges, params.dpp().n(), params.dpp().c(), params.dpp().s() );
+
+}
 
 // Delta Precision
 BasePrec *make_delta(const Params &params) {

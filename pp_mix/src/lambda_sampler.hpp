@@ -66,7 +66,7 @@ private:
     double compute_ln_dens_analytic();
     MatrixXd compute_grad_analytic(const MatrixXd& lamb);
     MatrixXd compute_grad_analytic();
-    MatrixXd compute_gr_an(const MatrixXd& lamb, VectorXd Phis, const VectorXd& Phi_tildes, double Ds);
+    MatrixXd compute_gr_an(const MatrixXd& lamb, const VectorXd& Phis, const VectorXd& Phi_tildes, double Ds);
 public:
     LambdaSamplerMala(MultivariateConditionalMCMC* mcmc, double m_p): BaseLambdaSampler(mcmc), mala_p_lambda(m_p), lambda_tar_fun(*mcmc){}
     void perform() override;

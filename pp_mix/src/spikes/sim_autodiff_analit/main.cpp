@@ -43,54 +43,30 @@ M load_csv (const std::string & path) {
 
 int main() {
 
-      const int d=2;
-      Eigen::MatrixXd ranges(2, d);
-      ranges.row(0) = RowVectorXd::Constant(d, -50);
-      ranges.row(1) = RowVectorXd::Constant(d, 50);
+    int niter=2;
 
-    MatrixXd datacsv = load_csv<MatrixXd>("/home/lorenzo/Documents/Tesi/github_repos/pp_mix/data/data_by_rule_gaussian/p_100_d_2_M_4_nperclus_50_data.csv");
+    MatrixXd datacsv = load_csv<MatrixXd>("/home/lorenzo/Documents/Tesi/github_repos/pp_mix/data/data_autodiff_analytic/p_400_n_150.csv");
 
-    // We perform 1000 Mala steps for Lambda, other parameters fixed.
     std::string params_file = \
-      "/home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/resources/valgrind/sampler_params_d2.asciipb";
+      "/home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/resources/autodiff_analytic/sampler_params_d_vary_N_vary.asciipb";
     Params params = loadTextProto<Params>(params_file);
 
-    int log_every=10;
-    int ntrick = 1;
-    int burnin = 1;
-    int niter=100;
-    int thin = 1;
-
-
-    DeterminantalPP* pp_mix = make_dpp(params, ranges);
+    // We perform 4 steps updating Lambda, other parameters fixed.
+    DeterminantalPP* pp_mix = make_dpp(params);
 
     BasePrec* g = make_delta(params);
 
     MCMCsampler::MultivariateConditionalMCMC sampler(pp_mix, g, params);
 
     sampler.initialize(datacsv);
-    /*
-    for (int i = 0; i < ntrick; i++) {
-        sampler.run_one_trick();
-        if ((i + 1) % log_every == 0) {
-            std::cout<< "Trick, iter #"<< i + 1<< " / "<< ntrick<<std::endl;
-        }
-    }
 
-    for (int i = 0; i < burnin; i++) {
-        sampler.run_one();
-        if ((i + 1) % log_every == 0) {
-            std::cout<<"Burnin, iter #"<< i + 1<< " / "<< burnin<<std::endl;
-        }
-    }
-    */
     for (int i = 0; i < niter; i++) {
         sampler.run_one();
 
-        if ((i + 1) % log_every == 0) {
             std::cout<<"Running, iter #"<< i + 1<< " / "<< niter<<std::endl;
-        }
     }
+
+
     std::cout<<"END!"<<std::endl;
     return 0;
 

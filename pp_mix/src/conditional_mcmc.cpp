@@ -150,6 +150,7 @@ void MultivariateConditionalMCMC::initialize_allocated_means() {
       a_means.row(i) = in[index[i]].transpose();
     }
   }
+  std::cout<<"alloc means: "<<a_means.rows()<<std::endl;
   return;
 }
 

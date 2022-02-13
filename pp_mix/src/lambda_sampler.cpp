@@ -283,8 +283,8 @@ double LambdaSamplerMala::compute_ln_dens_analytic(){
 MatrixXd LambdaSamplerMala::compute_grad_analytic(const MatrixXd& lamb){
 
   //mcmc->pp_mix->decompose_proposal(lamb);
-  VectorXd Phis (mcmc->pp_mix->get_phis_tmp());
-  VectorXd Phi_tildes (mcmc->pp_mix->get_phi_tildes_tmp());
+  const VectorXd& Phis (mcmc->pp_mix->get_phis_tmp());
+  const VectorXd& Phi_tildes (mcmc->pp_mix->get_phi_tildes_tmp());
   double Ds = mcmc->pp_mix->get_Ds_tmp();
 
   return compute_gr_an(lamb,Phis,Phi_tildes, Ds);
@@ -297,7 +297,7 @@ MatrixXd LambdaSamplerMala::compute_grad_analytic(){
 
 
 
-MatrixXd LambdaSamplerMala::compute_gr_an(const MatrixXd& lamb, VectorXd Phis, const VectorXd& Phi_tildes, double Ds){
+MatrixXd LambdaSamplerMala::compute_gr_an(const MatrixXd& lamb, const VectorXd& Phis, const VectorXd& Phi_tildes, double Ds){
 
   MatrixXd grad_log = MatrixXd::Zero(mcmc->get_dim_data(),mcmc->get_dim_fact());
 
@@ -319,7 +319,7 @@ MatrixXd LambdaSamplerMala::compute_gr_an(const MatrixXd& lamb, VectorXd Phis, c
   }
 
   MatrixXd Ctilde(mu_trans.rows(), mu_trans.rows());
-  MatrixXd Kappas (mcmc->pp_mix->get_kappas());
+  const MatrixXd& Kappas (mcmc->pp_mix->get_kappas());
 
   for (int l = 0; l < mu_trans.rows(); l++) {
     for (int m = l; m < mu_trans.rows(); m++) {
@@ -345,9 +345,10 @@ MatrixXd LambdaSamplerMala::compute_gr_an(const MatrixXd& lamb, VectorXd Phis, c
   LLT<MatrixXd> l_t_l (lamb.transpose() * lamb);
   MatrixXd part_g (2.0 * pow(l_t_l.matrixL().determinant(),2.0/d) * lamb);
   //Redefine Kappas keeping only the ones with positive or 0 first component
-  Kappas = Kappas.bottomRows(Kappas.rows()/(2*mcmc->pp_mix->get_N() +1) * (mcmc->pp_mix->get_N() +1));
-  Phis = Phis.bottomRows(Phis.rows()/(2*mcmc->pp_mix->get_N() +1) * (mcmc->pp_mix->get_N() +1));
+  MatrixXd Kappas_ = Kappas.bottomRows(Kappas.rows()/(2*mcmc->pp_mix->get_N() +1) * (mcmc->pp_mix->get_N() +1));
+  VectorXd Phis_ = Phis.bottomRows(Phis.rows()/(2*mcmc->pp_mix->get_N() +1) * (mcmc->pp_mix->get_N() +1));
   MatrixXd SecTerm = MatrixXd::Zero(mcmc->get_dim_data(),d);
+
   for (int kind=0; kind< Kappas.rows(); kind++) {
     //construct g^k , u_k (real and img)
     VectorXd sol(l_t_l.solve(Kappas.row(kind).transpose()));
@@ -382,7 +383,7 @@ void LambdaSamplerMala::perform() {
   /*********************************************************/
   /******************** AUTODIFF VERSION ****************/
   /********************************************************/
-
+/*
   // Current Lambda (here are the means) are expanded to vector<double> column major
   double ln_px_curr;
   VectorXd grad_ln_px_curr;
@@ -414,8 +415,8 @@ void LambdaSamplerMala::perform() {
   ln_dens_ad = ln_px_curr - ln_px_prop;
 
   ln_dens_analytic = compute_ln_dens_analytic()-compute_ln_dens_analytic(prop_lambda);
-*/
-
+*****////
+/*
   tot_sampled_Lambda += 1;
   // COMPUTE ACCEPTANCE PROBABILITY
   // (log) TARGET DENSITY TERMS
@@ -451,7 +452,7 @@ void LambdaSamplerMala::perform() {
   /*********************************************************/
   /******************** ANALYTICAL VERSION ****************/
   /********************************************************/
-/*
+
   double ln_px_curr (compute_ln_dens_analytic() );
   //THIS IS THE GRADIENT VIA ANALYTICAL COMPUTATION (in the current Lambda)
   MatrixXd grad_ln_px_curr (compute_grad_analytic() );
@@ -490,7 +491,7 @@ void LambdaSamplerMala::perform() {
     mcmc->pp_mix->update_decomposition_from_proposal();
     //std::cout<<"accepted Lambda"<<std::endl;
   }
-*/
+
   /*********************************************************/
   /******************** END ANALYTICAL VERSION ****************/
   /********************************************************/

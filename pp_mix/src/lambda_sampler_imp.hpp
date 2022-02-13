@@ -21,7 +21,7 @@ T LambdaSamplerMala::lambda_target_function::operator()(const Eigen::Matrix<T,Ei
 
   // ############# SECOND TERM
   //std::cout<<"checkpoint 4"<<std::endl;
-
+/*
   T esp_fact = -2*pow(stan::math::pi(),2)*pow(exp(log_determinant_spd(crossprod(lamb_mat))),1.0/m_mcmc.get_dim_fact())*pow(m_mcmc.pp_mix->get_c(),-2.0/m_mcmc.get_dim_fact());
 
   T Ds(0.);
@@ -63,7 +63,7 @@ T LambdaSamplerMala::lambda_target_function::operator()(const Eigen::Matrix<T,Ei
     }
   }
   output += -Ds - log(1-exp(-Ds)) + log_determinant(Ctilde);
-
+*/
   //######## THIRD TERM
 
   output += (- 0.5 / (m_mcmc.get_tau()*m_mcmc.get_tau())) * sum(elt_divide(lamb_mat.array().square(),(m_mcmc.get_Psi().array()) * (m_mcmc.get_Phi().array().square())));

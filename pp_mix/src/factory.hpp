@@ -22,6 +22,7 @@ MCMCsampler::BaseMeansSampler* make_MeansSampler(MCMCsampler::MultivariateCondit
 
 // DPP
 DeterminantalPP* make_dpp(const Params& params, const MatrixXd& ranges);
+DeterminantalPP* make_dpp(const Params& params);
 
 // Delta Precision
 BasePrec* make_delta(const Params& params);
