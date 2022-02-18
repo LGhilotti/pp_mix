@@ -36,7 +36,7 @@ void MeansSamplerClassic::perform_update_allocated() {
 
         MatrixXd others(allmeans.rows() - 1, mcmc->get_dim_fact());
         others = delete_row(allmeans, i);
-
+        // set Ctilde with these means, as Ctilde_tmp e.g., and in papangelou pass this Ctilde.
         prior_ratio =
             mcmc->pp_mix->papangelou(prop, others) - mcmc->pp_mix->papangelou(currmean, others);
 

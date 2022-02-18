@@ -35,7 +35,15 @@ protected:
     double Ds;
 
     MatrixXd Kappas; // grid for approximating summation over Z^dim
-
+    MatrixXd Kappas_red; // grid for approximating summation over Z^dim
+    VectorXd phis_red;
+    VectorXd phi_tildes_red;
+    VectorXd phis_tmp_red;
+    VectorXd phi_tildes_tmp_red;
+    double Ds_red;
+    double Ds_tmp_red;
+    double c_star_red;
+    double c_star_tmp_red;
     // Affine transformation to the unit square
     MatrixXd A;
     VectorXd b;
@@ -65,6 +73,7 @@ public:
 
     // modifies the passed Ds, phis, phi_tildes, c_star according to the dpp defined with lambda
     void compute_eigen_and_cstar(double * D_, VectorXd * Phis_, VectorXd * Phi_tildes_, double * C_star_, const MatrixXd * lambda);
+    void compute_eigen_and_cstar_red(double * D_, VectorXd * Phis_, VectorXd * Phi_tildes_, double * C_star_, const MatrixXd * lambda);
 
     // manages decomposition wrt the passed lambda.
     // it takes the proposed Lambda and performs decomposition, storing it in "tmp" variables
@@ -80,6 +89,7 @@ public:
 
     // computes (log default) density in x of cond process wrt the current decomposition (expressed by the Father variables Ds, phis,...)
     double dens_cond(const MatrixXd& x, bool log=true);
+    double dens_cond_red(const MatrixXd& x, bool log=true);
 
     // computes (log default) density in x of dpp process wrt the current decomposition (expressed by the Father variables Ds, phis,...)
     double dens(const MatrixXd& x, bool log=true);
@@ -87,10 +97,12 @@ public:
 
     // PRIVATE: final method that actually computes the log-density of dpp given parameters of decomposition
     double ln_dens_process(const MatrixXd& x, double Ds_p, const VectorXd& phis_p, const VectorXd& phi_tildes_p, double c_star_p);
+    double ln_dens_process_red(const MatrixXd& x, double Ds_p, const VectorXd& phis_p, const VectorXd& phi_tildes_p, double c_star_p);
 
 
 
     double log_det_Ctilde(const MatrixXd& x, const VectorXd& phi_tildes_p);
+    double log_det_Ctilde_red(const MatrixXd& x, const VectorXd& phi_tildes_p);
 
     double papangelou(const VectorXd& xi, const MatrixXd &x, bool log = true);
 
@@ -132,6 +144,19 @@ public:
     const VectorXd& get_phis() const {return phis;}
 
     double get_Ds() const {return Ds;}
+
+    // reduced getters
+    double get_cstar_red() const { return c_star_red; }
+
+    const MatrixXd& get_kappas_red() const {return Kappas_red;}
+
+    const VectorXd& get_phi_tildes_red() const {return phi_tildes_red;}
+
+    const VectorXd& get_phis_red() const {return phis_red;}
+
+    double get_Ds_red() const {return Ds_red;}
+
+    // end reduced getters
 
     const VectorXd& get_phi_tildes_tmp() const {return phi_tildes_tmp;}
 

@@ -282,19 +282,44 @@ double LambdaSamplerMala::compute_ln_dens_analytic(){
 
 MatrixXd LambdaSamplerMala::compute_grad_analytic(const MatrixXd& lamb){
 
-  //mcmc->pp_mix->decompose_proposal(lamb);
   const VectorXd& Phis (mcmc->pp_mix->get_phis_tmp());
   const VectorXd& Phi_tildes (mcmc->pp_mix->get_phi_tildes_tmp());
   double Ds = mcmc->pp_mix->get_Ds_tmp();
 
   return compute_gr_an(lamb,Phis,Phi_tildes, Ds);
+
 }
+
+
+// test reduced
+MatrixXd LambdaSamplerMala::compute_grad_analytic_red(const MatrixXd& lamb){
+
+  //const VectorXd& Phis (mcmc->pp_mix->get_phis_tmp());
+  const VectorXd& Phis_red (mcmc->pp_mix->get_phis_tmp_red());
+  //const VectorXd& Phi_tildes (mcmc->pp_mix->get_phi_tildes_tmp());
+  const VectorXd& Phi_tildes_red (mcmc->pp_mix->get_phi_tildes_tmp_red());
+  //double Ds = mcmc->pp_mix->get_Ds_tmp();
+  double Ds_red = mcmc->pp_mix->get_Ds_tmp_red();
+
+  //return compute_gr_an(lamb,Phis,Phi_tildes, Ds);
+  return compute_gr_an_red(lamb,Phis_red,Phi_tildes_red, Ds_red);
+
+}
+
 
 MatrixXd LambdaSamplerMala::compute_grad_analytic(){
 
   return compute_gr_an(mcmc->get_Lambda(),mcmc->pp_mix->get_phis(),mcmc->pp_mix->get_phi_tildes(), mcmc->pp_mix->get_Ds());
+
 }
 
+// test reduced
+MatrixXd LambdaSamplerMala::compute_grad_analytic_red(){
+
+  //return compute_gr_an(mcmc->get_Lambda(),mcmc->pp_mix->get_phis(),mcmc->pp_mix->get_phi_tildes(), mcmc->pp_mix->get_Ds());
+  return compute_gr_an_red(mcmc->get_Lambda(),mcmc->pp_mix->get_phis_red(),mcmc->pp_mix->get_phi_tildes_red(), mcmc->pp_mix->get_Ds_red());
+
+}
 
 
 MatrixXd LambdaSamplerMala::compute_gr_an(const MatrixXd& lamb, const VectorXd& Phis, const VectorXd& Phi_tildes, double Ds){
@@ -378,6 +403,87 @@ MatrixXd LambdaSamplerMala::compute_gr_an(const MatrixXd& lamb, const VectorXd& 
 }
 
 
+// test reduced
+MatrixXd LambdaSamplerMala::compute_gr_an_red(const MatrixXd& lamb, const VectorXd& Phis, const VectorXd& Phi_tildes, double Ds){
+
+  MatrixXd grad_log = MatrixXd::Zero(mcmc->get_dim_data(),mcmc->get_dim_fact());
+
+  //First term
+
+  MatrixXd A_tmp = mcmc->get_data().transpose() - lamb*(mcmc->get_etas().transpose());
+
+  for (int i =0; i<mcmc->get_ndata();i++){
+    grad_log += A_tmp.col(i)*mcmc->get_etas().row(i);
+  }
+  grad_log = mcmc->get_sigma_bar().asDiagonal() * grad_log;
+
+  //Second term
+
+  int n_means=mcmc->get_num_a_means()+mcmc->get_num_na_means();
+  MatrixXd mu_trans(n_means,mcmc->get_dim_fact());
+  for (int i = 0; i < n_means; i++){
+        mu_trans.row(i) = (mcmc->pp_mix->get_A() * mcmc->get_all_means().row(i).transpose() + mcmc->pp_mix->get_b()).transpose();
+  }
+
+  MatrixXd Ctilde(mu_trans.rows(), mu_trans.rows());
+  const MatrixXd& Kappas_red (mcmc->pp_mix->get_kappas_red());
+
+  for (int l = 0; l < mu_trans.rows()-1; l++) {
+    for (int m = l+1; m < mu_trans.rows(); m++) {
+      double aux = 0.0;
+      RowVectorXd vec(mu_trans.row(l)-mu_trans.row(m));
+      //int nthreads;
+      //#pragma omp parallel for default(none) firstprivate(Kappas,vec, phi_tildes_p) reduction(+:aux)
+      for (int kind = 1; kind < Kappas_red.rows(); kind++) {
+        //nthreads = omp_get_num_threads();
+        //printf("Number of threads = %d\n", nthreads);
+        double dotprod = Kappas.row(kind).dot(vec);
+        aux += Phi_tildes[kind] * std::cos(2. * stan::math::pi() * dotprod);
+
+      }
+      Ctilde(l, m) = 2.0*aux + Phi_tildes(0);
+      if (l!=m) Ctilde(m,l) = 2.0*aux + Phi_tildes(0);
+    }
+  }
+  Ctilde.diagonal() = ArrayXd::Constant(mu_trans.rows(), 2.*Phi_tildes.tail(Phi_tildes.rows()-1).sum() + Phi_tildes(0));
+
+  LLT<MatrixXd> Ctil (Ctilde);
+
+  int d =  mcmc->get_dim_fact();
+  LLT<MatrixXd> l_t_l (lamb.transpose() * lamb);
+  MatrixXd part_g (2.0 * pow(l_t_l.matrixL().determinant(),2.0/d) * lamb);
+  MatrixXd SecTerm = MatrixXd::Zero(mcmc->get_dim_data(),d);
+
+  for (int kind=1; kind< Kappas_red.rows(); kind++) {
+    //construct g^k , u_k (real and img)
+    VectorXd sol(l_t_l.solve(Kappas_red.row(kind).transpose()));
+    // s_part_g contains the entire squared bracket
+    MatrixXd s_part_g =MatrixXd::Constant(d,d, 1.0/d * Kappas_red.row(kind).dot(sol.transpose()) ) - Kappas_red.row(kind).transpose()*sol.transpose();
+    // gk is the matrix g^k
+    MatrixXd gk (part_g *l_t_l.solve(s_part_g));
+
+    //define u_k
+    VectorXd arg (2*stan::math::pi()* mu_trans * Kappas_red.row(kind).transpose());
+    VectorXd uR (arg.array().cos());
+    VectorXd uI (arg.array().sin());
+    // scal is the scalar after g^k
+    //double scal = Phis[kind]/std::pow(1-Phis[kind],2.0)*(((1-Phis[kind])/(1-std::exp(-mcmc->pp_mix->get_Ds())))-Ctil.solve(uR).dot(uR)-Ctil.solve(uI).dot(uI));
+    double scal = Phis[kind]/std::pow(1-Phis[kind],2.0)*(((1-Phis[kind])/(1-std::exp(-Ds)))-Ctil.solve(uR).dot(uR)-Ctil.solve(uI).dot(uI));
+
+    SecTerm += scal * gk;
+  }
+
+  grad_log += 4*std::pow(stan::math::pi(),2.0)*std::pow(mcmc->pp_mix->get_c(),-2.0/d) * SecTerm;
+  //g^(0) = 0, so need not to add its contribution
+
+  //Third term
+  grad_log -= (lamb.array() / (mcmc->get_Phi().array().square() * mcmc->get_Psi().array() * mcmc->get_tau()*mcmc->get_tau())).matrix();
+
+
+  return grad_log;
+}
+
+
 void LambdaSamplerMala::perform() {
 
   /*********************************************************/
@@ -452,7 +558,17 @@ void LambdaSamplerMala::perform() {
   /*********************************************************/
   /******************** ANALYTICAL VERSION ****************/
   /********************************************************/
+  // test reduced
+  //std::cout<<"dens_cond:\n"<<mcmc->pp_mix->dens_cond(mcmc->get_all_means(),true)<<std::endl;
+  //std::cout<<"dens_cond_red:\n"<<mcmc->pp_mix->dens_cond_red(mcmc->get_all_means(),true)<<std::endl;
+  //std::cout<<"Ds:\n"<<mcmc->pp_mix->get_Ds()<<std::endl;
+  //std::cout<<"phi_tildes:\n"<<mcmc->pp_mix->get_phi_tildes()<<std::endl;
+  // end test reduced
 
+  //Given the mus, I can compute Ctilde of the current Lambda and current mus, so that
+  // I use it both for density evaluation and gradient computation. The, DPP has two methods, if I pass the mus,
+  // it computes Ctilde, if not uses Ctilde already set.
+  set_Ctilde
   double ln_px_curr (compute_ln_dens_analytic() );
   //THIS IS THE GRADIENT VIA ANALYTICAL COMPUTATION (in the current Lambda)
   MatrixXd grad_ln_px_curr (compute_grad_analytic() );

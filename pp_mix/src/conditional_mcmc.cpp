@@ -324,6 +324,7 @@ void MultivariateConditionalMCMC::sample_jumps_a()
 
 void MultivariateConditionalMCMC::sample_means_na(double psi_u)
 {
+  // I can set Ctilde with all the means and then remove or add row/column when na_means is updated.
   for (int i=0; i < 10; i++) {
     int na_points = na_means.rows();
     pp_mix->sample_nonalloc_fullcond(&na_means, a_means, psi_u);
