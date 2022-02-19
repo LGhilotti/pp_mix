@@ -97,8 +97,8 @@ int main() {
 
     int log_every=1;
     int ntrick = 0;
-    int burnin = 2;
-    int niter=2;
+    int burnin = 0;
+    int niter=1;
     int thin = 1;
 
 
@@ -150,6 +150,7 @@ int main() {
             //myfile<< "Means_na: \n"<< sampler.get_na_means()<<"\n";
             myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
             //myfile<< "diff_log_dens_analytic: \n"<< sampler.get_ln_dens_analytic()<<"\n";
+            myfile<< "Ctilde: \n"<< sampler.get_ctilde()<<"\n";
 
           }
     }
