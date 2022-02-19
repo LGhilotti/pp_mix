@@ -34,7 +34,7 @@ public:
     BaseLambdaSampler(MultivariateConditionalMCMC* mcmc): mcmc(mcmc) {}
     virtual ~BaseLambdaSampler(){}
 
-    virtual void perform() = 0;
+    virtual void perform(MatrixXd& Ctilde) = 0;
 
     const MatrixXd& get_grad_log_ad(){return grad_log_ad;}
     const MatrixXd& get_grad_log_analytic(){return grad_log_analytic;}
@@ -55,21 +55,21 @@ private:
 
 public:
     LambdaSamplerClassic(MultivariateConditionalMCMC* mcmc, double p_l_s): BaseLambdaSampler(mcmc), prop_lambda_sigma(p_l_s){}
-    void perform() override;
+    void perform(MatrixXd& Ctilde) override;
 };
 
 class LambdaSamplerMala : public BaseLambdaSampler {
 private:
     double mala_p_lambda;
 
-    double compute_ln_dens_analytic(const MatrixXd& lamb);
-    double compute_ln_dens_analytic();
-    MatrixXd compute_grad_analytic(const MatrixXd& lamb);
-    MatrixXd compute_grad_analytic();
-    MatrixXd compute_gr_an(const MatrixXd& lamb, const VectorXd& Phis, const VectorXd& Phi_tildes, double Ds);
+    double compute_ln_dens_analytic(const MatrixXd& lamb, double);
+    double compute_ln_dens_analytic(double);
+    MatrixXd compute_grad_analytic(const MatrixXd& lamb, const MatrixXd& Ctilde);
+    MatrixXd compute_grad_analytic(const MatrixXd& Ctilde);
+    MatrixXd compute_gr_an(const MatrixXd& lamb, const MatrixXd& Ctilde, const VectorXd& Phis, double Ds);
 public:
     LambdaSamplerMala(MultivariateConditionalMCMC* mcmc, double m_p): BaseLambdaSampler(mcmc), mala_p_lambda(m_p), lambda_tar_fun(*mcmc){}
-    void perform() override;
+    void perform(MatrixXd& Ctilde) override;
 
     // TARGET FUNCTION OBJECT : must implement logfunction (as required in Mala)
     class lambda_target_function {

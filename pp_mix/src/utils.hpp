@@ -20,9 +20,13 @@ using std::vector;
 
 void delete_row(MatrixXd *x, int ind);
 
+void delete_column(MatrixXd *x, int ind);
+
 void delete_elem(VectorXd *x, int ind);
 
 MatrixXd delete_row(const MatrixXd &x, int ind);
+
+MatrixXd delete_column(const MatrixXd &x, int ind);
 
 VectorXd delete_elem(const VectorXd &x, int ind);
 

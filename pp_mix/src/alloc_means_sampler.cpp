@@ -10,7 +10,7 @@ double BaseMeansSampler::Means_acc_rate(){
 /// MeansSamplerClassic /////////
 ///////////////////////////////
 
-void MeansSamplerClassic::perform_update_allocated() {
+void MeansSamplerClassic::perform_update_allocated(MatrixXd& Ctilde) {
 
   MatrixXd allmeans = mcmc->get_all_means();
 
@@ -36,15 +36,46 @@ void MeansSamplerClassic::perform_update_allocated() {
 
         MatrixXd others(allmeans.rows() - 1, mcmc->get_dim_fact());
         others = delete_row(allmeans, i);
-        // set Ctilde with these means, as Ctilde_tmp e.g., and in papangelou pass this Ctilde.
+        others = mcmc->pp_mix->get_A()*others.transpose() + mcmc->pp_mix->get_b();
+        VectorXd prop_trans = mcmc->pp_mix->get_A() * prop + mcmc->pp_mix->get_b();
+
+        MatrixXd Ctilde_oth(Ctilde);
+        delete_row(&Ctilde_oth, i);
+        delete_column(&Ctilde_oth,i);
+
+        int n = Ctilde_oth.rows();
+
+        // compute the row/column to be added to Ctilde: note that first i elements are over the diagonal, the last n-i
+        // are below the diagonal.
+        VectorXd col_new = VectorXd::Zero(n);
+        const MatrixXd& Kappas=mcmc->pp_mix->get_kappas();
+        for (int l = 0; l < n; l++) {
+            RowVectorXd vec(others.row(l)-prop_trans.transpose());
+            //int nthreads;
+            //#pragma omp parallel for default(none) firstprivate(Kappas,vec, phi_tildes_p) reduction(+:aux)
+            for (int kind = 0; kind < Kappas.rows(); kind++) {
+              //nthreads = omp_get_num_threads();
+              //printf("Number of threads = %d\n", nthreads);
+              double dotprod = Kappas.row(kind).dot(vec);
+              col_new(l) += mcmc->pp_mix->get_phi_tildes()[kind] * std::cos(2. * stan::math::pi() * dotprod);
+            }
+        }
+        // Ctilde_prop differs from Ctilde only in the i row and column (diagonal element doesn't change)
+        MatrixXd Ctilde_prop = Ctilde;
+        Ctilde_prop.block(0,i,i,1) = col_new.head(i);
+        Ctilde_prop.block(i+1,i,n-i,1) = col_new.tail(n-i);
+        Ctilde_prop.block(i,0,1,i) = col_new.head(i);
+        Ctilde_prop.block(i,i+1,1,n-i) = col_new.tail(n-i);
+
         prior_ratio =
-            mcmc->pp_mix->papangelou(prop, others) - mcmc->pp_mix->papangelou(currmean, others);
+            mcmc->pp_mix->papangelou(Ctilde_oth, Ctilde_prop) - mcmc->pp_mix->papangelou(Ctilde_oth, Ctilde);
 
         arate = lik_ratio + prior_ratio;
 
         if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < arate) {
           mcmc->set_single_a_mean(i, prop);
           acc_sampled_a_means += 1;
+          Ctilde = Ctilde_prop;
         }
     }
 
@@ -95,7 +126,7 @@ void MeansSamplerClassic::perform_update_trick_na() {
 ///////////////////////////////
 
 
-void MeansSamplerMala::perform_update_allocated() {
+void MeansSamplerMala::perform_update_allocated(MatrixXd& Ctilde) {
 
   allmeans = mcmc->get_all_means();
 

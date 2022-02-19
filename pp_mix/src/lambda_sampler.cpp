@@ -23,7 +23,7 @@ double LambdaSamplerClassic::compute_exp_prior(const MatrixXd& lamb) const {
 }
 
 
-void LambdaSamplerClassic::perform() {
+void LambdaSamplerClassic::perform(MatrixXd& Ctilde) {
   //std::cout<<"sample Lambda"<<std::endl;
   // Current Lambda (here are the means) are expanded to vector<double> column major
   MatrixXd prop_lambda = Map<MatrixXd>(normal_rng( std::vector<double>(mcmc->get_Lambda().data(), mcmc->get_Lambda().data() + mcmc->get_dim_data()*mcmc->get_dim_fact()) ,
@@ -223,7 +223,7 @@ MatrixXd LambdaSamplerMala::compute_grad_analytic(){
 }
 */
 
-double LambdaSamplerMala::compute_ln_dens_analytic(const MatrixXd& lamb){
+double LambdaSamplerMala::compute_ln_dens_analytic(const MatrixXd& lamb, double lndetCtil_prop){
 
   const MatrixXd& data = mcmc->get_data();
   const MatrixXd& etas = mcmc->get_etas();
@@ -241,7 +241,7 @@ double LambdaSamplerMala::compute_ln_dens_analytic(const MatrixXd& lamb){
   ln_dens -= betas.dot(mcmc->get_sigma_bar());
 
   // SECOND TERM
-  ln_dens += mcmc->pp_mix->dens_cond_in_proposal(mcmc->get_all_means(),true);
+  ln_dens += mcmc->pp_mix->dens_cond_in_proposal(mcmc->get_all_means(), lndetCtil_prop, true);
 
   // THIRD TERM
   ln_dens -= 0.5 * (lamb.array().square() / (mcmc->get_Phi().array().square() * mcmc->get_Psi().array() * mcmc->get_tau()*mcmc->get_tau())).sum();
@@ -250,7 +250,7 @@ double LambdaSamplerMala::compute_ln_dens_analytic(const MatrixXd& lamb){
 }
 
 
-double LambdaSamplerMala::compute_ln_dens_analytic(){
+double LambdaSamplerMala::compute_ln_dens_analytic(double lndetCtil){
 
   const MatrixXd& lamb = mcmc->get_Lambda();
   const MatrixXd& data = mcmc->get_data();
@@ -269,7 +269,7 @@ double LambdaSamplerMala::compute_ln_dens_analytic(){
   ln_dens -= betas.dot(mcmc->get_sigma_bar());
 
   // SECOND TERM
-  ln_dens += mcmc->pp_mix->dens_cond(mcmc->get_all_means(),true);
+  ln_dens += mcmc->pp_mix->dens_cond(mcmc->get_all_means(),lndetCtil, true);
 
   // THIRD TERM
   ln_dens -= 0.5 * (lamb.array().square() / (mcmc->get_Phi().array().square() * mcmc->get_Psi().array() * mcmc->get_tau()*mcmc->get_tau())).sum();
@@ -280,17 +280,16 @@ double LambdaSamplerMala::compute_ln_dens_analytic(){
 
 
 
-MatrixXd LambdaSamplerMala::compute_grad_analytic(const MatrixXd& lamb){
+MatrixXd LambdaSamplerMala::compute_grad_analytic(const MatrixXd& lamb, const MatrixXd& Ctilde){
 
   const VectorXd& Phis (mcmc->pp_mix->get_phis_tmp());
-  const VectorXd& Phi_tildes (mcmc->pp_mix->get_phi_tildes_tmp());
   double Ds = mcmc->pp_mix->get_Ds_tmp();
 
-  return compute_gr_an(lamb,Phis,Phi_tildes, Ds);
+  return compute_gr_an(lamb,Ctilde,Phis, Ds);
 
 }
 
-
+/*
 // test reduced
 MatrixXd LambdaSamplerMala::compute_grad_analytic_red(const MatrixXd& lamb){
 
@@ -305,14 +304,14 @@ MatrixXd LambdaSamplerMala::compute_grad_analytic_red(const MatrixXd& lamb){
   return compute_gr_an_red(lamb,Phis_red,Phi_tildes_red, Ds_red);
 
 }
+*/
 
+MatrixXd LambdaSamplerMala::compute_grad_analytic(const MatrixXd& Ctilde){
 
-MatrixXd LambdaSamplerMala::compute_grad_analytic(){
-
-  return compute_gr_an(mcmc->get_Lambda(),mcmc->pp_mix->get_phis(),mcmc->pp_mix->get_phi_tildes(), mcmc->pp_mix->get_Ds());
+  return compute_gr_an(mcmc->get_Lambda(), Ctilde, mcmc->pp_mix->get_phis(), mcmc->pp_mix->get_Ds());
 
 }
-
+/*
 // test reduced
 MatrixXd LambdaSamplerMala::compute_grad_analytic_red(){
 
@@ -320,11 +319,13 @@ MatrixXd LambdaSamplerMala::compute_grad_analytic_red(){
   return compute_gr_an_red(mcmc->get_Lambda(),mcmc->pp_mix->get_phis_red(),mcmc->pp_mix->get_phi_tildes_red(), mcmc->pp_mix->get_Ds_red());
 
 }
+*/
 
+MatrixXd LambdaSamplerMala::compute_gr_an(const MatrixXd& lamb, const MatrixXd& Ctilde, const VectorXd& Phis, double Ds){
 
-MatrixXd LambdaSamplerMala::compute_gr_an(const MatrixXd& lamb, const VectorXd& Phis, const VectorXd& Phi_tildes, double Ds){
+  int d =  mcmc->get_dim_fact();
 
-  MatrixXd grad_log = MatrixXd::Zero(mcmc->get_dim_data(),mcmc->get_dim_fact());
+  MatrixXd grad_log = MatrixXd::Zero(mcmc->get_dim_data(),d);
 
   //First term
 
@@ -336,37 +337,16 @@ MatrixXd LambdaSamplerMala::compute_gr_an(const MatrixXd& lamb, const VectorXd& 
   grad_log = mcmc->get_sigma_bar().asDiagonal() * grad_log;
 
   //Second term
-
   int n_means=mcmc->get_num_a_means()+mcmc->get_num_na_means();
-  MatrixXd mu_trans(n_means,mcmc->get_dim_fact());
+  MatrixXd mu_trans(n_means,d);
   for (int i = 0; i < n_means; i++){
         mu_trans.row(i) = (mcmc->pp_mix->get_A() * mcmc->get_all_means().row(i).transpose() + mcmc->pp_mix->get_b()).transpose();
   }
 
-  MatrixXd Ctilde(mu_trans.rows(), mu_trans.rows());
   const MatrixXd& Kappas (mcmc->pp_mix->get_kappas());
-
-  for (int l = 0; l < mu_trans.rows(); l++) {
-    for (int m = l; m < mu_trans.rows(); m++) {
-      double aux = 0.0;
-      RowVectorXd vec(mu_trans.row(l)-mu_trans.row(m));
-      //int nthreads;
-      //#pragma omp parallel for default(none) firstprivate(Kappas,vec, phi_tildes_p) reduction(+:aux)
-      for (int kind = 0; kind < Kappas.rows(); kind++) {
-        //nthreads = omp_get_num_threads();
-        //printf("Number of threads = %d\n", nthreads);
-        double dotprod = Kappas.row(kind).dot(vec);
-        aux += Phi_tildes[kind] * std::cos(2. * stan::math::pi() * dotprod);
-
-      }
-      Ctilde(l, m) = aux;
-      if (l!=m) Ctilde(m,l) = aux;
-    }
-  }
 
   LLT<MatrixXd> Ctil (Ctilde);
 
-  int d =  mcmc->get_dim_fact();
   LLT<MatrixXd> l_t_l (lamb.transpose() * lamb);
   MatrixXd part_g (2.0 * pow(l_t_l.matrixL().determinant(),2.0/d) * lamb);
   //Redefine Kappas keeping only the ones with positive or 0 first component
@@ -402,7 +382,7 @@ MatrixXd LambdaSamplerMala::compute_gr_an(const MatrixXd& lamb, const VectorXd& 
   return grad_log;
 }
 
-
+/*
 // test reduced
 MatrixXd LambdaSamplerMala::compute_gr_an_red(const MatrixXd& lamb, const VectorXd& Phis, const VectorXd& Phi_tildes, double Ds){
 
@@ -482,9 +462,9 @@ MatrixXd LambdaSamplerMala::compute_gr_an_red(const MatrixXd& lamb, const Vector
 
   return grad_log;
 }
+*/
 
-
-void LambdaSamplerMala::perform() {
+void LambdaSamplerMala::perform(MatrixXd& Ctilde) {
 
   /*********************************************************/
   /******************** AUTODIFF VERSION ****************/
@@ -565,13 +545,15 @@ void LambdaSamplerMala::perform() {
   //std::cout<<"phi_tildes:\n"<<mcmc->pp_mix->get_phi_tildes()<<std::endl;
   // end test reduced
 
+// Ctilde in mcmc is related to the current means and the current lambda.
+// When proposing the new lambda, of course I need to compute Ctilde from scratch.
   //Given the mus, I can compute Ctilde of the current Lambda and current mus, so that
   // I use it both for density evaluation and gradient computation. The, DPP has two methods, if I pass the mus,
   // it computes Ctilde, if not uses Ctilde already set.
-  set_Ctilde
-  double ln_px_curr (compute_ln_dens_analytic() );
+  double lndetCtil = 2.0 * std::log(Ctilde.llt().matrixL().determinant());
+  double ln_px_curr (compute_ln_dens_analytic(lndetCtil) );
   //THIS IS THE GRADIENT VIA ANALYTICAL COMPUTATION (in the current Lambda)
-  MatrixXd grad_ln_px_curr (compute_grad_analytic() );
+  MatrixXd grad_ln_px_curr (compute_grad_analytic(Ctilde) );
 
   // Proposal according MALA
   MatrixXd prop_lambda = mcmc->get_Lambda() + mala_p_lambda*grad_ln_px_curr +
@@ -579,9 +561,11 @@ void LambdaSamplerMala::perform() {
                   std::vector<double>(mcmc->get_dim_data()*mcmc->get_dim_fact(),1.), Rng::Instance().get()).data() , mcmc->get_dim_data() , mcmc->get_dim_fact());
 
   mcmc->pp_mix->decompose_proposal(prop_lambda);
+  MatrixXd Ctilde_prop = mcmc->pp_mix->compute_Ctilde_prop(mcmc->get_all_means());
+  double lndetCtil_prop = 2.0 * std::log(Ctilde_prop.llt().matrixL().determinant());
 
-  double ln_px_prop (compute_ln_dens_analytic(prop_lambda) );
-  MatrixXd grad_ln_px_prop (compute_grad_analytic(prop_lambda) );
+  double ln_px_prop (compute_ln_dens_analytic(prop_lambda, lndetCtil_prop) );
+  MatrixXd grad_ln_px_prop (compute_grad_analytic(prop_lambda,Ctilde_prop) );
 
   tot_sampled_Lambda += 1;
   // COMPUTE ACCEPTANCE PROBABILITY
@@ -606,6 +590,7 @@ void LambdaSamplerMala::perform() {
     mcmc->set_Lambda(prop_lambda);
     mcmc->pp_mix->update_decomposition_from_proposal();
     //std::cout<<"accepted Lambda"<<std::endl;
+    Ctilde = Ctilde_prop;
   }
 
   /*********************************************************/

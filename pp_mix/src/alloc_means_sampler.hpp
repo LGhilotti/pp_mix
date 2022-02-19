@@ -32,7 +32,7 @@ public:
     BaseMeansSampler(MultivariateConditionalMCMC* mcmc): mcmc(mcmc) {}
     virtual ~BaseMeansSampler(){}
 
-    virtual void perform_update_allocated() = 0;
+    virtual void perform_update_allocated(MatrixXd& ) = 0;
 
     virtual void perform_update_trick_na() = 0;
 
@@ -48,7 +48,7 @@ private:
 public:
     MeansSamplerClassic(MultivariateConditionalMCMC* mcmc, double p_m_s): BaseMeansSampler(mcmc), prop_means_sigma(p_m_s){}
 
-    void perform_update_allocated() override;
+    void perform_update_allocated(MatrixXd& ) override;
 
     void perform_update_trick_na() override;
 
@@ -65,7 +65,7 @@ public:
     MeansSamplerMala(MultivariateConditionalMCMC* mcmc, double m_p): BaseMeansSampler(mcmc), mala_p_means(m_p),
     alloc_means_tar_fun(*this), trick_na_means_tar_fun(*this){}
 
-    void perform_update_allocated() override;
+    void perform_update_allocated(MatrixXd& ) override;
 
     void perform_update_trick_na() override;
 

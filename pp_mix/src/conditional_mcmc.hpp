@@ -75,6 +75,9 @@ class MultivariateConditionalMCMC {
     MatrixXd Psi;
     MatrixXd Lambda;
 
+    //C_tilde
+    MatrixXd Ctilde;
+
     // Lambda sampling callable object
     BaseLambdaSampler* sample_lambda;
     // Allocated means sampling callable object
@@ -244,6 +247,10 @@ class MultivariateConditionalMCMC {
         return out;
     }
 
+    MatrixXd get_all_means_trans() const {
+        return pp_mix->get_A()*get_all_means().transpose() + pp_mix->get_b();
+    }
+
     MatrixXd get_all_means_reverse() const {
         MatrixXd out(na_means.rows()+a_means.rows(), dim_fact);
         out << na_means , a_means;
@@ -265,7 +272,7 @@ class MultivariateConditionalMCMC {
     double get_ln_dens_ad() ;
 
     double get_ln_dens_analytic() ;
-    
+
     const MatrixXd& get_grad_log_ad();
 
     const MatrixXd& get_grad_log_analytic();

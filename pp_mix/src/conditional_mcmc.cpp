@@ -205,7 +205,7 @@ void MultivariateConditionalMCMC::run_one() {
 
   // sample allocated variables
   //sample_means_a();
-  sample_means_obj->perform_update_allocated();
+  sample_means_obj->perform_update_allocated(Ctilde);
   //std::cout<<"sample deltas a"<<std::endl;
 
   sample_deltas_a();
@@ -224,7 +224,8 @@ void MultivariateConditionalMCMC::run_one() {
   sample_tau();
   sample_Phi();
   */
-  sample_lambda->perform();
+  Ctilde = pp_mix->compute_Ctilde(get_all_means());
+  sample_lambda->perform(Ctilde);
 
   // print_debug_string();
 
@@ -266,7 +267,7 @@ void MultivariateConditionalMCMC::run_one_trick() {
   //sample_means_a();
   //std::cout<<"perform_update_allocated"<<std::endl;
 
-  sample_means_obj->perform_update_allocated();
+  sample_means_obj->perform_update_allocated(Ctilde);
   //std::cout<<"sample deltas a"<<std::endl;
 
   sample_deltas_a();
@@ -292,7 +293,7 @@ void MultivariateConditionalMCMC::run_one_trick() {
   //std::cout<<"sample Phi"<<std::endl;
   sample_Phi();
   //std::cout<<"before sampling Lambda"<<std::endl;
-  sample_lambda->perform();
+  sample_lambda->perform(Ctilde);
  //std::cout<<"sample Lambda"<<std::endl;
 
   // print_debug_string();
@@ -325,13 +326,16 @@ void MultivariateConditionalMCMC::sample_jumps_a()
 void MultivariateConditionalMCMC::sample_means_na(double psi_u)
 {
   // I can set Ctilde with all the means and then remove or add row/column when na_means is updated.
+  Ctilde = pp_mix->compute_Ctilde(get_all_means());
+
   for (int i=0; i < 10; i++) {
     int na_points = na_means.rows();
-    pp_mix->sample_nonalloc_fullcond(&na_means, a_means, psi_u);
+    pp_mix->sample_nonalloc_fullcond(&na_means, a_means, psi_u, Ctilde);
     //std::cout<<"rep "<<i<<": "<<na_means<<std::endl;
     if (na_means.rows() != na_points)
       break;
-  }
+
+  }//at this point also Ctilde is updated to current updated means.
   return;
 }
 

@@ -22,7 +22,8 @@ LDLIBS = \
 LDFLAGS = -D_REENTRANT -g -fopenmp
 
 PROTO_SRCS = $(wildcard $(PROTO_DIR)/cpp/*.cpp)
-SPIKES_SRCS = $(SPIKES_DIR)/test_kappas_reduced/test_kappas.cpp \
+SPIKES_SRCS = $(SPIKES_DIR)/test_ctilde_update/test_ctilde.cpp\
+				#$(SPIKES_DIR)/test_kappas_reduced/test_kappas.cpp
 				#$(SPIKES_DIR)/sim_autodiff_analit/main.cpp
 				#$(SPIKES_DIR)/test_derivatives/test_derivat.cpp
 				#$(SPIKES_DIR)/test_valgrind/run_test_p6_d4.cpp
@@ -30,7 +31,7 @@ SPIKES_SRCS = $(SPIKES_DIR)/test_kappas_reduced/test_kappas.cpp \
 				#$(SPIKES_DIR)/first_inference_test/inf_multiple_params/debug_all_p200_d2_3g.cpp
 				#$(SPIKES_DIR)/first_inference_test/test_lambdablock_p4_d2_3g_inference.cpp
 				#$(SPIKES_DIR)/first_inference_test/test_sigmabar_inference.cpp
-				#$(SPIKES_DIR)/first_inference_test/test_lambdablock_p5_inference.cpp 
+				#$(SPIKES_DIR)/first_inference_test/test_lambdablock_p5_inference.cpp
 
 OUR_SRCS = $(wildcard $(SRC_DIR)/*.cpp) \
 		   $(wildcard $(SRC_DIR)/precs/*.cpp) \

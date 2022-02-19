@@ -10,6 +10,16 @@ void delete_row(MatrixXd *x, int ind) {
   x->conservativeResize(nrow, dim);
 }
 
+void delete_column(MatrixXd *x, int ind) {
+  int nrow = x->rows();
+  int dim = x->cols()-1;
+  if (ind < dim) {
+    x->block(0, ind, nrow, dim-ind) = x->block(0,ind+1, nrow , dim-ind);
+  }
+
+  x->conservativeResize(nrow, dim);
+}
+
 void delete_elem(VectorXd *x, int ind) {
   int size = x->size() - 1;
   if (ind < size) x->segment(ind, size - ind) = x->segment(ind + 1, size - ind);
@@ -23,6 +33,18 @@ MatrixXd delete_row(const MatrixXd &x, int ind) {
   int dim = x.cols();
   if (ind < nrow) {
     out.block(ind, 0, nrow - ind, dim) = out.block(ind + 1, 0, nrow - ind, dim);
+  }
+
+  out.conservativeResize(nrow, dim);
+  return out;
+}
+
+MatrixXd delete_column(const MatrixXd x, int ind) {
+  MatrixXd out = x;
+  int nrow = x.rows();
+  int dim = x.cols()-1;
+  if (ind < dim) {
+    out.block(0, ind, nrow, dim-ind) = out.block(0,ind+1, nrow , dim-ind);
   }
 
   out.conservativeResize(nrow, dim);

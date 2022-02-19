@@ -52,7 +52,7 @@ void DeterminantalPP::set_decomposition(const MatrixXd * lambda) {
 
   Lambda = lambda;
   compute_eigen_and_cstar(&Ds, &phis, &phi_tildes, &c_star, lambda);
-  compute_eigen_and_cstar_red(&Ds_red, &phis_red, &phi_tildes_red, &c_star_red, lambda);
+  //compute_eigen_and_cstar_red(&Ds_red, &phis_red, &phi_tildes_red, &c_star_red, lambda);
   return;
 
 }
@@ -86,7 +86,7 @@ void DeterminantalPP::compute_eigen_and_cstar(double * D_, VectorXd * Phis_, Vec
   return;
 
 }
-
+/*
 void DeterminantalPP::compute_eigen_and_cstar_red(double * D_, VectorXd * Phis_, VectorXd * Phi_tildes_, double * C_star_, const MatrixXd * lambda){
 
 
@@ -115,12 +115,12 @@ void DeterminantalPP::compute_eigen_and_cstar_red(double * D_, VectorXd * Phis_,
   return;
 
 }
-
+*/
 
 void DeterminantalPP::decompose_proposal(const MatrixXd& lambda) {
 
   compute_eigen_and_cstar(&Ds_tmp, &phis_tmp, &phi_tildes_tmp, &c_star_tmp, &lambda);
-  compute_eigen_and_cstar_red(&Ds_tmp_red, &phis_tmp_red, &phi_tildes_tmp_red, &c_star_tmp_red, &lambda);
+  //compute_eigen_and_cstar_red(&Ds_tmp_red, &phis_tmp_red, &phi_tildes_tmp_red, &c_star_tmp_red, &lambda);
 
   return;
 
@@ -133,11 +133,11 @@ void DeterminantalPP::update_decomposition_from_proposal() {
   phis.swap(phis_tmp);
   phi_tildes.swap(phi_tildes_tmp);
   std::swap(c_star, c_star_tmp);
-
+/*
   std::swap(Ds_red, Ds_tmp_red);
   phis_red.swap(phis_tmp_red);
   phi_tildes_red.swap(phi_tildes_tmp_red);
-  std::swap(c_star_red, c_star_tmp_red);
+  std::swap(c_star_red, c_star_tmp_red);*/
   return;
 }
 
@@ -167,9 +167,9 @@ void DeterminantalPP::compute_Kappas() {
 }
 
 
-double DeterminantalPP::dens_cond_in_proposal(const MatrixXd& x, bool log) {
+double DeterminantalPP::dens_cond_in_proposal(const MatrixXd& x, double lndetCtil_prop, bool log) {
 
-  double out = ln_dens_process(x, Ds_tmp, phis_tmp, phi_tildes_tmp, c_star_tmp);
+  double out = ln_dens_process(x, lndetCtil_prop, Ds_tmp, c_star_tmp);
   out -= std::log(1-std::exp(-Ds_tmp));
 
   if (!log) out=std::exp(out);
@@ -179,9 +179,9 @@ double DeterminantalPP::dens_cond_in_proposal(const MatrixXd& x, bool log) {
 }
 
 
-double DeterminantalPP::dens_cond(const MatrixXd& x, bool log) {
+double DeterminantalPP::dens_cond(const MatrixXd& x, double lndetCtil, bool log) {
 
-  double out = ln_dens_process(x, Ds, phis, phi_tildes, c_star);
+  double out = ln_dens_process(x, lndetCtil, Ds, c_star);
   out -= std::log(1-std::exp(-Ds));
 
   if (!log) out = std::exp(out);
@@ -189,7 +189,7 @@ double DeterminantalPP::dens_cond(const MatrixXd& x, bool log) {
   return out;
 
 }
-
+/*
 //test reduced
 double DeterminantalPP::dens_cond_red(const MatrixXd& x, bool log) {
 
@@ -285,10 +285,10 @@ double DeterminantalPP::dens(const MatrixXd &x, bool log) {
   return out;
 
 }
+*/
 
-
-double DeterminantalPP::ln_dens_process(const MatrixXd& x, double Ds_p, const VectorXd& phis_p,
-            const VectorXd& phi_tildes_p, double c_star_p){
+double DeterminantalPP::ln_dens_process(const MatrixXd& x, double lndetCtil_p, double Ds_p,
+   double c_star_p){
 
   double out;
   int n;
@@ -310,17 +310,7 @@ double DeterminantalPP::ln_dens_process(const MatrixXd& x, double Ds_p, const Ve
       }
     }
     if (check_range) {
-      out = -1.0 * n * std::log(vol_range) - Ds_p;
-
-
-      // Transform data points to be in the unit cube centered in 0
-      MatrixXd xtrans(n,x.cols());
-
-      for (int i = 0; i < n; i++)
-        xtrans.row(i) = (A * x.row(i).transpose() + b).transpose();
-
-      // std::cout << "xtrans " << xtrans.transpose() << std::endl;
-      out += log_det_Ctilde(xtrans, phi_tildes_p);
+      out = -1.0 * n * std::log(vol_range) - Ds_p + lndetCtil_p;
 
     } else {
       out = stan::math::NEGATIVE_INFTY;
@@ -332,7 +322,7 @@ double DeterminantalPP::ln_dens_process(const MatrixXd& x, double Ds_p, const Ve
 
 }
 
-
+/*
 double DeterminantalPP::log_det_Ctilde(const MatrixXd &x, const VectorXd& phi_tildes_p) {
   MatrixXd Ctilde(x.rows(), x.rows());
 
@@ -353,7 +343,8 @@ double DeterminantalPP::log_det_Ctilde(const MatrixXd &x, const VectorXd& phi_ti
       if (l!=m) Ctilde(m,l) = aux;
     }
   }
-//  return 2.0 * std::log(Ctilde.llt().matrixL().determinant());
+  return 2.0 * std::log(Ctilde.llt().matrixL().determinant());
+******************************
   std::cout<<"Ctilde:\n"<<Ctilde <<std::endl;
   std::cout<<"log_det_Ctilde:\n"<<2.0 * std::log(Ctilde.llt().matrixL().determinant()) <<std::endl;
 
@@ -384,20 +375,14 @@ double DeterminantalPP::log_det_Ctilde(const MatrixXd &x, const VectorXd& phi_ti
 return 2.0 * std::log(Ctilde.llt().matrixL().determinant());
 
 }
+*/
+// this is computed wrt the Lambda matrix and the current decomposition (in phi,phi_tildes)
+double DeterminantalPP::papangelou(const MatrixXd& Ctilde, const MatrixXd &Ctilde_xi, bool log) {
+  // starting from Ctilde with the current allmeans, it adds one row/column and compute the Ctilde'.
+  // Transform xi to be in the unit cube centered in 0
+  double out = -1.0*std::log(vol_range)+ 2.0 * std::log(Ctilde_xi.llt().matrixL().determinant()) - 2.0 * std::log(Ctilde.llt().matrixL().determinant());
 
-
-double DeterminantalPP::papangelou(const VectorXd& xi, const MatrixXd &x, bool log) {
-  int n = 1 + x.rows();
-  MatrixXd all( n , x.cols());
-  all << x, xi.transpose();
-  //std::cout<<"all: "<<all<<std::endl;
-  // Transform data points to be in the unit cube centered in 0
-  MatrixXd alltrans(n,all.cols());
-  for (int i = 0; i < n; i++)
-    alltrans.row(i) = (A * all.row(i).transpose() + b).transpose();
-
-  //std::cout<<"alltrans: "<<alltrans<<std::endl;
-  double out = -1.0*std::log(vol_range)+ log_det_Ctilde(alltrans, phi_tildes) - log_det_Ctilde(alltrans.topRows(n-1), phi_tildes);
+  //double out = -1.0*std::log(vol_range)+ log_det_Ctilde(alltrans, phi_tildes) - log_det_Ctilde(alltrans.topRows(n-1), phi_tildes);
   //std::cout<<"out: "<<out<<std::endl;
   if (!log) out = std::exp(out);
 
@@ -434,9 +419,55 @@ double DeterminantalPP::phi_star_dens(VectorXd xi, bool log) {
   return out;
 }
 
+MatrixXd DeterminantalPP::compute_Ctilde(const MatrixXd& means){
+
+  MatrixXd Ctilde(means.rows(), means.rows());
+
+  for (int l = 0; l < means.rows(); l++) {
+    for (int m = l; m < means.rows(); m++) {
+      double aux = 0.0;
+      RowVectorXd vec(means.row(l)-means.row(m));
+      //int nthreads;
+      //#pragma omp parallel for default(none) firstprivate(Kappas,vec, phi_tildes_p) reduction(+:aux)
+      for (int kind = 0; kind < Kappas.rows(); kind++) {
+        //nthreads = omp_get_num_threads();
+        //printf("Number of threads = %d\n", nthreads);
+        double dotprod = Kappas.row(kind).dot(vec);
+        aux += phi_tildes[kind] * std::cos(2. * stan::math::pi() * dotprod);
+      }
+      Ctilde(l, m) = aux;
+      if (l!=m) Ctilde(m,l) = aux;
+    }
+  }
+  return Ctilde;
+}
+
+MatrixXd DeterminantalPP::compute_Ctilde_prop(const MatrixXd& means){
+
+  MatrixXd Ctilde(means.rows(), means.rows());
+
+  for (int l = 0; l < means.rows(); l++) {
+    for (int m = l; m < means.rows(); m++) {
+      double aux = 0.0;
+      RowVectorXd vec(means.row(l)-means.row(m));
+      //int nthreads;
+      //#pragma omp parallel for default(none) firstprivate(Kappas,vec, phi_tildes_p) reduction(+:aux)
+      for (int kind = 0; kind < Kappas.rows(); kind++) {
+        //nthreads = omp_get_num_threads();
+        //printf("Number of threads = %d\n", nthreads);
+        double dotprod = Kappas.row(kind).dot(vec);
+        aux += phi_tildes_tmp[kind] * std::cos(2. * stan::math::pi() * dotprod);
+      }
+      Ctilde(l, m) = aux;
+      if (l!=m) Ctilde(m,l) = aux;
+    }
+  }
+  return Ctilde;
+}
+
 
 void DeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const MatrixXd &active,
-                                 double psi_u) {
+                                 double psi_u, MatrixXd& Ctilde) {
   int npoints = non_active->rows();
   double c_star_na = c_star * psi_u;
   birth_prob = std::log(c_star_na) - std::log(c_star_na + npoints);
@@ -448,14 +479,37 @@ void DeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const Matri
     VectorXd xi = phi_star_rng();
     //std::cout<<"Birth"<<std::endl;
     // compute prob of acceptance of the new birth
-    MatrixXd aux(active.rows() + npoints, dim);
+    MatrixXd means(active.rows() + npoints, dim);
   //  std::cout<<"defined aux"<<std::endl;
-    aux << active, *non_active;
+    means << active, *non_active;
     //std::cout<<"filled aux: "<<aux<<std::endl;
   //  std::cout<<"rows= "<<aux.rows()<<std::endl;
   //  std::cout<<"cols= "<<aux.cols()<<std::endl;
+  means = A*means.transpose() + b;
+  VectorXd xi_trans = A * xi + b;
+  int n = Ctilde.rows();
 
-    double pap = papangelou(xi, aux, true);
+  // compute the row/column to be added to Ctilde
+  VectorXd col_new = VectorXd::Zero(n);
+
+  for (int l = 0; l < n; l++) {
+      RowVectorXd vec(means.row(l)-xi_trans.transpose());
+      //int nthreads;
+      //#pragma omp parallel for default(none) firstprivate(Kappas,vec, phi_tildes_p) reduction(+:aux)
+      for (int kind = 0; kind < Kappas.rows(); kind++) {
+        //nthreads = omp_get_num_threads();
+        //printf("Number of threads = %d\n", nthreads);
+        double dotprod = Kappas.row(kind).dot(vec);
+        col_new(l) += phi_tildes[kind] * std::cos(2. * stan::math::pi() * dotprod);
+      }
+  }
+  MatrixXd Ctilde_xi = MatrixXd::Zero( n+1, n+1);
+  Ctilde_xi.topLeftCorner(n,n) = Ctilde;
+  Ctilde_xi.col(n) = col_new;
+  Ctilde_xi.row(n) = col_new;
+  Ctilde_xi(n,n) = Ctilde_xi(0,0);
+
+    double pap = papangelou(Ctilde, Ctilde_xi, true);
     //std::cout<<"done papan"<<std::endl;
     birth_arate = pap - phi_star_dens(xi);
     double rthird = uniform_rng(0, 1, Rng::Instance().get());
@@ -463,6 +517,7 @@ void DeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const Matri
       //std::cout<<"Accepted birth"<<std::endl;
       non_active->conservativeResize(npoints + 1, dim);
       non_active->row(npoints) = xi;
+      Ctilde = Ctilde_xi;
     }
     //else std::cout<<"Rejected birth"<<std::endl;
   } else {
@@ -473,6 +528,8 @@ void DeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const Matri
     int ind = categorical_rng(probas, Rng::Instance().get()) - 1;
 
     delete_row(non_active, ind);
+    delete_row(&Ctilde, ind+active.rows());
+    delete_column(&Ctilde, ind+active.rows());
   }
 
   return;
