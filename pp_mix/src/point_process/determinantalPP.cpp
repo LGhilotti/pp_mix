@@ -52,7 +52,7 @@ void DeterminantalPP::set_decomposition(const MatrixXd * lambda) {
 
   Lambda = lambda;
   compute_eigen_and_cstar(&Ds, &phis, &phi_tildes, &c_star, lambda);
-  compute_eigen_and_cstar_red(&Ds_red, &phis_red, &phi_tildes_red, &c_star_red, lambda);
+  //compute_eigen_and_cstar_red(&Ds_red, &phis_red, &phi_tildes_red, &c_star_red, lambda);
   return;
 
 }
@@ -86,7 +86,7 @@ void DeterminantalPP::compute_eigen_and_cstar(double * D_, VectorXd * Phis_, Vec
   return;
 
 }
-
+/*
 void DeterminantalPP::compute_eigen_and_cstar_red(double * D_, VectorXd * Phis_, VectorXd * Phi_tildes_, double * C_star_, const MatrixXd * lambda){
 
 
@@ -115,12 +115,12 @@ void DeterminantalPP::compute_eigen_and_cstar_red(double * D_, VectorXd * Phis_,
   return;
 
 }
-
+*/
 
 void DeterminantalPP::decompose_proposal(const MatrixXd& lambda) {
 
   compute_eigen_and_cstar(&Ds_tmp, &phis_tmp, &phi_tildes_tmp, &c_star_tmp, &lambda);
-  compute_eigen_and_cstar_red(&Ds_tmp_red, &phis_tmp_red, &phi_tildes_tmp_red, &c_star_tmp_red, &lambda);
+  //compute_eigen_and_cstar_red(&Ds_tmp_red, &phis_tmp_red, &phi_tildes_tmp_red, &c_star_tmp_red, &lambda);
 
   return;
 
@@ -133,11 +133,11 @@ void DeterminantalPP::update_decomposition_from_proposal() {
   phis.swap(phis_tmp);
   phi_tildes.swap(phi_tildes_tmp);
   std::swap(c_star, c_star_tmp);
-
+/*
   std::swap(Ds_red, Ds_tmp_red);
   phis_red.swap(phis_tmp_red);
   phi_tildes_red.swap(phi_tildes_tmp_red);
-  std::swap(c_star_red, c_star_tmp_red);
+  std::swap(c_star_red, c_star_tmp_red);*/
   return;
 }
 
@@ -189,7 +189,7 @@ double DeterminantalPP::dens_cond(const MatrixXd& x, bool log) {
   return out;
 
 }
-
+/*
 //test reduced
 double DeterminantalPP::dens_cond_red(const MatrixXd& x, bool log) {
 
@@ -285,7 +285,7 @@ double DeterminantalPP::dens(const MatrixXd &x, bool log) {
   return out;
 
 }
-
+*/
 
 double DeterminantalPP::ln_dens_process(const MatrixXd& x, double Ds_p, const VectorXd& phis_p,
             const VectorXd& phi_tildes_p, double c_star_p){

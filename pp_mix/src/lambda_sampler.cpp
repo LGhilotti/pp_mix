@@ -290,7 +290,7 @@ MatrixXd LambdaSamplerMala::compute_grad_analytic(const MatrixXd& lamb){
 
 }
 
-
+/*
 // test reduced
 MatrixXd LambdaSamplerMala::compute_grad_analytic_red(const MatrixXd& lamb){
 
@@ -305,14 +305,14 @@ MatrixXd LambdaSamplerMala::compute_grad_analytic_red(const MatrixXd& lamb){
   return compute_gr_an_red(lamb,Phis_red,Phi_tildes_red, Ds_red);
 
 }
-
+*/
 
 MatrixXd LambdaSamplerMala::compute_grad_analytic(){
 
   return compute_gr_an(mcmc->get_Lambda(),mcmc->pp_mix->get_phis(),mcmc->pp_mix->get_phi_tildes(), mcmc->pp_mix->get_Ds());
 
 }
-
+/*
 // test reduced
 MatrixXd LambdaSamplerMala::compute_grad_analytic_red(){
 
@@ -320,7 +320,7 @@ MatrixXd LambdaSamplerMala::compute_grad_analytic_red(){
   return compute_gr_an_red(mcmc->get_Lambda(),mcmc->pp_mix->get_phis_red(),mcmc->pp_mix->get_phi_tildes_red(), mcmc->pp_mix->get_Ds_red());
 
 }
-
+*/
 
 MatrixXd LambdaSamplerMala::compute_gr_an(const MatrixXd& lamb, const VectorXd& Phis, const VectorXd& Phi_tildes, double Ds){
 
@@ -402,7 +402,7 @@ MatrixXd LambdaSamplerMala::compute_gr_an(const MatrixXd& lamb, const VectorXd& 
   return grad_log;
 }
 
-
+/*
 // test reduced
 MatrixXd LambdaSamplerMala::compute_gr_an_red(const MatrixXd& lamb, const VectorXd& Phis, const VectorXd& Phi_tildes, double Ds){
 
@@ -482,7 +482,7 @@ MatrixXd LambdaSamplerMala::compute_gr_an_red(const MatrixXd& lamb, const Vector
 
   return grad_log;
 }
-
+*/
 
 void LambdaSamplerMala::perform() {
 
@@ -568,7 +568,6 @@ void LambdaSamplerMala::perform() {
   //Given the mus, I can compute Ctilde of the current Lambda and current mus, so that
   // I use it both for density evaluation and gradient computation. The, DPP has two methods, if I pass the mus,
   // it computes Ctilde, if not uses Ctilde already set.
-  set_Ctilde
   double ln_px_curr (compute_ln_dens_analytic() );
   //THIS IS THE GRADIENT VIA ANALYTICAL COMPUTATION (in the current Lambda)
   MatrixXd grad_ln_px_curr (compute_grad_analytic() );
