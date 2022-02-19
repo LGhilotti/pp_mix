@@ -36,7 +36,7 @@ void MeansSamplerClassic::perform_update_allocated(MatrixXd& Ctilde) {
 
         MatrixXd others(allmeans.rows() - 1, mcmc->get_dim_fact());
         others = delete_row(allmeans, i);
-        others = mcmc->pp_mix->get_A()*others.transpose() + mcmc->pp_mix->get_b();
+        others = ((mcmc->pp_mix->get_A()*others.transpose()).colwise() + mcmc->pp_mix->get_b()).transpose();
         VectorXd prop_trans = mcmc->pp_mix->get_A() * prop + mcmc->pp_mix->get_b();
 
         MatrixXd Ctilde_oth(Ctilde);

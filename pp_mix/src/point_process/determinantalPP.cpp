@@ -421,12 +421,13 @@ double DeterminantalPP::phi_star_dens(VectorXd xi, bool log) {
 
 MatrixXd DeterminantalPP::compute_Ctilde(const MatrixXd& means){
 
-  MatrixXd Ctilde(means.rows(), means.rows());
+  MatrixXd means_trans = ((A * means.transpose()).colwise() + b).transpose();
+  MatrixXd Ctilde(means_trans.rows(), means_trans.rows());
 
-  for (int l = 0; l < means.rows(); l++) {
-    for (int m = l; m < means.rows(); m++) {
+  for (int l = 0; l < means_trans.rows(); l++) {
+    for (int m = l; m < means_trans.rows(); m++) {
       double aux = 0.0;
-      RowVectorXd vec(means.row(l)-means.row(m));
+      RowVectorXd vec(means_trans.row(l)-means_trans.row(m));
       //int nthreads;
       //#pragma omp parallel for default(none) firstprivate(Kappas,vec, phi_tildes_p) reduction(+:aux)
       for (int kind = 0; kind < Kappas.rows(); kind++) {
@@ -444,12 +445,13 @@ MatrixXd DeterminantalPP::compute_Ctilde(const MatrixXd& means){
 
 MatrixXd DeterminantalPP::compute_Ctilde_prop(const MatrixXd& means){
 
-  MatrixXd Ctilde(means.rows(), means.rows());
+  MatrixXd means_trans = ((A * means.transpose()).colwise() + b).transpose();
+  MatrixXd Ctilde(means_trans.rows(), means_trans.rows());
 
-  for (int l = 0; l < means.rows(); l++) {
-    for (int m = l; m < means.rows(); m++) {
+  for (int l = 0; l < means_trans.rows(); l++) {
+    for (int m = l; m < means_trans.rows(); m++) {
       double aux = 0.0;
-      RowVectorXd vec(means.row(l)-means.row(m));
+      RowVectorXd vec(means_trans.row(l)-means_trans.row(m));
       //int nthreads;
       //#pragma omp parallel for default(none) firstprivate(Kappas,vec, phi_tildes_p) reduction(+:aux)
       for (int kind = 0; kind < Kappas.rows(); kind++) {
@@ -485,7 +487,7 @@ void DeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const Matri
     //std::cout<<"filled aux: "<<aux<<std::endl;
   //  std::cout<<"rows= "<<aux.rows()<<std::endl;
   //  std::cout<<"cols= "<<aux.cols()<<std::endl;
-  means = A*means.transpose() + b;
+  means = ((A*means.transpose()).colwise() + b).transpose();
   VectorXd xi_trans = A * xi + b;
   int n = Ctilde.rows();
 
