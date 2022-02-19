@@ -97,8 +97,8 @@ int main() {
 
     int log_every=1;
     int ntrick = 0;
-    int burnin = 0;
-    int niter=1;
+    int burnin = 2;
+    int niter=2;
     int thin = 1;
 
 
