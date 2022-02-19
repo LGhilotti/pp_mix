@@ -569,8 +569,10 @@ void LambdaSamplerMala::perform() {
   // I use it both for density evaluation and gradient computation. The, DPP has two methods, if I pass the mus,
   // it computes Ctilde, if not uses Ctilde already set.
   double ln_px_curr (compute_ln_dens_analytic() );
+  std::cout<<"ln_px_curr:\n"<<ln_px_curr<<std::endl;
   //THIS IS THE GRADIENT VIA ANALYTICAL COMPUTATION (in the current Lambda)
   MatrixXd grad_ln_px_curr (compute_grad_analytic() );
+  std::cout<<"grad_ln_px_curr:\n"<<grad_ln_px_curr<<std::endl;
 
   // Proposal according MALA
   MatrixXd prop_lambda = mcmc->get_Lambda() + mala_p_lambda*grad_ln_px_curr +

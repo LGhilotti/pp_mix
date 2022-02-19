@@ -353,35 +353,9 @@ double DeterminantalPP::log_det_Ctilde(const MatrixXd &x, const VectorXd& phi_ti
       if (l!=m) Ctilde(m,l) = aux;
     }
   }
-//  return 2.0 * std::log(Ctilde.llt().matrixL().determinant());
   std::cout<<"Ctilde:\n"<<Ctilde <<std::endl;
-  std::cout<<"log_det_Ctilde:\n"<<2.0 * std::log(Ctilde.llt().matrixL().determinant()) <<std::endl;
+  return 2.0 * std::log(Ctilde.llt().matrixL().determinant());
 
-  MatrixXd Ctilde1(x.rows(), x.rows());
-
-  // TODO: Ctilde is symmetric! Also the diagonal elements are identical!
-  for (int l = 0; l < x.rows()-1; l++) {
-    for (int m = l+1; m < x.rows(); m++) {
-      double aux = 0.0;
-      RowVectorXd vec(x.row(l)-x.row(m));
-      //int nthreads;
-      //#pragma omp parallel for default(none) firstprivate(Kappas,vec, phi_tildes_p) reduction(+:aux)
-      for (int kind = 0; kind < Kappas.rows(); kind++) {
-        //nthreads = omp_get_num_threads();
-        //printf("Number of threads = %d\n", nthreads);
-        double dotprod = Kappas.row(kind).dot(vec);
-        aux += phi_tildes_p[kind] * std::cos(2. * stan::math::pi() * dotprod);
-      }
-      Ctilde1(l, m) = aux;
-      if (l!=m) Ctilde1(m,l) = aux;
-    }
-  }
-  Ctilde1.diagonal() = ArrayXd::Constant(x.rows(), phi_tildes_p.sum());
-  std::cout<<"Ctilde_1:\n"<< Ctilde1 <<std::endl;
-  std::cout<<"log_det_Ctilde1:\n"<<2.0 * std::log(Ctilde1.llt().matrixL().determinant()) <<std::endl;
-
-
-return 2.0 * std::log(Ctilde.llt().matrixL().determinant());
 
 }
 
