@@ -177,7 +177,7 @@ bool MultivariateConditionalMCMC::is_inside(const VectorXd & point){
 }
 
 void MultivariateConditionalMCMC::run_one() {
-/*
+
   //std::cout<<"sample u"<<std::endl;
   sample_u();
 
@@ -223,7 +223,7 @@ void MultivariateConditionalMCMC::run_one() {
   sample_Psi();
   sample_tau();
   sample_Phi();
-  */
+  
   sample_lambda->perform();
 
   // print_debug_string();

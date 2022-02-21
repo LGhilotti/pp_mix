@@ -353,7 +353,7 @@ double DeterminantalPP::log_det_Ctilde(const MatrixXd &x, const VectorXd& phi_ti
       if (l!=m) Ctilde(m,l) = aux;
     }
   }
-  std::cout<<"Ctilde:\n"<<Ctilde <<std::endl;
+  //std::cout<<"Ctilde:\n"<<Ctilde <<std::endl;
   return 2.0 * std::log(Ctilde.llt().matrixL().determinant());
 
 
