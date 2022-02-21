@@ -135,9 +135,10 @@ int main() {
         if ((i + 1) % log_every == 0) {
             myfile<<"Burnin, iter #"<< i + 1<< " / "<< burnin<<"\n";
             //myfile<< "Means_na: \n"<< sampler.get_na_means()<<"\n";
+            //myfile<< "All_means: \n"<< sampler.get_all_means()<<"\n";
             myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
             //std::cout<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
-            myfile<< "Ctilde: \n"<< sampler.get_ctilde()<<"\n";
+            //myfile<< "Ctilde: \n"<< sampler.get_ctilde()<<"\n";
 
             //myfile<< "diff_log_dens_analytic: \n"<< sampler.get_ln_dens_analytic()<<"\n";
 
@@ -149,9 +150,10 @@ int main() {
         if ((i + 1) % log_every == 0) {
             myfile<<"Running, iter #"<< i + 1<< " / "<< niter<<"\n";
             //myfile<< "Means_na: \n"<< sampler.get_na_means()<<"\n";
+            //myfile<< "All_means: \n"<< sampler.get_all_means()<<"\n";
             myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
             //myfile<< "diff_log_dens_analytic: \n"<< sampler.get_ln_dens_analytic()<<"\n";
-            myfile<< "Ctilde: \n"<< sampler.get_ctilde()<<"\n";
+            //myfile<< "Ctilde: \n"<< sampler.get_ctilde()<<"\n";
 
           }
     }

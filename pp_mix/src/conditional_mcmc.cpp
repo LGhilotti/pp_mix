@@ -214,6 +214,10 @@ void MultivariateConditionalMCMC::run_one() {
 
   sample_jumps_a();
 
+  //// TEST
+  //std::cout<<"means_trans:\n"<<  ((pp_mix->get_A() * get_all_means().transpose()).colwise() + pp_mix->get_b()).transpose()<<std::endl;
+  //std::cout<<"Ctilde_after_alloc:\n"<<Ctilde<<std::endl;
+
   // sample etas
   sample_etas();
 

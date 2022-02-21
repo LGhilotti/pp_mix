@@ -381,7 +381,7 @@ double DeterminantalPP::papangelou(const MatrixXd& Ctilde, const MatrixXd &Ctild
   // starting from Ctilde with the current allmeans, it adds one row/column and compute the Ctilde'.
   // Transform xi to be in the unit cube centered in 0
   double out = -1.0*std::log(vol_range)+ 2.0 * std::log(Ctilde_xi.llt().matrixL().determinant()) - 2.0 * std::log(Ctilde.llt().matrixL().determinant());
-
+  
   //double out = -1.0*std::log(vol_range)+ log_det_Ctilde(alltrans, phi_tildes) - log_det_Ctilde(alltrans.topRows(n-1), phi_tildes);
   //std::cout<<"out: "<<out<<std::endl;
   if (!log) out = std::exp(out);
@@ -422,6 +422,7 @@ double DeterminantalPP::phi_star_dens(VectorXd xi, bool log) {
 MatrixXd DeterminantalPP::compute_Ctilde(const MatrixXd& means){
 
   MatrixXd means_trans = ((A * means.transpose()).colwise() + b).transpose();
+//  std::cout<<"means_trans:\n"<<means_trans<<std::endl;
   MatrixXd Ctilde(means_trans.rows(), means_trans.rows());
 
   for (int l = 0; l < means_trans.rows(); l++) {

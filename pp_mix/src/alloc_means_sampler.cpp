@@ -74,6 +74,8 @@ void MeansSamplerClassic::perform_update_allocated(MatrixXd& Ctilde) {
 
         if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < arate) {
           mcmc->set_single_a_mean(i, prop);
+          // correcting the mistake of conditioning
+          allmeans.row(i)=prop;
           acc_sampled_a_means += 1;
           Ctilde = Ctilde_prop;
         }
