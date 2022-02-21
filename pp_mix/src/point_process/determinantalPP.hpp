@@ -27,12 +27,12 @@ protected:
     double s; // in (0,1), s.t. rho= s * rho_max
 
     // c_star is the integral of psi^* (in b&D algo), which is C_tilde(0)=sum(phis_tilde)
-    double c_star; // c* of X (DPP): changes when Lambda changes!
+    //double c_star; // c* of X (DPP): changes when Lambda changes!
 
     // eigendecomposition params: change when Lambda changes!
-    VectorXd phis;
+    /*VectorXd phis;
     VectorXd phi_tildes;
-    double Ds;
+    double Ds;*/
 
     MatrixXd Kappas; // grid for approximating summation over Z^dim
     MatrixXd Kappas_red; // grid for approximating summation over Z^dim
@@ -53,13 +53,13 @@ protected:
 
     // FOR PROPOSAL
      const MatrixXd * Lambda; // const pointer to the Lambda matrix
-
+/*
     double c_star_tmp; // c* of X (DPP) wrt the last passed Lambda
 
     // eigendecomposition params for last passed Lambda
     VectorXd phis_tmp;
     VectorXd phi_tildes_tmp;
-    double Ds_tmp;
+    double Ds_tmp;*/
 
 public:
 
@@ -72,8 +72,8 @@ public:
     void set_decomposition(const MatrixXd * lambda);
 
     // modifies the passed Ds, phis, phi_tildes, c_star according to the dpp defined with lambda
-    void compute_eigen_and_cstar(double * D_, VectorXd * Phis_, VectorXd * Phi_tildes_, double * C_star_, const MatrixXd * lambda);
-  //  void compute_eigen_and_cstar_red(double * D_, VectorXd * Phis_, VectorXd * Phi_tildes_, double * C_star_, const MatrixXd * lambda);
+    //void compute_eigen_and_cstar(double * D_, VectorXd * Phis_, VectorXd * Phi_tildes_, double * C_star_, const MatrixXd * lambda);
+    void compute_eigen_and_cstar_red(double * D_, VectorXd * Phis_, VectorXd * Phi_tildes_, double * C_star_, const MatrixXd * lambda);
 
     // manages decomposition wrt the passed lambda.
     // it takes the proposed Lambda and performs decomposition, storing it in "tmp" variables
@@ -89,20 +89,9 @@ public:
 
     // computes (log default) density in x of cond process wrt the current decomposition (expressed by the Father variables Ds, phis,...)
     double dens_cond(const MatrixXd& x, double lndetCtil, bool log=true);
-    //double dens_cond_red(const MatrixXd& x, bool log=true);
-
-    // computes (log default) density in x of dpp process wrt the current decomposition (expressed by the Father variables Ds, phis,...)
-    //double dens(const MatrixXd& x, bool log=true);
-
 
     // PRIVATE: final method that actually computes the log-density of dpp given parameters of decomposition
     double ln_dens_process(const MatrixXd& x, double lndetCtil_p, double Ds_p, double c_star_p);
-    //double ln_dens_process_red(const MatrixXd& x, double Ds_p, const VectorXd& phis_p, const VectorXd& phi_tildes_p, double c_star_p);
-
-
-
-    //double log_det_Ctilde(const MatrixXd& x, const VectorXd& phi_tildes_p);
-    //double log_det_Ctilde_red(const MatrixXd& x, const VectorXd& phi_tildes_p);
 
     double papangelou(const MatrixXd& Ctilde, const MatrixXd &Ctilde_xi, bool log = true);
 

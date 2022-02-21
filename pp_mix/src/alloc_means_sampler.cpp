@@ -48,18 +48,19 @@ void MeansSamplerClassic::perform_update_allocated(MatrixXd& Ctilde) {
         // compute the row/column to be added to Ctilde: note that first i elements are over the diagonal, the last n-i
         // are below the diagonal.
         VectorXd col_new = VectorXd::Zero(n);
-        const MatrixXd& Kappas=mcmc->pp_mix->get_kappas();
+        const MatrixXd& Kappas_red=mcmc->pp_mix->get_kappas_red();
         for (int l = 0; l < n; l++) {
             RowVectorXd vec(others_trans.row(l)-prop_trans.transpose());
             //int nthreads;
             //#pragma omp parallel for default(none) firstprivate(Kappas,vec, phi_tildes_p) reduction(+:aux)
-            for (int kind = 0; kind < Kappas.rows(); kind++) {
+            for (int kind = 1; kind < Kappas_red.rows(); kind++) {
               //nthreads = omp_get_num_threads();
               //printf("Number of threads = %d\n", nthreads);
-              double dotprod = Kappas.row(kind).dot(vec);
-              col_new(l) += mcmc->pp_mix->get_phi_tildes()[kind] * std::cos(2. * stan::math::pi() * dotprod);
+              double dotprod = Kappas_red.row(kind).dot(vec);
+              col_new(l) += 2. * mcmc->pp_mix->get_phi_tildes_red()[kind] * std::cos(2. * stan::math::pi() * dotprod);
             }
         }
+        col_new += mcmc->pp_mix->get_phi_tildes_red()[0];
         // Ctilde_prop differs from Ctilde only in the i row and column (diagonal element doesn't change)
         MatrixXd Ctilde_prop = Ctilde;
         Ctilde_prop.block(0,i,i,1) = col_new.head(i);

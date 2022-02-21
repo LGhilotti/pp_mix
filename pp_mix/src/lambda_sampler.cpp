@@ -282,10 +282,10 @@ double LambdaSamplerMala::compute_ln_dens_analytic(double lndetCtil){
 
 MatrixXd LambdaSamplerMala::compute_grad_analytic(const MatrixXd& lamb, const MatrixXd& Ctilde){
 
-  const VectorXd& Phis (mcmc->pp_mix->get_phis_tmp());
-  double Ds = mcmc->pp_mix->get_Ds_tmp();
+  const VectorXd& Phis_red (mcmc->pp_mix->get_phis_tmp_red());
+  double Ds_red = mcmc->pp_mix->get_Ds_tmp_red();
 
-  return compute_gr_an(lamb,Ctilde,Phis, Ds);
+  return compute_gr_an(lamb,Ctilde,Phis_red, Ds_red);
 
 }
 
@@ -308,7 +308,7 @@ MatrixXd LambdaSamplerMala::compute_grad_analytic_red(const MatrixXd& lamb){
 
 MatrixXd LambdaSamplerMala::compute_grad_analytic(const MatrixXd& Ctilde){
 
-  return compute_gr_an(mcmc->get_Lambda(), Ctilde, mcmc->pp_mix->get_phis(), mcmc->pp_mix->get_Ds());
+  return compute_gr_an(mcmc->get_Lambda(), Ctilde, mcmc->pp_mix->get_phis_red(), mcmc->pp_mix->get_Ds_red());
 
 }
 /*
@@ -321,7 +321,7 @@ MatrixXd LambdaSamplerMala::compute_grad_analytic_red(){
 }
 */
 
-MatrixXd LambdaSamplerMala::compute_gr_an(const MatrixXd& lamb, const MatrixXd& Ctilde, const VectorXd& Phis, double Ds){
+MatrixXd LambdaSamplerMala::compute_gr_an(const MatrixXd& lamb, const MatrixXd& Ctilde, const VectorXd& Phis_red, double Ds_red){
 
   int d =  mcmc->get_dim_fact();
 
@@ -343,32 +343,30 @@ MatrixXd LambdaSamplerMala::compute_gr_an(const MatrixXd& lamb, const MatrixXd& 
         mu_trans.row(i) = (mcmc->pp_mix->get_A() * mcmc->get_all_means().row(i).transpose() + mcmc->pp_mix->get_b()).transpose();
   }
 
-  const MatrixXd& Kappas (mcmc->pp_mix->get_kappas());
+  const MatrixXd& Kappas_red (mcmc->pp_mix->get_kappas_red());
 
   LLT<MatrixXd> Ctil (Ctilde);
 
   LLT<MatrixXd> l_t_l (lamb.transpose() * lamb);
   MatrixXd part_g (2.0 * pow(l_t_l.matrixL().determinant(),2.0/d) * lamb);
   //Redefine Kappas keeping only the ones with positive or 0 first component
-  MatrixXd Kappas_ = Kappas.bottomRows(Kappas.rows()/(2*mcmc->pp_mix->get_N() +1) * (mcmc->pp_mix->get_N() +1));
-  VectorXd Phis_ = Phis.bottomRows(Phis.rows()/(2*mcmc->pp_mix->get_N() +1) * (mcmc->pp_mix->get_N() +1));
   MatrixXd SecTerm = MatrixXd::Zero(mcmc->get_dim_data(),d);
 
-  for (int kind=0; kind< Kappas.rows(); kind++) {
+  for (int kind=1; kind< Kappas_red.rows(); kind++) {
     //construct g^k , u_k (real and img)
-    VectorXd sol(l_t_l.solve(Kappas.row(kind).transpose()));
+    VectorXd sol(l_t_l.solve(Kappas_red.row(kind).transpose()));
     // s_part_g contains the entire squared bracket
-    MatrixXd s_part_g =MatrixXd::Constant(d,d, 1.0/d * Kappas.row(kind).dot(sol.transpose()) ) - Kappas.row(kind).transpose()*sol.transpose();
+    MatrixXd s_part_g =MatrixXd::Constant(d,d, 1.0/d * Kappas_red.row(kind).dot(sol.transpose()) ) - Kappas_red.row(kind).transpose()*sol.transpose();
     // gk is the matrix g^k
     MatrixXd gk (part_g *l_t_l.solve(s_part_g));
 
     //define u_k
-    VectorXd arg (2*stan::math::pi()* mu_trans * Kappas.row(kind).transpose());
+    VectorXd arg (2*stan::math::pi()* mu_trans * Kappas_red.row(kind).transpose());
     VectorXd uR (arg.array().cos());
     VectorXd uI (arg.array().sin());
     // scal is the scalar after g^k
     //double scal = Phis[kind]/std::pow(1-Phis[kind],2.0)*(((1-Phis[kind])/(1-std::exp(-mcmc->pp_mix->get_Ds())))-Ctil.solve(uR).dot(uR)-Ctil.solve(uI).dot(uI));
-    double scal = Phis[kind]/std::pow(1-Phis[kind],2.0)*(((1-Phis[kind])/(1-std::exp(-Ds)))-Ctil.solve(uR).dot(uR)-Ctil.solve(uI).dot(uI));
+    double scal = Phis_red[kind]/std::pow(1-Phis_red[kind],2.0)*(((1-Phis_red[kind])/(1-std::exp(-Ds_red)))-Ctil.solve(uR).dot(uR)-Ctil.solve(uI).dot(uI));
 
     SecTerm += scal * gk;
   }
@@ -552,10 +550,10 @@ void LambdaSamplerMala::perform(MatrixXd& Ctilde) {
   // it computes Ctilde, if not uses Ctilde already set.
   double lndetCtil = 2.0 * std::log(Ctilde.llt().matrixL().determinant());
   double ln_px_curr (compute_ln_dens_analytic(lndetCtil) );
-  std::cout<<"ln_px_curr:\n"<<ln_px_curr<<std::endl;
+  //std::cout<<"ln_px_curr:\n"<<ln_px_curr<<std::endl;
   //THIS IS THE GRADIENT VIA ANALYTICAL COMPUTATION (in the current Lambda)
   MatrixXd grad_ln_px_curr (compute_grad_analytic(Ctilde) );
-  std::cout<<"grad_ln_px_curr:\n"<<grad_ln_px_curr<<std::endl;
+  //std::cout<<"grad_ln_px_curr:\n"<<grad_ln_px_curr<<std::endl;
 
   // Proposal according MALA
   MatrixXd prop_lambda = mcmc->get_Lambda() + mala_p_lambda*grad_ln_px_curr +
