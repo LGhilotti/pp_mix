@@ -36,7 +36,7 @@ void MeansSamplerClassic::perform_update_allocated(MatrixXd& Ctilde) {
 
         MatrixXd others(allmeans.rows() - 1, mcmc->get_dim_fact());
         others = delete_row(allmeans, i);
-        others = ((mcmc->pp_mix->get_A()*others.transpose()).colwise() + mcmc->pp_mix->get_b()).transpose();
+        MatrixXd others_trans = ((mcmc->pp_mix->get_A()*others.transpose()).colwise() + mcmc->pp_mix->get_b()).transpose();
         VectorXd prop_trans = mcmc->pp_mix->get_A() * prop + mcmc->pp_mix->get_b();
 
         MatrixXd Ctilde_oth(Ctilde);
@@ -50,7 +50,7 @@ void MeansSamplerClassic::perform_update_allocated(MatrixXd& Ctilde) {
         VectorXd col_new = VectorXd::Zero(n);
         const MatrixXd& Kappas=mcmc->pp_mix->get_kappas();
         for (int l = 0; l < n; l++) {
-            RowVectorXd vec(others.row(l)-prop_trans.transpose());
+            RowVectorXd vec(others_trans.row(l)-prop_trans.transpose());
             //int nthreads;
             //#pragma omp parallel for default(none) firstprivate(Kappas,vec, phi_tildes_p) reduction(+:aux)
             for (int kind = 0; kind < Kappas.rows(); kind++) {
@@ -64,8 +64,8 @@ void MeansSamplerClassic::perform_update_allocated(MatrixXd& Ctilde) {
         MatrixXd Ctilde_prop = Ctilde;
         Ctilde_prop.block(0,i,i,1) = col_new.head(i);
         Ctilde_prop.block(i+1,i,n-i,1) = col_new.tail(n-i);
-        Ctilde_prop.block(i,0,1,i) = col_new.head(i);
-        Ctilde_prop.block(i,i+1,1,n-i) = col_new.tail(n-i);
+        Ctilde_prop.block(i,0,1,i) = col_new.head(i).transpose();
+        Ctilde_prop.block(i,i+1,1,n-i) = col_new.tail(n-i).transpose();
 
         prior_ratio =
             mcmc->pp_mix->papangelou(Ctilde_oth, Ctilde_prop) - mcmc->pp_mix->papangelou(Ctilde_oth, Ctilde);

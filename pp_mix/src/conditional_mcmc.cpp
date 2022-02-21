@@ -177,7 +177,7 @@ bool MultivariateConditionalMCMC::is_inside(const VectorXd & point){
 }
 
 void MultivariateConditionalMCMC::run_one() {
-/*
+
   //std::cout<<"sample u"<<std::endl;
   sample_u();
 
@@ -194,6 +194,8 @@ void MultivariateConditionalMCMC::run_one() {
 //std::cout<<"sample means na"<<std::endl;
 
   // sample non-allocated variables
+  // I can set Ctilde with all the means and then remove or add row/column when na_means is updated.
+  Ctilde = pp_mix->compute_Ctilde(get_all_means());
   sample_means_na(psi_u);
   //std::cout<<"sample jumps na"<<std::endl;
 
@@ -204,7 +206,6 @@ void MultivariateConditionalMCMC::run_one() {
 //  std::cout<<"sample means a"<<std::endl;
 
   // sample allocated variables
-  //sample_means_a();
   sample_means_obj->perform_update_allocated(Ctilde);
   //std::cout<<"sample deltas a"<<std::endl;
 
@@ -223,8 +224,7 @@ void MultivariateConditionalMCMC::run_one() {
   sample_Psi();
   sample_tau();
   sample_Phi();
-  */
-  Ctilde = pp_mix->compute_Ctilde(get_all_means());
+
   sample_lambda->perform(Ctilde);
 
   // print_debug_string();
@@ -325,8 +325,6 @@ void MultivariateConditionalMCMC::sample_jumps_a()
 
 void MultivariateConditionalMCMC::sample_means_na(double psi_u)
 {
-  // I can set Ctilde with all the means and then remove or add row/column when na_means is updated.
-  Ctilde = pp_mix->compute_Ctilde(get_all_means());
 
   for (int i=0; i < 10; i++) {
     int na_points = na_means.rows();

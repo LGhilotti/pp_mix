@@ -487,7 +487,7 @@ void DeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const Matri
     //std::cout<<"filled aux: "<<aux<<std::endl;
   //  std::cout<<"rows= "<<aux.rows()<<std::endl;
   //  std::cout<<"cols= "<<aux.cols()<<std::endl;
-  means = ((A*means.transpose()).colwise() + b).transpose();
+  MatrixXd means_trans = ((A*means.transpose()).colwise() + b).transpose();
   VectorXd xi_trans = A * xi + b;
   int n = Ctilde.rows();
 
@@ -495,7 +495,7 @@ void DeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const Matri
   VectorXd col_new = VectorXd::Zero(n);
 
   for (int l = 0; l < n; l++) {
-      RowVectorXd vec(means.row(l)-xi_trans.transpose());
+      RowVectorXd vec(means_trans.row(l)-xi_trans.transpose());
       //int nthreads;
       //#pragma omp parallel for default(none) firstprivate(Kappas,vec, phi_tildes_p) reduction(+:aux)
       for (int kind = 0; kind < Kappas.rows(); kind++) {
@@ -507,8 +507,8 @@ void DeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const Matri
   }
   MatrixXd Ctilde_xi = MatrixXd::Zero( n+1, n+1);
   Ctilde_xi.topLeftCorner(n,n) = Ctilde;
-  Ctilde_xi.col(n) = col_new;
-  Ctilde_xi.row(n) = col_new;
+  Ctilde_xi.block(0,n,n,1) = col_new;
+  Ctilde_xi.block(n,0,1,n) = col_new.transpose();
   Ctilde_xi(n,n) = Ctilde_xi(0,0);
 
     double pap = papangelou(Ctilde, Ctilde_xi, true);
@@ -519,6 +519,7 @@ void DeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const Matri
       //std::cout<<"Accepted birth"<<std::endl;
       non_active->conservativeResize(npoints + 1, dim);
       non_active->row(npoints) = xi;
+      //Ctilde.resize(n+1,n+1);
       Ctilde = Ctilde_xi;
     }
     //else std::cout<<"Rejected birth"<<std::endl;
