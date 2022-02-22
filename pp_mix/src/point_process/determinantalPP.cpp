@@ -263,7 +263,7 @@ VectorXd DeterminantalPP::phi_star_rng() {
 }
 
 double DeterminantalPP::phi_star_dens(VectorXd xi, bool log) {
-  double out = std::log(c_star) - std::log(vol_range);
+  double out = std::log(c_star_red) - std::log(vol_range);
   if (!log) out = std::exp(out);
 
   return out;
@@ -360,8 +360,8 @@ void DeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const Matri
         col_new(l) += 2. * phi_tildes_red[kind] * std::cos(2. * stan::math::pi() * dotprod);
       }
   }
-  col_new += phi_tildes_red(0);
-  
+  col_new.array() += phi_tildes_red(0);
+
   MatrixXd Ctilde_xi = MatrixXd::Zero( n+1, n+1);
   Ctilde_xi.topLeftCorner(n,n) = Ctilde;
   Ctilde_xi.block(0,n,n,1) = col_new;

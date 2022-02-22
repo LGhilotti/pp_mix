@@ -257,6 +257,7 @@ void MultivariateConditionalMCMC::run_one_trick() {
   // sample non-allocated variables
   //sample_means_na(psi_u);
   //std::cout<<"perform_update_trick_na"<<std::endl;
+  Ctilde = pp_mix->compute_Ctilde(get_all_means());
 
   sample_means_obj->perform_update_trick_na();
   //std::cout<<"sample jumps na"<<std::endl;

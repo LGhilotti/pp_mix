@@ -34,7 +34,7 @@ public:
 
     virtual void perform_update_allocated(MatrixXd& ) = 0;
 
-    virtual void perform_update_trick_na() = 0;
+    virtual void perform_update_trick_na(MatrixXd& ) = 0;
 
 
     double Means_acc_rate(); // only accounts for allocated
@@ -50,7 +50,7 @@ public:
 
     void perform_update_allocated(MatrixXd& ) override;
 
-    void perform_update_trick_na() override;
+    void perform_update_trick_na(MatrixXd& ) override;
 
 };
 
@@ -67,7 +67,7 @@ public:
 
     void perform_update_allocated(MatrixXd& ) override;
 
-    void perform_update_trick_na() override;
+    void perform_update_trick_na(MatrixXd& ) override;
 
     const MatrixXd& get_allmeans() const {return allmeans;}
     int get_num_allmeans() const {return allmeans.rows();}

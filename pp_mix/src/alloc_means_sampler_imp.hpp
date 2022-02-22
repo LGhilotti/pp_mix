@@ -6,14 +6,14 @@ namespace MCMCsampler {
 // returns the ln of full-cond of Lambda|rest in current Lambda (lamb is vectorized)
 template <typename T>
 T MeansSamplerMala::alloc_means_target_function::operator()(const Eigen::Matrix<T,Eigen::Dynamic,1> & mean) const {
-
+/*
   using std::pow; using std::exp; using std::log;
 
   MatrixXd others(msm.get_num_allmeans() - 1, msm.mcmc->get_dim_fact());
   others = delete_row(msm.get_allmeans(), msm.get_ind_mean());
-
+*/
   T output{0.};
-
+/*
   int n = msm.mcmc->get_etas_by_clus(msm.get_ind_mean()).size();
 
   MatrixXd cluster_etas(msm.mcmc->get_dim_fact(), n );
@@ -62,7 +62,7 @@ T MeansSamplerMala::alloc_means_target_function::operator()(const Eigen::Matrix<
 
   Ctilde(n_all_means-1, n_all_means-1) = Ctilde(0,0);
   output += +log_determinant(Ctilde);
-
+*/
   return output;
 
 }
@@ -72,14 +72,14 @@ T MeansSamplerMala::alloc_means_target_function::operator()(const Eigen::Matrix<
 
 template <typename T>
 T MeansSamplerMala::trick_na_means_target_function::operator()(const Eigen::Matrix<T,Eigen::Dynamic,1> & mean) const {
-
+/*
   using std::pow; using std::exp; using std::log;
 
   MatrixXd others(msm.get_num_allmeans() - 1, msm.mcmc->get_dim_fact());
   others = delete_row(msm.get_allmeans(), msm.get_ind_mean());
-
+*/
   T output{0.};
-
+/*
 
   MatrixXd others_trans(others.rows(),msm.mcmc->get_dim_fact());
   for (int i = 0; i < others_trans.rows() ; i++){
@@ -120,7 +120,7 @@ T MeansSamplerMala::trick_na_means_target_function::operator()(const Eigen::Matr
 
   Ctilde(n_all_means-1, n_all_means-1) = Ctilde(0,0);
   output += +log_determinant(Ctilde);
-
+*/
   return output;
 
 }

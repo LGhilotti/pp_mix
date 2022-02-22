@@ -126,7 +126,7 @@ public:
 
     double get_N() const {return N;}
 
-
+/*
     double get_cstar() const { return c_star; }
 
     const MatrixXd& get_kappas() const {return Kappas;}
@@ -136,7 +136,7 @@ public:
     const VectorXd& get_phis() const {return phis;}
 
     double get_Ds() const {return Ds;}
-
+*/
     // reduced getters
     double get_cstar_red() const { return c_star_red; }
 
@@ -148,13 +148,11 @@ public:
 
     double get_Ds_red() const {return Ds_red;}
 
-    // end reduced getters
+    const VectorXd& get_phi_tildes_tmp_red() const {return phi_tildes_tmp_red;}
 
-    const VectorXd& get_phi_tildes_tmp() const {return phi_tildes_tmp;}
+    const VectorXd& get_phis_tmp_red() const {return phis_tmp_red;}
 
-    const VectorXd& get_phis_tmp() const {return phis_tmp;}
-
-    double get_Ds_tmp() const {return Ds_tmp;}
+    double get_Ds_tmp_red() const {return Ds_tmp_red;}
 
     const MatrixXd& get_A() const {return A;}
 
