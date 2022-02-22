@@ -96,7 +96,7 @@ int main() {
     // NOTE: We use all params
 
     int log_every=1;
-    int ntrick = 0;
+    int ntrick = 2;
     int burnin = 2;
     int niter=2;
     int thin = 1;
@@ -115,18 +115,18 @@ int main() {
 
     myfile<< "Initial Lambda: \n"<< sampler.get_Lambda()<<"\n";
 
-/*
+
     for (int i = 0; i < ntrick; i++) {
         sampler.run_one_trick();
         if ((i + 1) % log_every == 0) {
             myfile<< "Trick, iter #"<< i + 1<< " / "<< ntrick<<"\n";
-            //myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
-            myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
-            myfile<< "Grad_log_analytic: \n"<< sampler.get_grad_log_analytic()<<"\n";
+            myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
+            //myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
+            //myfile<< "Grad_log_analytic: \n"<< sampler.get_grad_log_analytic()<<"\n";
 
         }
     }
-*/
+
 
 
     for (int i = 0; i < burnin; i++) {

@@ -45,6 +45,7 @@ void MeansSamplerClassic::perform_update_allocated() {
         if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < arate) {
           mcmc->set_single_a_mean(i, prop);
           acc_sampled_a_means += 1;
+          allmeans.row(i)=prop;
         }
     }
 
@@ -83,6 +84,7 @@ void MeansSamplerClassic::perform_update_trick_na() {
         if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < prior_ratio) {
           mcmc->set_single_na_mean(i, prop);
           //acc_sampled_a_means += 1;
+          allmeans.row(i)=prop;
         }
     }
 
