@@ -62,7 +62,7 @@ T LambdaSamplerMala::lambda_target_function::operator()(const Eigen::Matrix<T,Ei
 
     }
   }
-  Ctilde.diagonal() = Array<T,Dynamic>::Constant(mu_trans.rows(), 2.*sum(phi_tildes) - phi_tildes(0));
+  Ctilde.diagonal() = Array<T,Dynamic,1>::Constant(mu_trans.rows(), 2.*sum(phi_tildes) - phi_tildes(0));
   output += -Ds - log(1-exp(-Ds)) + log_determinant(Ctilde);
 
   //######## THIRD TERM
