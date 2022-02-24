@@ -21,24 +21,24 @@ T LambdaSamplerMala::lambda_target_function::operator()(const Eigen::Matrix<T,Ei
 
   // ############# SECOND TERM
   //std::cout<<"checkpoint 4"<<std::endl;
-/*
+
   T esp_fact = -2*pow(stan::math::pi(),2)*pow(exp(log_determinant_spd(crossprod(lamb_mat))),1.0/m_mcmc.get_dim_fact())*pow(m_mcmc.pp_mix->get_c(),-2.0/m_mcmc.get_dim_fact());
 
   T Ds(0.);
   Matrix<T,Dynamic,1> phis;
   Matrix<T,Dynamic,1> phi_tildes;
-  const MatrixXd& Kappas = m_mcmc.pp_mix->get_kappas();
-  phis.resize(Kappas.rows());
-  phi_tildes.resize(Kappas.rows());
+  const MatrixXd& Kappas_red = m_mcmc.pp_mix->get_kappas_red();
+  phis.resize(Kappas_red.rows());
+  phi_tildes.resize(Kappas_red.rows());
   double s = m_mcmc.pp_mix->get_s();
-  for (int i = 0; i < Kappas.rows(); i++) {
+  for (int i = 0; i < Kappas_red.rows(); i++) {
      // std::cout<<"checkpoint 7"<<std::endl;
 
-    phis(i) = s*exp(esp_fact * dot_product(Kappas.row(i),mdivide_left_spd(crossprod(lamb_mat), Kappas.row(i).transpose() )) );
+    phis(i) = s*exp(esp_fact * dot_product(Kappas_red.row(i),mdivide_left_spd(crossprod(lamb_mat), Kappas_red.row(i).transpose() )) );
 
     phi_tildes(i) = phis(i) / (1 - phis(i));
   }
-  Ds = sum(log(1 + phi_tildes.array()));
+  Ds = 2.0 * sum(log(1 + phi_tildes.array())) - log(1+phi_tildes(0));
 
   int n_means=m_mcmc.get_num_a_means()+m_mcmc.get_num_na_means();
   MatrixXd mu_trans(n_means,m_mcmc.get_dim_fact());
@@ -49,21 +49,22 @@ T LambdaSamplerMala::lambda_target_function::operator()(const Eigen::Matrix<T,Ei
 
   Matrix<T,Dynamic,Dynamic> Ctilde(mu_trans.rows(), mu_trans.rows());
 
-  for (int l = 0; l < mu_trans.rows(); l++) {
-    for (int m = l; m < mu_trans.rows(); m++) {
+  for (int l = 0; l < mu_trans.rows()-1; l++) {
+    for (int m = l+1; m < mu_trans.rows(); m++) {
       T aux = 0.0;
       RowVectorXd vec = mu_trans.row(l) - mu_trans.row(m);
-      for (int kind = 0; kind < Kappas.rows(); kind++) {
-        double dotprod = Kappas.row(kind).dot(vec);
+      for (int kind = 1; kind < Kappas_red.rows(); kind++) {
+        double dotprod = Kappas_red.row(kind).dot(vec);
         aux += phi_tildes(kind) * cos(2. * stan::math::pi() * dotprod);
       }
-      Ctilde(l, m) = aux;
-      if (l!=m) Ctilde(m,l) = aux;
+      Ctilde(l, m) = 2.0*aux + phi_tildes(0);
+      if (l!=m) Ctilde(m,l) = 2.0*aux + phi_tildes(0);
 
     }
   }
+  Ctilde.diagonal() = Array<T,Dynamic>::Constant(mu_trans.rows(), 2.*sum(phi_tildes) - phi_tildes(0));
   output += -Ds - log(1-exp(-Ds)) + log_determinant(Ctilde);
-*/
+
   //######## THIRD TERM
 
   output += (- 0.5 / (m_mcmc.get_tau()*m_mcmc.get_tau())) * sum(elt_divide(lamb_mat.array().square(),(m_mcmc.get_Psi().array()) * (m_mcmc.get_Phi().array().square())));
