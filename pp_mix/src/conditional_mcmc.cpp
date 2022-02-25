@@ -134,7 +134,7 @@ void MultivariateConditionalMCMC::initialize_etas(const MatrixXd &dat) {
 
 
 void MultivariateConditionalMCMC::initialize_allocated_means() {
-  int init_n_clus = 4;
+  int init_n_clus = 10;
   std::vector<VectorXd> in = proj_inside();
 
   if (init_n_clus >= in.size()) {
@@ -243,9 +243,6 @@ void MultivariateConditionalMCMC::run_one_trick() {
   sample_u();
 
   //std::cout<<"compute psi"<<std::endl;
-
-  // compute laplace transform psi in u
-  //double psi_u = laplace(u);
 
   //std::cout<<"sample alloca and relabel"<<std::endl;
 

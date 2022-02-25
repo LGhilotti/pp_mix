@@ -11,7 +11,7 @@ double BaseMeansSampler::Means_acc_rate(){
 ///////////////////////////////
 
 void MeansSamplerClassic::perform_update_allocated(MatrixXd& Ctilde) {
-
+  std::cout<<"HERE!"<<std::endl;
   MatrixXd allmeans = mcmc->get_all_means();
 
   for (int i = 0; i < mcmc->get_num_a_means(); i++) {
