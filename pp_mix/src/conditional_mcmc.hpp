@@ -277,7 +277,7 @@ class MultivariateConditionalMCMC {
 
     const MatrixXd& get_grad_log_analytic();
 
-    const MatrixXd& get_ctilde(){return Ctilde;};
+    MatrixXd get_ctilde() const {return Ctilde;}
 
 };
 

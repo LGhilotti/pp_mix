@@ -1,0 +1,44 @@
+### conclusion: using "getters" you have the correct evaluation of the
+### function, but gradient is 0!
+
+Initial Lambda:
+ -1.38873 -0.941508
+-0.389493   0.77192
+  1.19783 -0.223898
+  -1.3939 -0.459247
+Trick, iter #1 / 2
+Grad_log_ad:
+0 0
+0 0
+0 0
+0 0
+Trick, iter #2 / 2
+Grad_log_ad:
+0 0
+0 0
+0 0
+0 0
+Burnin, iter #1 / 2
+Grad_log_ad:
+0 0
+0 0
+0 0
+0 0
+Burnin, iter #2 / 2
+Grad_log_ad:
+0 0
+0 0
+0 0
+0 0
+Running, iter #1 / 2
+Grad_log_ad:
+0 0
+0 0
+0 0
+0 0
+Running, iter #2 / 2
+Grad_log_ad:
+0 0
+0 0
+0 0
+0 0

@@ -11,7 +11,6 @@ double BaseMeansSampler::Means_acc_rate(){
 ///////////////////////////////
 
 void MeansSamplerClassic::perform_update_allocated(MatrixXd& Ctilde) {
-  std::cout<<"HERE!"<<std::endl;
   MatrixXd allmeans = mcmc->get_all_means();
 
   for (int i = 0; i < mcmc->get_num_a_means(); i++) {
@@ -145,7 +144,6 @@ void MeansSamplerClassic::perform_update_trick_na(MatrixXd& Ctilde) {
         prior_ratio =
             mcmc->pp_mix->papangelou(Ctilde_oth, Ctilde_prop) - mcmc->pp_mix->papangelou(Ctilde_oth, Ctilde);
 
-        std::cout<<"prop:\n"<<prop<<std::endl;
         if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < prior_ratio) {
           mcmc->set_single_na_mean(i, prop);
           //acc_sampled_a_means += 1;

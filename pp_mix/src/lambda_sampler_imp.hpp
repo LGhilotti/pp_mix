@@ -9,7 +9,6 @@ T LambdaSamplerMala::lambda_target_function::operator()(const Eigen::Matrix<T,Ei
 
   using std::pow; using std::exp; using std::log;
   //std::cout<<"checkpoint 1"<<std::endl;
-  //Matrix<T,Dynamic,Dynamic> lamb_mat(dim_data,dim_fact);
   Matrix<T,Dynamic,Dynamic> lamb_mat=Map<const Matrix<T,Dynamic,Dynamic>>(lamb.data(),m_mcmc.get_dim_data(),m_mcmc.get_dim_fact());
 
   T output{0.};
@@ -40,12 +39,8 @@ T LambdaSamplerMala::lambda_target_function::operator()(const Eigen::Matrix<T,Ei
   }
   Ds = 2.0 * sum(log(1 + phi_tildes.array())) - log(1+phi_tildes(0));
 
-  int n_means=m_mcmc.get_num_a_means()+m_mcmc.get_num_na_means();
-  MatrixXd mu_trans(n_means,m_mcmc.get_dim_fact());
-  for (int i = 0; i < n_means; i++){
-        mu_trans.row(i) = (m_mcmc.pp_mix->get_A() * m_mcmc.get_all_means().row(i).transpose() + m_mcmc.pp_mix->get_b()).transpose();
-  }
-     //std::cout<<"checkpoint 9"<<std::endl;
+  MatrixXd allmeans = m_mcmc.get_all_means();
+  MatrixXd mu_trans = ((m_mcmc.pp_mix->get_A()*allmeans.transpose()).colwise() + m_mcmc.pp_mix->get_b()).transpose();
 
   Matrix<T,Dynamic,Dynamic> Ctilde(mu_trans.rows(), mu_trans.rows());
 
@@ -63,6 +58,7 @@ T LambdaSamplerMala::lambda_target_function::operator()(const Eigen::Matrix<T,Ei
     }
   }
   Ctilde.diagonal() = Array<T,Dynamic,1>::Constant(mu_trans.rows(), 2.*sum(phi_tildes) - phi_tildes(0));
+
   output += -Ds - log(1-exp(-Ds)) + log_determinant(Ctilde);
 
   //######## THIRD TERM

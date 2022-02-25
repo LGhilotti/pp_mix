@@ -134,7 +134,7 @@ void MultivariateConditionalMCMC::initialize_etas(const MatrixXd &dat) {
 
 
 void MultivariateConditionalMCMC::initialize_allocated_means() {
-  int init_n_clus = 10;
+  int init_n_clus = 5;
   std::vector<VectorXd> in = proj_inside();
 
   if (init_n_clus >= in.size()) {

@@ -372,7 +372,8 @@ void LambdaSamplerMala::perform(MatrixXd& Ctilde) {
  // THIS IS THE GRADIENT VIA AUTODIFF
   stan::math::gradient(lambda_tar_fun, Lambda_curr, ln_px_curr, grad_ln_px_curr);
 
-  //grad_log_ad = Map<MatrixXd>(grad_ln_px_curr.data(), mcmc->get_dim_data(), mcmc->get_dim_fact());
+  grad_log_ad = Map<MatrixXd>(grad_ln_px_curr.data(), mcmc->get_dim_data(), mcmc->get_dim_fact());
+  std::cout<<"ln_px_curr:\n"<<ln_px_curr<<std::endl;
 
   // Proposal according MALA
   VectorXd prop_lambda_vec = Lambda_curr + mala_p_lambda*grad_ln_px_curr +
@@ -388,15 +389,18 @@ void LambdaSamplerMala::perform(MatrixXd& Ctilde) {
 
   /****** TEST FOR SAME GRADIENTS AND DENSITY *****/
   //THIS IS THE GRADIENT VIA ANALYTICAL COMPUTATION
-  /*
-  grad_log_analytic = compute_grad_analytic();
+
+  grad_log_analytic = compute_grad_analytic(Ctilde);
+  double lndetCtil = 2.0 * std::log(Ctilde.llt().matrixL().determinant());
 
   mcmc->pp_mix->decompose_proposal(prop_lambda);
+  MatrixXd Ctilde_prop = mcmc->pp_mix->compute_Ctilde_prop(mcmc->get_all_means());
+  double lndetCtil_prop = 2.0 * std::log(Ctilde_prop.llt().matrixL().determinant());
+  ln_dens_analytic = compute_ln_dens_analytic(lndetCtil) - compute_ln_dens_analytic(prop_lambda, lndetCtil_prop);
 
   ln_dens_ad = ln_px_curr - ln_px_prop;
 
-  ln_dens_analytic = compute_ln_dens_analytic()-compute_ln_dens_analytic(prop_lambda);
-*****////
+
 
   tot_sampled_Lambda += 1;
   // COMPUTE ACCEPTANCE PROBABILITY
