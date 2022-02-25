@@ -261,7 +261,7 @@ void MultivariateConditionalMCMC::run_one_trick() {
 
   sample_means_obj->perform_update_trick_na(Ctilde);
   //std::cout<<"sample jumps na"<<std::endl;
-
+std::cout<<"na_means:\n"<<get_na_means()<<std::endl;
   sample_jumps_na();
   //std::cout<<"sample deltsa na"<<std::endl;
 

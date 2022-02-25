@@ -364,7 +364,7 @@ void LambdaSamplerMala::perform(MatrixXd& Ctilde) {
   /*********************************************************/
   /******************** AUTODIFF VERSION ****************/
   /********************************************************/
-
+/*
   // Current Lambda (here are the means) are expanded to vector<double> column major
   double ln_px_curr;
   VectorXd grad_ln_px_curr;
@@ -397,7 +397,7 @@ void LambdaSamplerMala::perform(MatrixXd& Ctilde) {
 
   ln_dens_analytic = compute_ln_dens_analytic()-compute_ln_dens_analytic(prop_lambda);
 *****////
-
+/*
   tot_sampled_Lambda += 1;
   // COMPUTE ACCEPTANCE PROBABILITY
   // (log) TARGET DENSITY TERMS
@@ -440,7 +440,7 @@ void LambdaSamplerMala::perform(MatrixXd& Ctilde) {
   //std::cout<<"Ds:\n"<<mcmc->pp_mix->get_Ds()<<std::endl;
   //std::cout<<"phi_tildes:\n"<<mcmc->pp_mix->get_phi_tildes()<<std::endl;
   // end test reduced
-/*
+
 // Ctilde in mcmc is related to the current means and the current lambda.
 // When proposing the new lambda, of course I need to compute Ctilde from scratch.
   //Given the mus, I can compute Ctilde of the current Lambda and current mus, so that
@@ -490,7 +490,7 @@ void LambdaSamplerMala::perform(MatrixXd& Ctilde) {
     //std::cout<<"accepted Lambda"<<std::endl;
     //Ctilde = Ctilde_prop;
   }
-*/
+
   /*********************************************************/
   /******************** END ANALYTICAL VERSION ****************/
   /********************************************************/
