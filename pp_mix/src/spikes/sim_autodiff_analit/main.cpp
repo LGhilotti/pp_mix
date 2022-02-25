@@ -45,7 +45,7 @@ int main() {
 
     int niter=2;
 
-    MatrixXd datacsv = load_csv<MatrixXd>("/home/lorenzo/Documents/Tesi/github_repos/pp_mix/data/data_autodiff_analytic/p_400_n_150.csv");
+    MatrixXd datacsv = load_csv<MatrixXd>("/home/lorenzo/Documents/Tesi/github_repos/pp_mix/data/data_autodiff_analytic/p_100_n_150.csv");
 
     std::string params_file = \
       "/home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/resources/autodiff_analytic/sampler_params_d_vary_N_vary.asciipb";

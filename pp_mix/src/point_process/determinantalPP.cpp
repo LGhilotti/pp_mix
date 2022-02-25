@@ -21,15 +21,7 @@ DeterminantalPP::DeterminantalPP(const MatrixXd &ranges, int N, double c, double
   }
 
   compute_Kappas();
-  Kappas_red.resize(Kappas.rows()/2 +1,dim);
-  Kappas_red = Kappas.bottomRows(Kappas.rows()/2 +1);
 
-/*
-  phis.resize(Kappas.rows());
-  phi_tildes.resize(Kappas.rows());
-  phis_tmp.resize(Kappas.rows());
-  phi_tildes_tmp.resize(Kappas.rows());
-*/
   phis_red.resize(Kappas_red.rows());
   phi_tildes_red.resize(Kappas_red.rows());
   phis_tmp_red.resize(Kappas_red.rows());
@@ -148,17 +140,17 @@ void DeterminantalPP::compute_Kappas() {
   for (int n = -N; n <= N; n++) {
     k[n + N] = n;
   }
-  std::vector<std::vector<double>> kappas;
+  std::vector<std::vector<double>> kappas_red;
   if (dim == 1) {
-    kappas.resize(k.size());
-    for (int i = 0; i < k.size(); i++) kappas[i].push_back(k[i]);
+    kappas_red.resize(k.size()/2 +1);
+    for (int i = 0; i < kappas_red.size(); i++) kappas_red[kappas_red.size() - 1-i].push_back(-k[i]);
   } else {
-    kappas = cart_product(k, dim);
+    kappas_red = cart_product(k, dim);
   }
 
-  Kappas.resize(kappas.size(), dim);
-  for (int i = 0; i < kappas.size(); i++) {
-    Kappas.row(i) = Map<VectorXd>(kappas[i].data(), dim).transpose();
+  Kappas_red.resize(kappas_red.size(), dim);
+  for (int i = 0; i < kappas_red.size(); i++) {
+    Kappas_red.row(i) = Map<VectorXd>(kappas_red[i].data(), dim).transpose();
   }
 
 

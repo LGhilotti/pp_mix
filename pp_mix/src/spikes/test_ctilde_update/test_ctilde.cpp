@@ -109,7 +109,7 @@ int main() {
     MCMCsampler::MultivariateConditionalMCMC sampler(pp_mix, g, params);
 
     sampler.initialize(data);
-
+/*
     std::ofstream myfile;
     myfile.open("./src/spikes/test_ctilde_update/test_c_updated.txt", std::ios::app);
 
@@ -168,7 +168,7 @@ int main() {
 
     myfile.close();
     std::cout<<"acceptance lambda: "<<sampler.Lambda_acceptance_rate()<<std::endl;
-
+*/
 
     std::cout<<"END!"<<std::endl;
     return 0;

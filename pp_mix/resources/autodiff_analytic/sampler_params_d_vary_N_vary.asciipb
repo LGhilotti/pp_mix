@@ -8,10 +8,10 @@ wishart {
   nu: 6
   identity: true
   sigma: 0.5
-  dim: 4
+  dim: 2
 }
 
-dimf: 4
+dimf: 2
 
 a: 1.0
 

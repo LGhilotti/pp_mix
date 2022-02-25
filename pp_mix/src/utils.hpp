@@ -80,7 +80,7 @@ vector<vector<T>> cart_product(const vector<vector<T>> &v) {
     }
     s = move(r);
   }
-  return s;
+  return vector<vector<T>>(s.end()-(s.size()/2 +1), s.end());
 }
 
 template <typename T>

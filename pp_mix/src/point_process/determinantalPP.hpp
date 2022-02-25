@@ -34,7 +34,7 @@ protected:
     VectorXd phi_tildes;
     double Ds;*/
 
-    MatrixXd Kappas; // grid for approximating summation over Z^dim
+    //MatrixXd Kappas; // grid for approximating summation over Z^dim
     MatrixXd Kappas_red; // grid for approximating summation over Z^dim
     VectorXd phis_red;
     VectorXd phi_tildes_red;
