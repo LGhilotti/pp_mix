@@ -489,7 +489,7 @@ void LambdaSamplerMala::perform() {
   /*********************************************************/
   /******************** AUTODIFF VERSION ****************/
   /********************************************************/
-/*
+
   // Current Lambda (here are the means) are expanded to vector<double> column major
   double ln_px_curr;
   VectorXd grad_ln_px_curr;
@@ -497,7 +497,8 @@ void LambdaSamplerMala::perform() {
  // THIS IS THE GRADIENT VIA AUTODIFF
   stan::math::gradient(lambda_tar_fun, Lambda_curr, ln_px_curr, grad_ln_px_curr);
 
-  //grad_log_ad = Map<MatrixXd>(grad_ln_px_curr.data(), mcmc->get_dim_data(), mcmc->get_dim_fact());
+  grad_log_ad = Map<MatrixXd>(grad_ln_px_curr.data(), mcmc->get_dim_data(), mcmc->get_dim_fact());
+  std::cout<<"ln_px_curr:\n"<<ln_px_curr<<std::endl;
 
   // Proposal according MALA
   VectorXd prop_lambda_vec = Lambda_curr + mala_p_lambda*grad_ln_px_curr +
@@ -522,7 +523,7 @@ void LambdaSamplerMala::perform() {
 
   ln_dens_analytic = compute_ln_dens_analytic()-compute_ln_dens_analytic(prop_lambda);
 *****////
-/*
+
   tot_sampled_Lambda += 1;
   // COMPUTE ACCEPTANCE PROBABILITY
   // (log) TARGET DENSITY TERMS
@@ -564,7 +565,7 @@ void LambdaSamplerMala::perform() {
   //std::cout<<"Ds:\n"<<mcmc->pp_mix->get_Ds()<<std::endl;
   //std::cout<<"phi_tildes:\n"<<mcmc->pp_mix->get_phi_tildes()<<std::endl;
   // end test reduced
-
+/*
   //Given the mus, I can compute Ctilde of the current Lambda and current mus, so that
   // I use it both for density evaluation and gradient computation. The, DPP has two methods, if I pass the mus,
   // it computes Ctilde, if not uses Ctilde already set.

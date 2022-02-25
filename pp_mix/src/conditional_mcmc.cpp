@@ -134,7 +134,7 @@ void MultivariateConditionalMCMC::initialize_etas(const MatrixXd &dat) {
 
 
 void MultivariateConditionalMCMC::initialize_allocated_means() {
-  int init_n_clus = 4;
+  int init_n_clus = 10;
   std::vector<VectorXd> in = proj_inside();
 
   if (init_n_clus >= in.size()) {
@@ -223,7 +223,7 @@ void MultivariateConditionalMCMC::run_one() {
   sample_Psi();
   sample_tau();
   sample_Phi();
-  
+
   sample_lambda->perform();
 
   // print_debug_string();
@@ -255,7 +255,7 @@ void MultivariateConditionalMCMC::run_one_trick() {
 
   sample_means_obj->perform_update_trick_na();
   //std::cout<<"sample jumps na"<<std::endl;
-
+  std::cout<<"na_means:\n"<<get_na_means()<<std::endl;
   sample_jumps_na();
   //std::cout<<"sample deltsa na"<<std::endl;
 

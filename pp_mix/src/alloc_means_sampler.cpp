@@ -11,7 +11,6 @@ double BaseMeansSampler::Means_acc_rate(){
 ///////////////////////////////
 
 void MeansSamplerClassic::perform_update_allocated() {
-
   MatrixXd allmeans = mcmc->get_all_means();
 
   for (int i = 0; i < mcmc->get_num_a_means(); i++) {
@@ -79,7 +78,6 @@ void MeansSamplerClassic::perform_update_trick_na() {
 
         prior_ratio =
             mcmc->pp_mix->papangelou(prop, others) - mcmc->pp_mix->papangelou(currmean, others);
-
 
         if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < prior_ratio) {
           mcmc->set_single_na_mean(i, prop);
