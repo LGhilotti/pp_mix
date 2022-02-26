@@ -96,7 +96,7 @@ int main() {
     // NOTE: We use all params
 
     int log_every=1;
-    int ntrick = 2;
+    int ntrick = 0;
     int burnin = 2;
     int niter=2;
     int thin = 1;
@@ -109,7 +109,7 @@ int main() {
     MCMCsampler::MultivariateConditionalMCMC sampler(pp_mix, g, params);
 
     sampler.initialize(data);
-/*
+
     std::ofstream myfile;
     myfile.open("./src/spikes/test_ctilde_update/test_c_updated.txt", std::ios::app);
 
@@ -121,12 +121,12 @@ int main() {
         sampler.run_one_trick();
         if ((i + 1) % log_every == 0) {
             myfile<< "Trick, iter #"<< i + 1<< " / "<< ntrick<<"\n";
-            //myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
+            /*myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
             myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
             myfile<< "Grad_log_analytic: \n"<< sampler.get_grad_log_analytic()<<"\n";
             myfile<< "diff_log_dens_ad: \n"<< sampler.get_ln_dens_ad()<<"\n";
             myfile<< "diff_log_dens_analytic: \n"<< sampler.get_ln_dens_analytic()<<"\n";
-
+*/
         }
     }
 
@@ -141,11 +141,11 @@ int main() {
             //myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
             //std::cout<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
             //myfile<< "Ctilde: \n"<< sampler.get_ctilde()<<"\n";
-            myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
+            /*myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
             myfile<< "Grad_log_analytic: \n"<< sampler.get_grad_log_analytic()<<"\n";
             myfile<< "diff_log_dens_ad: \n"<< sampler.get_ln_dens_ad()<<"\n";
             myfile<< "diff_log_dens_analytic: \n"<< sampler.get_ln_dens_analytic()<<"\n";
-
+*/
           }
     }
 
@@ -158,17 +158,17 @@ int main() {
             //myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
             //myfile<< "diff_log_dens_analytic: \n"<< sampler.get_ln_dens_analytic()<<"\n";
             //myfile<< "Ctilde: \n"<< sampler.get_ctilde()<<"\n";
-            myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
+          /*  myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
             myfile<< "Grad_log_analytic: \n"<< sampler.get_grad_log_analytic()<<"\n";
             myfile<< "diff_log_dens_ad: \n"<< sampler.get_ln_dens_ad()<<"\n";
             myfile<< "diff_log_dens_analytic: \n"<< sampler.get_ln_dens_analytic()<<"\n";
-
+*/
           }
     }
 
     myfile.close();
     std::cout<<"acceptance lambda: "<<sampler.Lambda_acceptance_rate()<<std::endl;
-*/
+
 
     std::cout<<"END!"<<std::endl;
     return 0;

@@ -96,6 +96,9 @@ void MultivariateConditionalMCMC::initialize(const MatrixXd& dat) {
 
   // DECOMPOSE DPP (in MultiDpp also assign the pointer to Lambda)
   pp_mix->set_decomposition(&Lambda);
+
+  Ctilde = pp_mix->compute_Ctilde(get_all_means());
+
 /*
   std::cout<<"data: "<<data<<std::endl;
   std::cout<<"ndata: "<<ndata<<std::endl;
@@ -134,7 +137,7 @@ void MultivariateConditionalMCMC::initialize_etas(const MatrixXd &dat) {
 
 
 void MultivariateConditionalMCMC::initialize_allocated_means() {
-  int init_n_clus = 5;
+  int init_n_clus = 8;
   std::vector<VectorXd> in = proj_inside();
 
   if (init_n_clus >= in.size()) {
@@ -187,15 +190,17 @@ void MultivariateConditionalMCMC::run_one() {
   double psi_u = laplace(u);
 
 //  std::cout<<"sample alloca and relabel"<<std::endl;
-
+std::cout<<"Ctilde before:\n"<<Ctilde<<std::endl;
   // sample c | rest and reorganize the all and nall parameters, and c as well
   sample_allocations_and_relabel();
+  std::cout<<"Ctilde after relabel:\n"<<Ctilde<<std::endl;
+  std::cout<<"Ctilde_recomputed after:\n"<<pp_mix->compute_Ctilde(get_all_means())<<std::endl;
 
 //std::cout<<"sample means na"<<std::endl;
 
   // sample non-allocated variables
   // I can set Ctilde with all the means and then remove or add row/column when na_means is updated.
-  Ctilde = pp_mix->compute_Ctilde(get_all_means());
+  //Ctilde = pp_mix->compute_Ctilde(get_all_means());
   sample_means_na(psi_u);
   //std::cout<<"sample jumps na"<<std::endl;
 
@@ -254,11 +259,10 @@ void MultivariateConditionalMCMC::run_one_trick() {
   // sample non-allocated variables
   //sample_means_na(psi_u);
   //std::cout<<"perform_update_trick_na"<<std::endl;
-  Ctilde = pp_mix->compute_Ctilde(get_all_means());
+  //Ctilde = pp_mix->compute_Ctilde(get_all_means());
 
   sample_means_obj->perform_update_trick_na(Ctilde);
   //std::cout<<"sample jumps na"<<std::endl;
-std::cout<<"na_means:\n"<<get_na_means()<<std::endl;
   sample_jumps_na();
   //std::cout<<"sample deltsa na"<<std::endl;
 
@@ -452,12 +456,12 @@ void MultivariateConditionalMCMC::_relabel() {
   int Mna = na_means.rows();
   int Mtot = Ma + Mna;
 
+  // FILL THE NA2A
   for (int i = 0; i < ndata; i++) {
     if (clus_alloc(i) >= Ma) na2a.insert(clus_alloc(i) - Ma);
   }
 
-  // NOW WE RELABEL
-  // FIND OUT WHICH CLUSTER HAVE BECOME NON-ACTIVE
+  // FILL THE A2NA
   for (int k = 0; k < Ma; k++) {
     if ((clus_alloc.array() == k).count() == 0) a2na.insert(k);
   }
@@ -527,6 +531,61 @@ void MultivariateConditionalMCMC::_relabel() {
 
   for (const auto &prec : new_na_deltas) na_deltas.push_back(prec);
 
+  // BUILD THE VECTOR OF PERMUTATION
+  std::vector<int> perm(Mtot);
+  for (int j=0; j< Ma; j++){
+    int num=0;
+    if (n_new_na==0){
+      perm[j]=j;
+    } else for (int i=0; i< n_new_na; i++){
+      if (a2na_vec[i]==j){
+        perm[j]=Mtot - n_new_na + i;
+        break;
+      } else if (a2na_vec[i] < j & num < n_new_na) {
+        num++;
+      } else {
+        perm[j] = j - num;
+        break;
+      }
+    }
+
+  }
+
+  for (int j=Ma; j<Mtot; j++){
+    bool found=false;
+    for (int i=0; i< n_new_a; i++){
+      if (na2a_vec[i]+Ma==j){
+        perm[j]=Ma - n_new_na + i;
+        found=true;
+        break;
+      }
+    }
+    if (found==false){
+      perm[j] = j + n_new_a - n_new_na;
+    }
+  }
+  std::cout<<"Ma:\n"<<Ma<<std::endl;
+  std::cout<<"Mna:\n"<<Mna<<std::endl;
+  std::cout<<"a2na:\n"<<std::endl;
+  for (int i:a2na_vec) std::cout<<i<<std::endl;
+  std::cout<<"na2a:\n"<<std::endl;
+  for (int i:na2a_vec) std::cout<<i<<std::endl;
+  std::cout<<"perm:\n"<<std::endl;
+  for (int i:perm) std::cout<<i<<std::endl;
+
+  //now the perm vector tells the new positions of the means.
+  MatrixXd Ctilde_up = MatrixXd::Zero(Mtot,Mtot);
+  for (int i=0; i<Mtot-1; i++){
+    for (int j=i+1; j<Mtot; j++){
+      Ctilde_up(perm[i],perm[j])=Ctilde(i,j);
+    }
+  }
+  std::cout<<"Ctilde_up:\n"<<Ctilde_up<<std::endl;
+  MatrixXd Ctilde_up_tmp = Ctilde_up + Ctilde_up.transpose();
+  Ctilde_up_tmp.diagonal() = Ctilde.diagonal();
+
+  Ctilde = Ctilde_up_tmp;
+
   // NOW RELABEL
   std::set<int> uniques_(clus_alloc.data(), clus_alloc.data() + ndata);
   std::vector<int> uniques(uniques_.begin(), uniques_.end());
@@ -545,6 +604,8 @@ void MultivariateConditionalMCMC::_relabel() {
     obs_by_clus[clus_alloc(i)].push_back(i);
     etas_by_clus[clus_alloc(i)].push_back(etas.row(i).transpose());
   }
+
+  return;
 }
 
 

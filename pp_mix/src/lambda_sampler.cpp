@@ -364,7 +364,7 @@ void LambdaSamplerMala::perform(MatrixXd& Ctilde) {
   /*********************************************************/
   /******************** AUTODIFF VERSION ****************/
   /********************************************************/
-
+/*
   // Current Lambda (here are the means) are expanded to vector<double> column major
   double ln_px_curr;
   VectorXd grad_ln_px_curr;
@@ -389,7 +389,7 @@ void LambdaSamplerMala::perform(MatrixXd& Ctilde) {
 
   /****** TEST FOR SAME GRADIENTS AND DENSITY *****/
   //THIS IS THE GRADIENT VIA ANALYTICAL COMPUTATION
-
+/*
   grad_log_analytic = compute_grad_analytic(Ctilde);
   double lndetCtil = 2.0 * std::log(Ctilde.llt().matrixL().determinant());
 
@@ -444,7 +444,7 @@ void LambdaSamplerMala::perform(MatrixXd& Ctilde) {
   //std::cout<<"Ds:\n"<<mcmc->pp_mix->get_Ds()<<std::endl;
   //std::cout<<"phi_tildes:\n"<<mcmc->pp_mix->get_phi_tildes()<<std::endl;
   // end test reduced
-/*
+
 // Ctilde in mcmc is related to the current means and the current lambda.
 // When proposing the new lambda, of course I need to compute Ctilde from scratch.
   //Given the mus, I can compute Ctilde of the current Lambda and current mus, so that
@@ -488,11 +488,10 @@ void LambdaSamplerMala::perform(MatrixXd& Ctilde) {
   if (std::log(uniform_rng(0, 1, Rng::Instance().get())) < ln_ratio){
     //ACCEPTED
     acc_sampled_Lambda += 1;
-    //mcmc->pp_mix->decompose_proposal(prop_lambda);
     mcmc->set_Lambda(prop_lambda);
     mcmc->pp_mix->update_decomposition_from_proposal();
     //std::cout<<"accepted Lambda"<<std::endl;
-    //Ctilde = Ctilde_prop;
+    Ctilde = Ctilde_prop;
   }
 
   /*********************************************************/

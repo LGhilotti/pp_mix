@@ -1,0 +1,39 @@
+Initial Lambda: 
+ -1.38873 -0.941508
+-0.389493   0.77192
+  1.19783 -0.223898
+  -1.3939 -0.459247
+Burnin, iter #1 / 2
+Burnin, iter #2 / 2
+Initial Lambda: 
+ -1.38873 -0.941508
+-0.389493   0.77192
+  1.19783 -0.223898
+  -1.3939 -0.459247
+Burnin, iter #1 / 2
+Burnin, iter #2 / 2
+Initial Lambda: 
+ -1.38873 -0.941508
+-0.389493   0.77192
+  1.19783 -0.223898
+  -1.3939 -0.459247
+Burnin, iter #1 / 2
+Burnin, iter #2 / 2
+Initial Lambda: 
+ -1.38873 -0.941508
+-0.389493   0.77192
+  1.19783 -0.223898
+  -1.3939 -0.459247
+Burnin, iter #1 / 2
+Burnin, iter #2 / 2
+Running, iter #1 / 2
+Running, iter #2 / 2
+Initial Lambda: 
+ -1.38873 -0.941508
+-0.389493   0.77192
+  1.19783 -0.223898
+  -1.3939 -0.459247
+Burnin, iter #1 / 2
+Burnin, iter #2 / 2
+Running, iter #1 / 2
+Running, iter #2 / 2
