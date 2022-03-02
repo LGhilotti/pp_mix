@@ -97,31 +97,10 @@ void MultivariateConditionalMCMC::initialize(const MatrixXd& dat) {
   // DECOMPOSE DPP (in MultiDpp also assign the pointer to Lambda)
   pp_mix->set_decomposition(&Lambda);
 
+  // TEST UPDATE RELABEL
   Ctilde = pp_mix->compute_Ctilde(get_all_means());
 
-/*
-  std::cout<<"data: "<<data<<std::endl;
-  std::cout<<"ndata: "<<ndata<<std::endl;
-  std::cout<<"dim_data: "<<dim_data<<std::endl;
-  std::cout<<"tau: "<<tau<<std::endl;
-  std::cout<<"Phi: "<<Phi<<std::endl;
-  std::cout<<"Psi: "<<Psi<<std::endl;
-  std::cout<<"Lambda: "<<Lambda<<std::endl;
-  std::cout<<"sigma bar: "<<sigma_bar<<std::endl;
-  std::cout<<"etas: "<<etas<<std::endl;
-  std::cout<<"alloc means: "<<a_means<<std::endl;
-  std::cout<<"non_alloc means: "<<na_means<<std::endl;
-  std::cout<<"nclus: "<<nclus<<std::endl;
-  std::cout<<"clus_alloc: "<<clus_alloc<<std::endl;
-  std::cout<<"alloc jumps: "<<a_jumps<<std::endl;
-  std::cout<<"non_alloc jumps: "<<na_jumps<<std::endl;
-  for (int i = 0; i < a_deltas.size(); i++) {
-    std::cout << "alloc deltas: "<< a_deltas[i] << std::endl;
-  }
-  for (int i = 0; i < na_deltas.size(); i++) {
-    std::cout << "non_alloc deltas: " << na_deltas[i] << std::endl;
-  }
-*/
+
 }
 
 
@@ -192,7 +171,7 @@ void MultivariateConditionalMCMC::run_one() {
 //  std::cout<<"sample alloca and relabel"<<std::endl;
   // sample c | rest and reorganize the all and nall parameters, and c as well
   sample_allocations_and_relabel();
-  
+
 //std::cout<<"sample means na"<<std::endl;
 
   // sample non-allocated variables
@@ -253,10 +232,7 @@ void MultivariateConditionalMCMC::run_one_trick() {
 
   //std::cout<<"sample means na"<<std::endl;
 
-  // sample non-allocated variables
-  //sample_means_na(psi_u);
-  //std::cout<<"perform_update_trick_na"<<std::endl;
-  //Ctilde = pp_mix->compute_Ctilde(get_all_means());
+//  Ctilde = pp_mix->compute_Ctilde(get_all_means());
 
   sample_means_obj->perform_update_trick_na(Ctilde);
   //std::cout<<"sample jumps na"<<std::endl;
@@ -529,6 +505,7 @@ void MultivariateConditionalMCMC::_relabel() {
   for (const auto &prec : new_na_deltas) na_deltas.push_back(prec);
 
   // BUILD THE VECTOR OF PERMUTATION
+  
   std::vector<int> perm(Mtot);
   for (int j=0; j< Ma; j++){
     int num=0;

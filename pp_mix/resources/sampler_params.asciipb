@@ -1,6 +1,6 @@
 dpp {
   c: 60
-  n: 4
+  n: 5
   s: 0.8
 }
 
@@ -8,10 +8,10 @@ wishart {
   nu: 12
   identity: true
   sigma: 0.05
-  dim: 2
+  dim: 3
 }
 
-dimf: 2
+dimf: 3
 
 a: 1.0
 
