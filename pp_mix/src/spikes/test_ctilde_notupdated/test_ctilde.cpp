@@ -96,9 +96,9 @@ int main() {
     // NOTE: We use all params
 
     int log_every=1;
-    int ntrick = 2;
-    int burnin = 2;
-    int niter=2;
+    int ntrick = 10;
+    int burnin = 10;
+    int niter=10;
     int thin = 1;
 
 
@@ -120,8 +120,8 @@ int main() {
         sampler.run_one_trick();
         if ((i + 1) % log_every == 0) {
             myfile<< "Trick, iter #"<< i + 1<< " / "<< ntrick<<"\n";
-            //myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
-            myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
+            myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
+            //myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
             //myfile<< "Grad_log_analytic: \n"<< sampler.get_grad_log_analytic()<<"\n";
 
         }
@@ -134,9 +134,9 @@ int main() {
         if ((i + 1) % log_every == 0) {
             myfile<<"Burnin, iter #"<< i + 1<< " / "<< burnin<<"\n";
             //myfile<< "Means_na: \n"<< sampler.get_na_means()<<"\n";
-            //myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
+            myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
             //myfile<< "diff_log_dens_analytic: \n"<< sampler.get_ln_dens_analytic()<<"\n";
-            myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
+            //myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
 
           }
     }
@@ -146,9 +146,9 @@ int main() {
         if ((i + 1) % log_every == 0) {
             myfile<<"Running, iter #"<< i + 1<< " / "<< niter<<"\n";
             //myfile<< "Means_na: \n"<< sampler.get_na_means()<<"\n";
-            //myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
+            myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
             //myfile<< "diff_log_dens_analytic: \n"<< sampler.get_ln_dens_analytic()<<"\n";
-            myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
+          //  myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
 
           }
     }

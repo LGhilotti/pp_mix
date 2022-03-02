@@ -17,7 +17,7 @@ T LambdaSamplerMala::lambda_target_function::operator()(const Eigen::Matrix<T,Ei
 
  // ######### FIRST TERM
 
-  //output += -0.5 * sum(multiply(m_mcmc.get_sigma_bar().array().sqrt().matrix().asDiagonal(),subtract(m_mcmc.get_data().transpose(),multiply(lamb_mat, m_mcmc.get_etas().transpose()))).colwise().squaredNorm());
+  output += -0.5 * sum(multiply(m_mcmc.get_sigma_bar().array().sqrt().matrix().asDiagonal(),subtract(m_mcmc.get_data().transpose(),multiply(lamb_mat, m_mcmc.get_etas().transpose()))).colwise().squaredNorm());
 
   // ############# SECOND TERM
   //std::cout<<"checkpoint 4"<<std::endl;
@@ -66,7 +66,7 @@ T LambdaSamplerMala::lambda_target_function::operator()(const Eigen::Matrix<T,Ei
 
   //######## THIRD TERM
 
-  //output += (- 0.5 / (m_mcmc.get_tau()*m_mcmc.get_tau())) * sum(elt_divide(lamb_mat.array().square(),(m_mcmc.get_Psi().array()) * (m_mcmc.get_Phi().array().square())));
+  output += (- 0.5 / (m_mcmc.get_tau()*m_mcmc.get_tau())) * sum(elt_divide(lamb_mat.array().square(),(m_mcmc.get_Psi().array()) * (m_mcmc.get_Phi().array().square())));
 
   return output;
 }
