@@ -190,12 +190,9 @@ void MultivariateConditionalMCMC::run_one() {
   double psi_u = laplace(u);
 
 //  std::cout<<"sample alloca and relabel"<<std::endl;
-std::cout<<"Ctilde before:\n"<<Ctilde<<std::endl;
   // sample c | rest and reorganize the all and nall parameters, and c as well
   sample_allocations_and_relabel();
-  std::cout<<"Ctilde after relabel:\n"<<Ctilde<<std::endl;
-  std::cout<<"Ctilde_recomputed after:\n"<<pp_mix->compute_Ctilde(get_all_means())<<std::endl;
-
+  
 //std::cout<<"sample means na"<<std::endl;
 
   // sample non-allocated variables
@@ -543,7 +540,8 @@ void MultivariateConditionalMCMC::_relabel() {
         break;
       } else if (a2na_vec[i] < j & num < n_new_na) {
         num++;
-      } else {
+      }
+      if (a2na_vec[i]>j || num == n_new_na) {
         perm[j] = j - num;
         break;
       }
@@ -553,25 +551,20 @@ void MultivariateConditionalMCMC::_relabel() {
 
   for (int j=Ma; j<Mtot; j++){
     bool found=false;
+    int count=0;
     for (int i=0; i< n_new_a; i++){
       if (na2a_vec[i]+Ma==j){
         perm[j]=Ma - n_new_na + i;
         found=true;
         break;
-      }
+      } else if (na2a_vec[i]+Ma<j){
+        count++;
+      } else break;
     }
     if (found==false){
-      perm[j] = j + n_new_a - n_new_na;
+      perm[j] = j + n_new_a - count - n_new_na;
     }
   }
-  std::cout<<"Ma:\n"<<Ma<<std::endl;
-  std::cout<<"Mna:\n"<<Mna<<std::endl;
-  std::cout<<"a2na:\n"<<std::endl;
-  for (int i:a2na_vec) std::cout<<i<<std::endl;
-  std::cout<<"na2a:\n"<<std::endl;
-  for (int i:na2a_vec) std::cout<<i<<std::endl;
-  std::cout<<"perm:\n"<<std::endl;
-  for (int i:perm) std::cout<<i<<std::endl;
 
   //now the perm vector tells the new positions of the means.
   MatrixXd Ctilde_up = MatrixXd::Zero(Mtot,Mtot);
@@ -580,7 +573,6 @@ void MultivariateConditionalMCMC::_relabel() {
       Ctilde_up(perm[i],perm[j])=Ctilde(i,j);
     }
   }
-  std::cout<<"Ctilde_up:\n"<<Ctilde_up<<std::endl;
   MatrixXd Ctilde_up_tmp = Ctilde_up + Ctilde_up.transpose();
   Ctilde_up_tmp.diagonal() = Ctilde.diagonal();
 

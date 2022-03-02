@@ -96,9 +96,9 @@ int main() {
     // NOTE: We use all params
 
     int log_every=1;
-    int ntrick = 0;
-    int burnin = 2;
-    int niter=2;
+    int ntrick = 10;
+    int burnin = 10;
+    int niter=10;
     int thin = 1;
 
 
@@ -114,15 +114,13 @@ int main() {
     myfile.open("./src/spikes/test_ctilde_update/test_c_updated.txt", std::ios::app);
 
     myfile<< "Initial Lambda: \n"<< sampler.get_Lambda()<<"\n";
-    std::cout<< "Initial Lambda: \n"<< sampler.get_Lambda()<<"\n";
-
 
     for (int i = 0; i < ntrick; i++) {
         sampler.run_one_trick();
         if ((i + 1) % log_every == 0) {
             myfile<< "Trick, iter #"<< i + 1<< " / "<< ntrick<<"\n";
-            /*myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
-            myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
+            myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
+            /*myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
             myfile<< "Grad_log_analytic: \n"<< sampler.get_grad_log_analytic()<<"\n";
             myfile<< "diff_log_dens_ad: \n"<< sampler.get_ln_dens_ad()<<"\n";
             myfile<< "diff_log_dens_analytic: \n"<< sampler.get_ln_dens_analytic()<<"\n";
@@ -138,7 +136,7 @@ int main() {
             myfile<<"Burnin, iter #"<< i + 1<< " / "<< burnin<<"\n";
             //myfile<< "Means_na: \n"<< sampler.get_na_means()<<"\n";
             //myfile<< "All_means: \n"<< sampler.get_all_means()<<"\n";
-            //myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
+            myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
             //std::cout<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
             //myfile<< "Ctilde: \n"<< sampler.get_ctilde()<<"\n";
             /*myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
@@ -155,7 +153,7 @@ int main() {
             myfile<<"Running, iter #"<< i + 1<< " / "<< niter<<"\n";
             //myfile<< "Means_na: \n"<< sampler.get_na_means()<<"\n";
             //myfile<< "All_means: \n"<< sampler.get_all_means()<<"\n";
-            //myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
+            myfile<< "Lambda: \n"<< sampler.get_Lambda()<<"\n";
             //myfile<< "diff_log_dens_analytic: \n"<< sampler.get_ln_dens_analytic()<<"\n";
             //myfile<< "Ctilde: \n"<< sampler.get_ctilde()<<"\n";
           /*  myfile<< "Grad_log_ad: \n"<< sampler.get_grad_log_ad()<<"\n";
