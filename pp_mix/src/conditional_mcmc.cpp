@@ -116,7 +116,7 @@ void MultivariateConditionalMCMC::initialize_etas(const MatrixXd &dat) {
 
 
 void MultivariateConditionalMCMC::initialize_allocated_means() {
-  int init_n_clus = 8;
+  int init_n_clus = 6;
   std::vector<VectorXd> in = proj_inside();
 
   if (init_n_clus >= in.size()) {
@@ -159,7 +159,7 @@ bool MultivariateConditionalMCMC::is_inside(const VectorXd & point){
 }
 
 void MultivariateConditionalMCMC::run_one() {
-
+/*
   //std::cout<<"sample u"<<std::endl;
   sample_u();
 
@@ -209,7 +209,7 @@ void MultivariateConditionalMCMC::run_one() {
   sample_Psi();
   sample_tau();
   sample_Phi();
-
+*/
   sample_lambda->perform(Ctilde);
 
   // print_debug_string();
@@ -505,7 +505,7 @@ void MultivariateConditionalMCMC::_relabel() {
   for (const auto &prec : new_na_deltas) na_deltas.push_back(prec);
 
   // BUILD THE VECTOR OF PERMUTATION
-  
+
   std::vector<int> perm(Mtot);
   for (int j=0; j< Ma; j++){
     int num=0;

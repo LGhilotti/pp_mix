@@ -364,7 +364,7 @@ void LambdaSamplerMala::perform(MatrixXd& Ctilde) {
   /*********************************************************/
   /******************** AUTODIFF VERSION ****************/
   /********************************************************/
-/*
+
   // Current Lambda (here are the means) are expanded to vector<double> column major
   double ln_px_curr;
   VectorXd grad_ln_px_curr;
@@ -372,8 +372,6 @@ void LambdaSamplerMala::perform(MatrixXd& Ctilde) {
  // THIS IS THE GRADIENT VIA AUTODIFF
   stan::math::gradient(lambda_tar_fun, Lambda_curr, ln_px_curr, grad_ln_px_curr);
 
-  grad_log_ad = Map<MatrixXd>(grad_ln_px_curr.data(), mcmc->get_dim_data(), mcmc->get_dim_fact());
-  std::cout<<"ln_px_curr:\n"<<ln_px_curr<<std::endl;
 
   // Proposal according MALA
   VectorXd prop_lambda_vec = Lambda_curr + mala_p_lambda*grad_ln_px_curr +
@@ -399,7 +397,7 @@ void LambdaSamplerMala::perform(MatrixXd& Ctilde) {
   ln_dens_analytic = compute_ln_dens_analytic(lndetCtil) - compute_ln_dens_analytic(prop_lambda, lndetCtil_prop);
 
   ln_dens_ad = ln_px_curr - ln_px_prop;
-
+*/
 
 
   tot_sampled_Lambda += 1;
@@ -450,7 +448,7 @@ void LambdaSamplerMala::perform(MatrixXd& Ctilde) {
   //Given the mus, I can compute Ctilde of the current Lambda and current mus, so that
   // I use it both for density evaluation and gradient computation. The, DPP has two methods, if I pass the mus,
   // it computes Ctilde, if not uses Ctilde already set.
-  double lndetCtil = 2.0 * std::log(Ctilde.llt().matrixL().determinant());
+/*  double lndetCtil = 2.0 * std::log(Ctilde.llt().matrixL().determinant());
   double ln_px_curr (compute_ln_dens_analytic(lndetCtil) );
   //std::cout<<"ln_px_curr:\n"<<ln_px_curr<<std::endl;
   //THIS IS THE GRADIENT VIA ANALYTICAL COMPUTATION (in the current Lambda)
@@ -493,7 +491,7 @@ void LambdaSamplerMala::perform(MatrixXd& Ctilde) {
     //std::cout<<"accepted Lambda"<<std::endl;
     Ctilde = Ctilde_prop;
   }
-
+*/
   /*********************************************************/
   /******************** END ANALYTICAL VERSION ****************/
   /********************************************************/
