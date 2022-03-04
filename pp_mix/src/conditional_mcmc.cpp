@@ -116,7 +116,7 @@ void MultivariateConditionalMCMC::initialize_etas(const MatrixXd &dat) {
 
 
 void MultivariateConditionalMCMC::initialize_allocated_means() {
-  int init_n_clus = 6;
+  int init_n_clus = 10;
   std::vector<VectorXd> in = proj_inside();
 
   if (init_n_clus >= in.size()) {
@@ -132,7 +132,7 @@ void MultivariateConditionalMCMC::initialize_allocated_means() {
       a_means.row(i) = in[index[i]].transpose();
     }
   }
-  std::cout<<"alloc means: "<<a_means.rows()<<std::endl;
+  //std::cout<<"alloc means: "<<a_means.rows()<<std::endl;
   return;
 }
 
@@ -159,7 +159,7 @@ bool MultivariateConditionalMCMC::is_inside(const VectorXd & point){
 }
 
 void MultivariateConditionalMCMC::run_one() {
-/*
+
   //std::cout<<"sample u"<<std::endl;
   sample_u();
 
@@ -209,7 +209,7 @@ void MultivariateConditionalMCMC::run_one() {
   sample_Psi();
   sample_tau();
   sample_Phi();
-*/
+
   sample_lambda->perform(Ctilde);
 
   // print_debug_string();
@@ -241,10 +241,6 @@ void MultivariateConditionalMCMC::run_one_trick() {
 
   sample_deltas_na();
   //std::cout<<"sample means a"<<std::endl;
-
-  // sample allocated variables
-  //sample_means_a();
-  //std::cout<<"perform_update_allocated"<<std::endl;
 
   sample_means_obj->perform_update_allocated(Ctilde);
   //std::cout<<"sample deltas a"<<std::endl;
