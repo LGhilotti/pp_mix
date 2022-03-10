@@ -111,7 +111,7 @@ int main() {
     sampler.initialize(data);
 
     std::ofstream myfile;
-    myfile.open("./src/spikes/test_ctilde_update/test_c_updated.txt", std::ios::app);
+    myfile.open("./src/spikes/test_ctilde_update/test_noparallel.txt", std::ios::app);
 
     myfile<< "Initial Lambda: \n"<< sampler.get_Lambda()<<"\n";
 

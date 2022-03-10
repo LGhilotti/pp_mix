@@ -93,11 +93,13 @@ void DeterminantalPP::compute_eigen_and_cstar_red(double * D_, VectorXd * Phis_,
   double esp_fact = -2*std::pow(stan::math::pi(),2)*std::pow(det,1.0/dim)*std::pow(c,-2.0/dim);
 //  ArrayXd vec_phi(Kappas.rows());
   //#pragma omp parallel for default(none) shared(vec_phi, Kappas, s,esp_fact,M)
-  for (int i = 0; i < Kappas_red.rows(); i++) {
+  /*for (int i = 0; i < Kappas_red.rows(); i++) {
     VectorXd sol = M.solve(Kappas_red.row(i).transpose());
     double dot_prod = (Kappas_red.row(i)).dot(sol);
     (*Phis_)(i) = s*std::exp(esp_fact*dot_prod);
-  }
+  }*/
+  ArrayXd dotprods = (Kappas_red * M.solve(Kappas_red.transpose())).diagonal();
+  *Phis_ = s*(esp_fact*dotprods).exp();
 
   *Phi_tildes_ = ((*Phis_).array() / (1 - (*Phis_).array())).matrix();
 
@@ -269,18 +271,23 @@ MatrixXd DeterminantalPP::compute_Ctilde(const MatrixXd& means){
 
   for (int l = 0; l < means_trans.rows()-1; l++) {
     for (int m = l+1; m < means_trans.rows(); m++) {
-      double aux = 0.0;
-      RowVectorXd vec(means_trans.row(l)-means_trans.row(m));
+      //double aux = 0.0;
+      //RowVectorXd vec(means_trans.row(l)-means_trans.row(m));
+      VectorXd vec_c(means_trans.row(l)-means_trans.row(m));
+
       //int nthreads;
       //#pragma omp parallel for default(none) firstprivate(Kappas,vec, phi_tildes_p) reduction(+:aux)
-      for (int kind = 1; kind < Kappas_red.rows(); kind++) {
+      /*for (int kind = 1; kind < Kappas_red.rows(); kind++) {
         //nthreads = omp_get_num_threads();
         //printf("Number of threads = %d\n", nthreads);
         double dotprod = Kappas_red.row(kind).dot(vec);
         aux += phi_tildes_red[kind] * std::cos(2. * stan::math::pi() * dotprod);
-      }
-      Ctilde(l, m) = 2.0*aux + phi_tildes_red(0);
-      if (l!=m) Ctilde(m,l) = 2.0*aux + phi_tildes_red(0);
+      }*/
+      VectorXd dotprods = Kappas_red.bottomRows(Kappas_red.rows()-1) * vec_c;
+      double aux_c = (phi_tildes_red.bottomRows(Kappas_red.rows()-1).array() * (2. * stan::math::pi() * dotprods).array().cos()).sum();
+
+      Ctilde(l, m) = 2.0*aux_c + phi_tildes_red(0);
+      if (l!=m) Ctilde(m,l) = 2.0*aux_c + phi_tildes_red(0);
     }
   }
   Ctilde.diagonal() = ArrayXd::Constant(means_trans.rows(), 2.*phi_tildes_red.sum() - phi_tildes_red(0));
@@ -295,18 +302,23 @@ MatrixXd DeterminantalPP::compute_Ctilde_prop(const MatrixXd& means){
 
   for (int l = 0; l < means_trans.rows()-1; l++) {
     for (int m = l+1; m < means_trans.rows(); m++) {
-      double aux = 0.0;
-      RowVectorXd vec(means_trans.row(l)-means_trans.row(m));
+      //double aux = 0.0;
+      //RowVectorXd vec(means_trans.row(l)-means_trans.row(m));
+      VectorXd vec_c(means_trans.row(l)-means_trans.row(m));
+
       //int nthreads;
       //#pragma omp parallel for default(none) firstprivate(Kappas,vec, phi_tildes_p) reduction(+:aux)
-      for (int kind = 1; kind < Kappas_red.rows(); kind++) {
+      /*for (int kind = 1; kind < Kappas_red.rows(); kind++) {
         //nthreads = omp_get_num_threads();
         //printf("Number of threads = %d\n", nthreads);
         double dotprod = Kappas_red.row(kind).dot(vec);
         aux += phi_tildes_tmp_red[kind] * std::cos(2. * stan::math::pi() * dotprod);
-      }
-      Ctilde(l, m) = 2.0*aux + phi_tildes_tmp_red(0);
-      if (l!=m) Ctilde(m,l) = 2.0*aux + phi_tildes_tmp_red(0);
+      }*/
+      VectorXd dotprods = Kappas_red.bottomRows(Kappas_red.rows()-1) * vec_c;
+      double aux_c = (phi_tildes_tmp_red.bottomRows(Kappas_red.rows()-1).array() * (2. * stan::math::pi() * dotprods).array().cos()).sum();
+
+      Ctilde(l, m) = 2.0*aux_c + phi_tildes_tmp_red(0);
+      if (l!=m) Ctilde(m,l) = 2.0*aux_c + phi_tildes_tmp_red(0);
     }
   }
   Ctilde.diagonal() = ArrayXd::Constant(means_trans.rows(), 2.*phi_tildes_tmp_red.sum() - phi_tildes_tmp_red(0));
@@ -342,15 +354,20 @@ void DeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const Matri
   VectorXd col_new = VectorXd::Zero(n);
 
   for (int l = 0; l < n; l++) {
-      RowVectorXd vec(means_trans.row(l)-xi_trans.transpose());
+      //RowVectorXd vec(means_trans.row(l)-xi_trans.transpose());
+      VectorXd vec_c(means_trans.row(l)-xi_trans.transpose());
+
       //int nthreads;
       //#pragma omp parallel for default(none) firstprivate(Kappas,vec, phi_tildes_p) reduction(+:aux)
-      for (int kind = 1; kind < Kappas_red.rows(); kind++) {
+      /*for (int kind = 1; kind < Kappas_red.rows(); kind++) {
         //nthreads = omp_get_num_threads();
         //printf("Number of threads = %d\n", nthreads);
         double dotprod = Kappas_red.row(kind).dot(vec);
         col_new(l) += 2. * phi_tildes_red[kind] * std::cos(2. * stan::math::pi() * dotprod);
-      }
+      }*/
+      VectorXd dotprods = Kappas_red.bottomRows(Kappas_red.rows()-1) * vec_c;
+      col_new(l) = 2.0 * (phi_tildes_red.bottomRows(Kappas_red.rows()-1).array() * (2. * stan::math::pi() * dotprods).array().cos()).sum();
+
   }
   col_new.array() += phi_tildes_red(0);
 
