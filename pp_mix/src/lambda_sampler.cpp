@@ -329,25 +329,32 @@ MatrixXd LambdaSamplerMala::compute_gr_an(const MatrixXd& lamb, const MatrixXd& 
   //Redefine Kappas keeping only the ones with positive or 0 first component
   MatrixXd SecTerm = MatrixXd::Zero(mcmc->get_dim_data(),d);
 
-  for (int kind=1; kind< Kappas_red.rows(); kind++) {
-    //construct g^k , u_k (real and img)
-    VectorXd sol(l_t_l.solve(Kappas_red.row(kind).transpose()));
-    // s_part_g contains the entire squared bracket
-    MatrixXd s_part_g =MatrixXd::Constant(d,d, 1.0/d * Kappas_red.row(kind).dot(sol.transpose()) ) - Kappas_red.row(kind).transpose()*sol.transpose();
-    // gk is the matrix g^k
-    MatrixXd gk (part_g *l_t_l.solve(s_part_g));
+  #pragma omp parallel
+  {
+    MatrixXd SecTerm_private = MatrixXd::Zero(mcmc->get_dim_data(),d);
 
-    //define u_k
-    VectorXd arg (2*stan::math::pi()* mu_trans * Kappas_red.row(kind).transpose());
-    VectorXd uR (arg.array().cos());
-    VectorXd uI (arg.array().sin());
-    // scal is the scalar after g^k
-    //double scal = Phis[kind]/std::pow(1-Phis[kind],2.0)*(((1-Phis[kind])/(1-std::exp(-mcmc->pp_mix->get_Ds())))-Ctil.solve(uR).dot(uR)-Ctil.solve(uI).dot(uI));
-    double scal = Phis_red[kind]/std::pow(1-Phis_red[kind],2.0)*(((1-Phis_red[kind])/(1-std::exp(-Ds_red)))-Ctil.solve(uR).dot(uR)-Ctil.solve(uI).dot(uI));
+    #pragma omp for nowait //fill SecTerm in parallel
+      for (int kind=1; kind< Kappas_red.rows(); kind++) {
+        //construct g^k , u_k (real and img)
+        VectorXd sol(l_t_l.solve(Kappas_red.row(kind).transpose()));
+        // s_part_g contains the entire squared bracket
+        MatrixXd s_part_g =MatrixXd::Constant(d,d, 1.0/d * Kappas_red.row(kind).dot(sol.transpose()) ) - Kappas_red.row(kind).transpose()*sol.transpose();
+        // gk is the matrix g^k
+        MatrixXd gk (part_g *l_t_l.solve(s_part_g));
 
-    SecTerm += scal * gk;
+        //define u_k
+        VectorXd arg (2*stan::math::pi()* mu_trans * Kappas_red.row(kind).transpose());
+        VectorXd uR (arg.array().cos());
+        VectorXd uI (arg.array().sin());
+        // scal is the scalar after g^k
+        double scal = Phis_red[kind]/std::pow(1-Phis_red[kind],2.0)*(((1-Phis_red[kind])/(1-std::exp(-Ds_red)))-Ctil.solve(uR).dot(uR)-Ctil.solve(uI).dot(uI));
+
+        SecTerm_private += scal * gk;
+      }
+
+      #pragma omp critical
+      SecTerm += SecTerm_private;
   }
-
   grad_log += 4*std::pow(stan::math::pi(),2.0)*std::pow(mcmc->pp_mix->get_c(),-2.0/d) * SecTerm;
 
   //Third term
