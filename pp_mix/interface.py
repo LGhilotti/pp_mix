@@ -15,8 +15,8 @@ from pp_mix.utils import loadChains, writeChains, to_numpy, to_proto, gen_even_s
 from pp_mix.params_helper import check_params
 from pp_mix.precision import PrecMat
 
-sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
-import pp_mix_high  # noqa
+#sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+import pp_mix_high.cpython-38-x86_64-linux-gnu.so  # noqa
 
 
 def getDeserialized(serialized, objType):

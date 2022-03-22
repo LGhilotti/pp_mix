@@ -72,7 +72,6 @@ std::tuple<std::deque<py::bytes>, double , double>
 
   for (int i = 0; i < niter; i++) {
     sampler.run_one();
-    py::print("Norm-2 of difference between gradients: ",Decimal(sampler.get_norm_diff()));
     if (i % thin == 0) {
       std::string s;
       MultivariateMixtureState curr;
