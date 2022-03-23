@@ -30,23 +30,23 @@ DeterminantalPP* make_dpp(const Params& params, const MatrixXd& ranges){
 
 }
 
-DeterminantalPP* make_dpp(const Params& params){
+DeterminantalPP* make_dpp(const Params& params, int d){
 
-    Eigen::MatrixXd ranges(2, params.dimf());
-    ranges.row(0) = RowVectorXd::Constant(params.dimf(), -50);
-    ranges.row(1) = RowVectorXd::Constant(params.dimf(), 50);
+    Eigen::MatrixXd ranges(2, d);
+    ranges.row(0) = RowVectorXd::Constant(d, -50);
+    ranges.row(1) = RowVectorXd::Constant(d, 50);
 
     return new DeterminantalPP(ranges, params.dpp().n(), params.dpp().c(), params.dpp().s() );
 
 }
 
 // Delta Precision
-BasePrec *make_delta(const Params &params) {
+BasePrec *make_delta(const Params &params, int d) {
   BasePrec *out;
   if (params.has_fixed_multi_prec())
-    out = make_fixed_prec(params.fixed_multi_prec());
+    out = make_fixed_prec(params.fixed_multi_prec(),d);
   else if (params.has_wishart())
-    out = make_wishart(params.wishart());
+    out = make_wishart(params.wishart(),d);
   else if (params.has_fixed_univ_prec())
     out = make_fixed_prec(params.fixed_univ_prec());
   else if (params.has_gamma_prec())
@@ -55,17 +55,17 @@ BasePrec *make_delta(const Params &params) {
   return out;
 }
 
-BasePrec *make_fixed_prec(const FixedMultiPrecParams &params) {
-  return new Delta_FixedMulti(params.dim(), params.sigma());
+BasePrec *make_fixed_prec(const FixedMultiPrecParams &params, int d) {
+  return new Delta_FixedMulti(d, params.sigma());
 }
 
-BasePrec *make_wishart(const WishartParams &params) {
+BasePrec *make_wishart(const WishartParams &params, int d) {
   //params.PrintDebugString();
   double sigma = 1.0;
   if (params.sigma() > 0) {
     sigma = params.sigma();
   }
-  return new Delta_Wishart(params.nu(), params.dim(), sigma);
+  return new Delta_Wishart(params.nu(), d, sigma);
 }
 
 BasePrec *make_fixed_prec(const FixedUnivPrecParams &params) {

@@ -9,11 +9,12 @@ namespace MCMCsampler {
 
 MultivariateConditionalMCMC::MultivariateConditionalMCMC(DeterminantalPP *pp_mix,
                                                          BasePrec *g,
-                                                         const Params &params)
+                                                         const Params &params,
+                                                         int d)
     : pp_mix(pp_mix) {
 
   set_prec(dynamic_cast<BaseMultiPrec *>(g));
-  set_params(params);
+  set_params(params,d);
   sample_lambda = make_LambdaSampler(this, params);
   sample_means_obj = make_MeansSampler(this, params);
 
@@ -27,10 +28,10 @@ MultivariateConditionalMCMC::~MultivariateConditionalMCMC()
          delete sample_means_obj;
 }
 
-void MultivariateConditionalMCMC::set_params(const Params & p){
+void MultivariateConditionalMCMC::set_params(const Params & p, int d){
 
   this->params = p;
-  this->dim_fact = params.dimf();
+  this->dim_fact = d;
   this->_a_phi = params.a();
   this->_alpha_jump = params.alphajump();
   this->_beta_jump = params.betajump();

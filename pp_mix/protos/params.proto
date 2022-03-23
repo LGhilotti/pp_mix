@@ -3,13 +3,11 @@ syntax="proto3";
 message WishartParams {
     double nu = 1;
     bool identity = 2;
-    double sigma = 3; 
-    int32 dim = 4;
+    double sigma = 3;
 }
 
 message FixedMultiPrecParams {
     double sigma = 1;
-    int32 dim = 2;
 }
 
 message FixedUnivPrecParams {
@@ -40,14 +38,12 @@ message Params {
         GammaParams gamma_prec = 5;
     }
 
-    int32 dimf = 6;
-
     double a = 7;
     double alphajump = 8;
     double betajump = 9;
     double agamma = 10;
     double bgamma = 11;
-    
+
     oneof step_means {
         double mala_step_means = 12;
         double mh_sigma_means = 13;
@@ -57,5 +53,5 @@ message Params {
         double mala_step_lambda = 14;
         double mh_sigma_lambda = 15;
     }
-    
+
 }

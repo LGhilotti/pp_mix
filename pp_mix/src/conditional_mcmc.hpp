@@ -101,12 +101,12 @@ class MultivariateConditionalMCMC {
     ~MultivariateConditionalMCMC() ;
 
     MultivariateConditionalMCMC(DeterminantalPP *pp_mix, BasePrec *g,
-                                const Params &params);
+                                const Params &params, int d);
 
 
     void set_pp_mix(DeterminantalPP* pp_mix) {this->pp_mix = pp_mix;}
     void set_prec(BaseMultiPrec* g) {this->g = g;}
-    void set_params(const Params & p);
+    void set_params(const Params & p, int d);
 
     // initializes some of the members (data, dim, ndata,..) and state of sampler
     // The constructor only initialize some other members (pointers) and params field

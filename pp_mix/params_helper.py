@@ -9,16 +9,16 @@ import pp_mix.protos.py.params_pb2 as params_pb2
 from pp_mix.protos.py.params_pb2 import Params
 
 
-def check_params(params, data, ranges):
-    if ranges.shape[1] != params.dimf :
+def check_params(params, data, d, ranges):
+    if ranges.shape[1] != d :
         raise ValueError(
             "Ranges columns does not match factor dimension, "
-            "found ranges.shape[1]={0}, dimf={1}".format(ranges.shape[1],params.dimf))
+            "found ranges.shape[1]={0}, dimf={1}".format(ranges.shape[1],d))
     if ranges.shape[0] != 2:
         raise ValueError(
             "Ranges should have 2 rows, incorrect number of rows, "
             "found ranges.shape[0]={0}".format(ranges.shape[0]))
-                    
+
     if params.WhichOneof("prec_params") not in \
             ("fixed_multi_prec", "wishart"):
         raise ValueError(
@@ -27,33 +27,17 @@ def check_params(params, data, ranges):
                 "[{0}]".format(", ".join(("fixed_multi_prec", "wishart")))
             ))
 
-    if params.HasField("fixed_multi_prec") and params.fixed_multi_prec.dim != params.dimf :
-        raise ValueError(
-            "Parameter dimf should match dimension of precision matrix, "
-            "found dimf={0}, prec_params.dim={1}".format(params.dimf,params.fixed_multi_prec.dim))
 
-    if params.HasField("wishart") and params.wishart.dim != params.dimf :
-        raise ValueError(
-            "Parameter dimf should match dimension of precision matrix, "
-            "found dimf={0}, prec_params.dim={1}".format(params.dimf,params.wishart.dim))
-
-                   
     if params.WhichOneof("prec_params") == "wishart":
-        if params.wishart.nu <= params.dimf - 1:
+        if params.wishart.nu <= d - 1:
             raise ValueError(
                 """Parameter wishart.nu sould be strictly greater than {0} - 1,
                  found wishart.nu={1} instead""".format(
-                     params.dimf, params.wishart.nu))
+                     d, params.wishart.nu))
 
     if params.wishart.identity is False:
         raise ValueError(
             "Only 'True' is supported for parametr wishart.identity")
-
-    if params.wishart.dim != params.dimf:
-        raise ValueError(
-            "Parameter wishart.dim should match the dimension of the data, "
-            "found wishart.dim={0}, params.dimf={1}".format(
-                params.wishart.dim, params.dimf))
 
     if params.wishart.sigma <= 0:
         raise ValueError(
@@ -68,7 +52,7 @@ def check_params(params, data, ranges):
         raise ValueError(
             "Parameter a (for Dirichlet) should be grater than 0, "
             "found a={0} instead".format(params.a))
-    
+
     if params.alphajump <= 0 or params.betajump <= 0 :
         raise ValueError(
             "Gamma parameters for jumps should be greater than 0, "
@@ -79,11 +63,11 @@ def check_params(params, data, ranges):
             "Gamma parameters for Sigma precision should be greater than 0, "
             "found agamma={0}, bgamma={1}".format(params.agamma,params.bgamma))
 
-    if (params.HasField("mh_sigma_means") and params.mh_sigma_means <=0) or (params.HasField("mala_step_means") and params.mala_step_means <=0) : 
+    if (params.HasField("mh_sigma_means") and params.mh_sigma_means <=0) or (params.HasField("mala_step_means") and params.mala_step_means <=0) :
         raise ValueError(
             "Parameter for allocated means update (MH or Mala) should be grater than 0")
 
 
-    if (params.HasField("mh_sigma_lambda") and params.mh_sigma_lambda <=0) or (params.HasField("mala_step_lambda") and params.mala_step_lambda <=0) : 
+    if (params.HasField("mh_sigma_lambda") and params.mh_sigma_lambda <=0) or (params.HasField("mala_step_lambda") and params.mala_step_lambda <=0) :
         raise ValueError(
             "Parameter for Lambda update (MH or Mala) should be greater than 0")

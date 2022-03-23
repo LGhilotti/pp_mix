@@ -45,9 +45,9 @@ data_scaled=(data-centering_var)/scaling_var
 svd = TruncatedSVD(n_components=10, n_iter=7, random_state=42)
 svd.fit(data_scaled)
 
-# d is set to be the minimum number of eigenbalues explaining at least 95% of the variability in the data.
+# d is set to be the minimum number of eigenbalues explaining at least 80% of the variability in the data.
 cum_eigs= np.cumsum(svd.singular_values_)/svd.singular_values_.sum()
-d=np.min(np.where(cum_eigs>.95))
+d=np.min(np.where(cum_eigs>.80))
 
 ## Set hyperparameters
 params_file = "data/Eyes_data/resources/sampler_params.asciipb"
@@ -55,17 +55,17 @@ bound_square = 10
 ranges = np.array([[-bound_square]*d,[bound_square]*d])
 
 # Set sampler parameters
-ntrick =10
-nburn=10
-niter =10
+ntrick =100
+nburn=1000
+niter =1000
 thin=2
-log_every=2
+log_every=50
 
 # Build the sampler
 sampler = ConditionalMCMC(params_file = params_file)
 
 # Run the algorithm
-sampler.run(ntrick, nburn, niter, thin, data, ranges, log_every)
+sampler.run(ntrick, nburn, niter, thin, data, d, ranges, log_every)
 
 # Save the serialized chain produced by the sampler
 sampler.serialize_chains("data/Eyes_data/chains/chain_1.recordio")

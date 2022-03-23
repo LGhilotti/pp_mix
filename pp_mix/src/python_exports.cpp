@@ -30,6 +30,7 @@ std::tuple<std::deque<py::bytes>, double , double>
  _run_pp_mix(int ntrick, int burnin, int niter, int thin,
                                   std::string serialized_data, //const Eigen::MatrixXd &data,
                                   std::string serialized_params,
+                                  int d,
                                   std::string serialized_ranges, //const Eigen::MatrixXd &ranges,
                                   int log_every = 200) {
   Params params;
@@ -48,9 +49,9 @@ std::tuple<std::deque<py::bytes>, double , double>
 
   std::deque<py::bytes> out;
   DeterminantalPP* pp_mix = make_dpp(params, ranges);
-  BasePrec* g = make_delta(params);
+  BasePrec* g = make_delta(params, d);
 
-  MCMCsampler::MultivariateConditionalMCMC sampler(pp_mix, g, params);
+  MCMCsampler::MultivariateConditionalMCMC sampler(pp_mix, g, params, d);
 
   sampler.initialize(data);
 
