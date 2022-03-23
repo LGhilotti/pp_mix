@@ -22,7 +22,7 @@ LDLIBS = \
 LDFLAGS = -D_REENTRANT -O3 -fopenmp
 
 PROTO_SRCS = $(wildcard $(PROTO_DIR)/cpp/*.cpp)
-SPIKES_SRCS = $(SPIKES_DIR)/test_ctilde_update/test_ctilde.cpp 
+SPIKES_SRCS = $(SPIKES_DIR)/test_ctilde_update/test_ctilde.cpp
 				#$(SPIKES_DIR)/sim_autodiff_analit/main_runtime.cpp
 				#$(SPIKES_DIR)/test_valgrind/run_test_p6_d3.cpp
 				#$(SPIKES_DIR)/test_valgrind/run_test_p6_d4.cpp
@@ -48,9 +48,9 @@ SPIKES_OBJS =  $(subst .cpp,.o, $(SPIKES_SRCS))
 all: generate_pybind
 
 generate_pybind: $(OBJS)
-	$(CXX) -shared $(CFLAGS) `/usr/bin/python3.8 -m pybind11 --includes` \
+	$(CXX) -shared $(CFLAGS) `/usr/bin/python3 -m pybind11 --includes` \
 		src/python_exports.cpp -o \
-		pp_mix_high`/usr/bin/python3.8-config --extension-suffix` \
+		pp_mix_high`/usr/bin/python3-config --extension-suffix` \
 		$(OBJS) $(LDLIBS) -fopenmp
 
 test: $(SPIKES_EXECS)

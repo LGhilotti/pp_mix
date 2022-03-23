@@ -16,7 +16,6 @@ from pp_mix.params_helper import check_params
 from pp_mix.precision import PrecMat
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
-#import pp_mix_high.cpython-38-x86_64-linux-gnu.so  # noqa
 import pp_mix_high  # noqa
 
 
