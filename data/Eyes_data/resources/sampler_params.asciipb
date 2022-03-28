@@ -5,20 +5,20 @@ dpp {
 }
 
 wishart {
-  nu: 12
+  nu: 50
   identity: true
   sigma: 0.05
 }
 
-a: 1.0
+a: 0.5
 
-alphajump: 2.0
+alphajump: 1.0
 
 betajump: 3.0
 
-agamma: 60.
+agamma: 1.0
 
-bgamma: 30.
+bgamma: 0.3
 
 mh_sigma_means: 0.005
 
