@@ -16,7 +16,7 @@ from pp_mix.params_helper import check_params
 from pp_mix.precision import PrecMat
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
-import pp_mix_high  # noqa
+#import pp_mix_high  # noqa
 
 
 def getDeserialized(serialized, objType):
@@ -26,12 +26,10 @@ def getDeserialized(serialized, objType):
 
 
 class ConditionalMCMC(object):
-    def __init__(self, params_file):
+    def __init__(self, hyperpar):
 
-        with open(params_file, 'r') as fp:
-            self.params = Params()
-            text_format.Parse(fp.read(), self.params)
-
+        self.params = Params()
+        self.params = hyperpar
         self.serialized_params = self.params.SerializeToString()
 
     def run(self, ntrick, nburn, niter, thin, data, d, ranges, log_every=200):

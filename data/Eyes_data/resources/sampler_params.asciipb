@@ -1,7 +1,4 @@
 dpp {
-  c: 60
-  n: 4
-  s: 0.8
 }
 
 wishart {

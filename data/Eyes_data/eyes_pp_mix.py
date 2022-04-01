@@ -16,7 +16,6 @@ import sys
 sys.path.append('/home/lorenzo/Documents/Tesi/github_repos/pp_mix/')
 sys.path.append('/home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix')
 
-import pp_mix.protos.py.params_pb2 as params_pb2
 from pp_mix.interface import ConditionalMCMC, cluster_estimate
 from pp_mix.utils import loadChains, to_numpy, to_proto
 from pp_mix.protos.py.state_pb2 import MultivariateMixtureState, EigenVector, EigenMatrix
@@ -49,10 +48,35 @@ svd.fit(data_scaled)
 cum_eigs= np.cumsum(svd.singular_values_)/svd.singular_values_.sum()
 d=np.min(np.where(cum_eigs>.80))
 
-## Set hyperparameters
-params_file = "data/Eyes_data/resources/sampler_params.asciipb"
+####################################
+##### HYPERPARAMETERS ###############
+####################################
+
+## Set hyperparameters (agreeing with Chandra)
+params_file = "/home/lorenzo/Documents/Tesi/github_repos/pp_mix/data/Eyes_data/resources/sampler_params.asciipb"
 bound_square = 10
 ranges = np.array([[-bound_square]*d,[bound_square]*d])
+
+## Set the expected number of centers a priori
+rho = 6.
+
+## Fix "s", then: rho_max = rho/s.
+## It follows: c = rho_max * (2 pi)^{d/2}
+s = 0.5
+rho_max = rho/s
+c = rho_max * ((2. * np.pi) ** (float(d)/2))
+
+## Set the truncation level N
+n = 4
+
+## Fill in the just computed hyperparameters in the Params object
+hyperpar = Params()
+with open(params_file, 'r') as fp:
+    text_format.Parse(fp.read(), hyperpar)
+
+hyperpar.dpp.c = c
+hyperpar.dpp.n = n
+hyperpar.dpp.s = s
 
 # Set sampler parameters
 ntrick =100
