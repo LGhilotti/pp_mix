@@ -54,8 +54,6 @@ d=np.min(np.where(cum_eigs>.80))
 
 ## Set hyperparameters (agreeing with Chandra)
 params_file = "/home/lorenzo/Documents/Tesi/github_repos/pp_mix/data/Eyes_data/resources/sampler_params.asciipb"
-bound_square = 10
-ranges = np.array([[-bound_square]*d,[bound_square]*d])
 
 ## Set the expected number of centers a priori
 rho = 6.
@@ -83,13 +81,13 @@ ntrick =100
 nburn=1000
 niter =1000
 thin=2
-log_every=50
+log_ev=50
 
 # Build the sampler
-sampler = ConditionalMCMC(params_file = params_file)
+sampler = ConditionalMCMC(hyperpar = hyperpar)
 
 # Run the algorithm
-sampler.run(ntrick, nburn, niter, thin, data, d, ranges, log_every)
+sampler.run(ntrick, nburn, niter, thin, data, d, log_every = log_ev)
 
 # Save the serialized chain produced by the sampler
 sampler.serialize_chains("data/Eyes_data/chains/chain_1.recordio")

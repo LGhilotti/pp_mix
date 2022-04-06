@@ -9,15 +9,7 @@ import pp_mix.protos.py.params_pb2 as params_pb2
 from pp_mix.protos.py.params_pb2 import Params
 
 
-def check_params(params, data, d, ranges):
-    if ranges.shape[1] != d :
-        raise ValueError(
-            "Ranges columns does not match factor dimension, "
-            "found ranges.shape[1]={0}, dimf={1}".format(ranges.shape[1],d))
-    if ranges.shape[0] != 2:
-        raise ValueError(
-            "Ranges should have 2 rows, incorrect number of rows, "
-            "found ranges.shape[0]={0}".format(ranges.shape[0]))
+def check_params(params, data, d):
 
     if params.WhichOneof("prec_params") not in \
             ("fixed_multi_prec", "wishart"):
@@ -71,3 +63,32 @@ def check_params(params, data, d, ranges):
     if (params.HasField("mh_sigma_lambda") and params.mh_sigma_lambda <=0) or (params.HasField("mala_step_lambda") and params.mala_step_lambda <=0) :
         raise ValueError(
             "Parameter for Lambda update (MH or Mala) should be greater than 0")
+
+def compute_ranges(params, data, d):
+
+    p = data.shape[1]
+    max_latent = 0
+
+    for (i in 1:100){
+        tau = np.random.gamma(p * d * params.a, 2)
+        Psi = np.random.exponential(2.0 , size = p*d)
+        Phi = np.random.dirichlet(np.full(p*d, params.a))
+        Lambda = (tau * Phi * np.sqrt(Psi) * np.random.normal(size=p*d)).reshape((p,d))
+
+        lat_fact = np.linalg.solve(np.dot(Lambda.T,Lambda), np.dot(Lambda.T, data.T))
+        max_latent = np.max([np.max(np.abs(lat_fact)),max_latent])
+    }
+
+    return 1.5 * np.array([np.full(d,-max_latent),np.full(d,max_latent)])
+
+
+def check_ranges(ranges,d):
+
+    if ranges.shape[1] != d :
+        raise ValueError(
+            "Ranges columns does not match factor dimension, "
+            "found ranges.shape[1]={0}, dimf={1}".format(ranges.shape[1],d))
+    if ranges.shape[0] != 2:
+        raise ValueError(
+            "Ranges should have 2 rows, incorrect number of rows, "
+            "found ranges.shape[0]={0}".format(ranges.shape[0])))

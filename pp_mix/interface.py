@@ -12,7 +12,7 @@ import pp_mix.protos.py.params_pb2 as params_pb2
 from pp_mix.protos.py.state_pb2 import MultivariateMixtureState, EigenVector
 from pp_mix.protos.py.params_pb2 import Params
 from pp_mix.utils import loadChains, writeChains, to_numpy, to_proto, gen_even_slices
-from pp_mix.params_helper import check_params
+from pp_mix.params_helper import check_params, compute_ranges, check_ranges
 from pp_mix.precision import PrecMat
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
@@ -32,9 +32,15 @@ class ConditionalMCMC(object):
         self.params = hyperpar
         self.serialized_params = self.params.SerializeToString()
 
-    def run(self, ntrick, nburn, niter, thin, data, d, ranges, log_every=200):
+    def run(self, ntrick, nburn, niter, thin, data, d, ranges = 0, log_every=200):
 
-        check_params(self.params, data, d, ranges)
+        check_params(self.params, data, d)
+
+        if (ranges == 0){
+            ranges = compute_ranges(self.params, data, d);
+        } else {
+            check_ranges(ranges, d)
+        }
 
         self.serialized_data = to_proto(data).SerializeToString()
         self.serialized_ranges = to_proto(ranges).SerializeToString()
