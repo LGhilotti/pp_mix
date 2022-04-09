@@ -69,7 +69,7 @@ def compute_ranges(params, data, d):
     p = data.shape[1]
     max_latent = 0
 
-    for (i in 1:100){
+    for i in range(100) :
         tau = np.random.gamma(p * d * params.a, 2)
         Psi = np.random.exponential(2.0 , size = p*d)
         Phi = np.random.dirichlet(np.full(p*d, params.a))
@@ -77,7 +77,7 @@ def compute_ranges(params, data, d):
 
         lat_fact = np.linalg.solve(np.dot(Lambda.T,Lambda), np.dot(Lambda.T, data.T))
         max_latent = np.max([np.max(np.abs(lat_fact)),max_latent])
-    }
+
 
     return 1.5 * np.array([np.full(d,-max_latent),np.full(d,max_latent)])
 
@@ -91,4 +91,4 @@ def check_ranges(ranges,d):
     if ranges.shape[0] != 2:
         raise ValueError(
             "Ranges should have 2 rows, incorrect number of rows, "
-            "found ranges.shape[0]={0}".format(ranges.shape[0])))
+            "found ranges.shape[0]={0}".format(ranges.shape[0]))

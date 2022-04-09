@@ -16,7 +16,7 @@ from pp_mix.params_helper import check_params, compute_ranges, check_ranges
 from pp_mix.precision import PrecMat
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
-#import pp_mix_high  # noqa
+import pp_mix_high  # noqa
 
 
 def getDeserialized(serialized, objType):
@@ -36,11 +36,12 @@ class ConditionalMCMC(object):
 
         check_params(self.params, data, d)
 
-        if (ranges == 0){
+        if ranges == 0 :
             ranges = compute_ranges(self.params, data, d);
-        } else {
+        else:
             check_ranges(ranges, d)
-        }
+
+        print("ranges: \n" , ranges)
 
         self.serialized_data = to_proto(data).SerializeToString()
         self.serialized_ranges = to_proto(ranges).SerializeToString()

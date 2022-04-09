@@ -1,3 +1,5 @@
+#############  TO BE LAUNCHED FROM pp_mix
+
 import numpy as np
 import arviz as az
 import pandas as pd
@@ -20,6 +22,8 @@ from pp_mix.interface import ConditionalMCMC, cluster_estimate
 from pp_mix.utils import loadChains, to_numpy, to_proto
 from pp_mix.protos.py.state_pb2 import MultivariateMixtureState, EigenVector, EigenMatrix
 from pp_mix.protos.py.params_pb2 import Params
+
+np.random.seed(1234)
 
 # read the dataset
 df = pd.read_excel("data/Eyes_data/41598_2021_2025_MOESM2_ESM.xlsx")
@@ -47,6 +51,7 @@ svd.fit(data_scaled)
 # d is set to be the minimum number of eigenbalues explaining at least 80% of the variability in the data.
 cum_eigs= np.cumsum(svd.singular_values_)/svd.singular_values_.sum()
 d=np.min(np.where(cum_eigs>.80))
+print("d= ",d)
 
 ####################################
 ##### HYPERPARAMETERS ###############
@@ -85,6 +90,7 @@ log_ev=50
 
 # Build the sampler
 sampler = ConditionalMCMC(hyperpar = hyperpar)
+print(sampler.params)
 
 # Run the algorithm
 sampler.run(ntrick, nburn, niter, thin, data, d, log_every = log_ev)
