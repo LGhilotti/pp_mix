@@ -1,4 +1,8 @@
-#############  TO BE LAUNCHED FROM pp_mix
+# NOTE: TO BE LAUNCHED FROM pp_mix
+
+#############################################
+### IMPORT LIBRARIES AND FUNCTIONS ##########
+#############################################
 
 import numpy as np
 import arviz as az
@@ -23,6 +27,10 @@ from pp_mix.utils import loadChains, to_numpy, to_proto
 from pp_mix.protos.py.state_pb2 import MultivariateMixtureState, EigenVector, EigenMatrix
 from pp_mix.protos.py.params_pb2 import Params
 
+#######################################
+### READ DATA AND PRE-PROCESSING ######
+#######################################
+
 np.random.seed(1234)
 
 # read the dataset
@@ -30,16 +38,15 @@ df = pd.read_excel("data/Eyes_data/41598_2021_2025_MOESM2_ESM.xlsx")
 
 # extract only right eyes (OD)
 df_od = df.loc[df['Masked_Id_Age1'].str.contains("OD", case=True)].set_index('Masked_Id_Age1')
+
 # clustering obtained by cifu (method used in the paper)
 cifu_clustering = df_od['Cluster_Id_Age1']
 
-# THIS IS THE DATA USED IN THE ALGORITHM, THEN CONVERTED TO NUMPY ARRAY
+# dataset used by the algorithm, converted in numpy array
 df_od = df_od[df_od.columns[1:]]
-
-# NUMPY ARRAY OF DATA
 data = df_od.to_numpy()
 
-# SCALING OF DATA
+# scaling of data
 centering_var=stat.median(np.mean(data,0))
 scaling_var=stat.median(np.std(data,0))
 data_scaled=(data-centering_var)/scaling_var
@@ -54,25 +61,25 @@ d=np.min(np.where(cum_eigs>.80))
 print("d= ",d)
 
 ####################################
-##### HYPERPARAMETERS ###############
+##### HYPERPARAMETERS ##############
 ####################################
 
-## Set hyperparameters (agreeing with Chandra)
+# Set hyperparameters (agreeing with Chandra)
 params_file = "/home/lorenzo/Documents/Tesi/github_repos/pp_mix/data/Eyes_data/resources/sampler_params.asciipb"
 
-## Set the expected number of centers a priori
+# Set the expected number of centers a priori
 rho = 6.
 
-## Fix "s", then: rho_max = rho/s.
-## It follows: c = rho_max * (2 pi)^{d/2}
+# Fix "s", then: rho_max = rho/s
+# It follows: c = rho_max * (2 pi)^{d/2}
 s = 0.5
 rho_max = rho/s
 c = rho_max * ((2. * np.pi) ** (float(d)/2))
 
-## Set the truncation level N
+# Set the truncation level N (here called n)
 n = 4
 
-## Fill in the just computed hyperparameters in the Params object
+# Fill in the just computed hyperparameters in the Params object
 hyperpar = Params()
 with open(params_file, 'r') as fp:
     text_format.Parse(fp.read(), hyperpar)
@@ -88,9 +95,12 @@ niter =1000
 thin=2
 log_ev=50
 
+###################################
+######## MCMC SAMPLER #############
+###################################
+
 # Build the sampler
 sampler = ConditionalMCMC(hyperpar = hyperpar)
-print(sampler.params)
 
 # Run the algorithm
 sampler.run(ntrick, nburn, niter, thin, data, d, log_every = log_ev)
