@@ -19,8 +19,8 @@ from scipy.stats import skewnorm
 from scipy.stats import norm
 from scipy.interpolate import griddata
 import sys
-sys.path.append('/home/lorenzo/Documents/Tesi/github_repos/pp_mix/')
-sys.path.append('/home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix')
+sys.path.append('.')
+sys.path.append('./pp_mix')
 
 from pp_mix.interface import ConditionalMCMC, cluster_estimate
 from pp_mix.utils import loadChains, to_numpy, to_proto
@@ -65,7 +65,7 @@ print("d= ",d)
 ####################################
 
 # Set hyperparameters (agreeing with Chandra)
-params_file = "/home/lorenzo/Documents/Tesi/github_repos/pp_mix/data/Eyes_data/resources/sampler_params.asciipb"
+params_file = "data/Eyes_data/resources/sampler_params.asciipb"
 
 # Set the expected number of centers a priori
 rho = 6.
@@ -88,11 +88,13 @@ hyperpar.dpp.c = c
 hyperpar.dpp.n = n
 hyperpar.dpp.s = s
 
+print(hyperpar)
+
 # Set sampler parameters
-ntrick =100
-nburn=1000
-niter =1000
-thin=2
+ntrick =10000
+nburn=100000
+niter = 10000
+thin= 10
 log_ev=50
 
 ###################################
@@ -106,4 +108,4 @@ sampler = ConditionalMCMC(hyperpar = hyperpar)
 sampler.run(ntrick, nburn, niter, thin, data, d, log_every = log_ev)
 
 # Save the serialized chain produced by the sampler
-sampler.serialize_chains("data/Eyes_data/chains/chain_1.recordio")
+sampler.serialize_chains("data/Eyes_data/chains/chain_2.recordio")
