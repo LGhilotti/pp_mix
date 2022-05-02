@@ -68,18 +68,32 @@ def compute_ranges(params, data, d):
 
     p = data.shape[1]
     max_latent = 0
+    n_samples = 100000
 
-    for i in range(100) :
-        tau = np.random.gamma(p * d * params.a, 2)
-        Psi = np.random.exponential(2.0 , size = p*d)
-        Phi = np.random.dirichlet(np.full(p*d, params.a))
-        Lambda = (tau * Phi * np.sqrt(Psi) * np.random.normal(size=p*d)).reshape((p,d))
+    tau_draws = np.random.gamma(p * d * params.a, 2, size=(n_samples,))
+    Psi_draws = np.random.exponential(2.0 , size = (n_samples, p*d))
+    Phi_draws = np.random.dirichlet(np.full(p*d, params.a), size=(n_samples,))
+    norm_draws = np.random.normal(size=(n_samples, p * d))
+    Lambda_draws = Phi_draws * np.sqrt(Psi_draws) * norm_draws
+    Lambda_draws = Lambda_draws * tau_draws[:, np.newaxis]
+    Lambda = Lambda_draws.reshape((n_samples, p, d))
+    lat_fact = np.stack([np.linalg.solve(
+        np.dot(Lambda[i, :, :].T, Lambda[i, :, :]),
+        np.dot(Lambda[i, :, :].T, data.T)) for i in range(n_samples)]) 
+    max_latent = np.max(np.abs(lat_fact))
+    print("max_latent: {0:.4f}".format(max_latent))
 
-        lat_fact = np.linalg.solve(np.dot(Lambda.T,Lambda), np.dot(Lambda.T, data.T))
-        max_latent = np.max([np.max(np.abs(lat_fact)),max_latent])
+    #for i in range(100) :
+    #    tau = np.random.gamma(p * d * params.a, 2)
+    #    Psi = np.random.exponential(2.0 , size = p*d)
+    #    Phi = np.random.dirichlet(np.full(p*d, params.a))
+    #    Lambda = (tau * Phi * np.sqrt(Psi) * np.random.normal(size=p*d)).reshape((p,d))
+
+    #   lat_fact = np.linalg.solve(np.dot(Lambda.T,Lambda), np.dot(Lambda.T, data.T))
+    #    max_latent = np.max([np.max(np.abs(lat_fact)),max_latent])
 
 
-    return 1.5 * np.array([np.full(d,-max_latent),np.full(d,max_latent)])
+    return 2000 * np.array([np.full(d,-max_latent),np.full(d,max_latent)])
 
 
 def check_ranges(ranges,d):
