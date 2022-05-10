@@ -7,6 +7,7 @@ from joblib import Parallel, delayed, effective_n_jobs
 from google.protobuf import text_format
 from itertools import combinations, product
 from scipy.stats import multivariate_normal, norm
+from sklearn.cluster import KMeans
 
 import pp_mix.protos.py.params_pb2 as params_pb2
 from pp_mix.protos.py.state_pb2 import MultivariateMixtureState, EigenVector
@@ -45,9 +46,13 @@ class ConditionalMCMC(object):
 
         self.serialized_data = to_proto(data).SerializeToString()
         self.serialized_ranges = to_proto(ranges).SerializeToString()
+        km = KMeans(6)
+        km.fit(data)
+        allocs = km.labels_.astype(int)
 
         self._serialized_chains, self.means_ar, self.lambda_ar = pp_mix_high._run_pp_mix(
-            ntrick, nburn, niter, thin, self.serialized_data, self.serialized_params, d, self.serialized_ranges, log_every)
+            ntrick, nburn, niter, thin, self.serialized_data, self.serialized_params, 
+            d, self.serialized_ranges, allocs, log_every)
 
         objType = MultivariateMixtureState
 

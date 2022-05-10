@@ -332,7 +332,6 @@ void DeterminantalPP::sample_nonalloc_fullcond(MatrixXd *non_active, const Matri
   int npoints = non_active->rows();
   double c_star_na = c_star_red * psi_u;
   birth_prob = std::log(c_star_na) - std::log(c_star_na + npoints);
-
   double rsecond = uniform_rng(0, 1, Rng::Instance().get());
   birth_arate = -1;
   if (std::log(rsecond) < birth_prob) {

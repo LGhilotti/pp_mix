@@ -6,6 +6,7 @@
 
 import numpy as np
 import arviz as az
+import os
 import pandas as pd
 import statistics as stat
 from sklearn.decomposition import TruncatedSVD
@@ -16,8 +17,11 @@ import matplotlib.pyplot as plt
 from google.protobuf import text_format
 from scipy.stats import multivariate_normal as mvn
 from scipy.stats import skewnorm
-from scipy.stats import norm
+from scipy.stats import norm, mode
 from scipy.interpolate import griddata
+from sklearn.metrics import adjusted_rand_score
+from math import sqrt
+
 import sys
 sys.path.append('.')
 sys.path.append('./pp_mix')
@@ -68,7 +72,7 @@ print("d= ",d)
 params_file = "data/Eyes_data/resources/sampler_params.asciipb"
 
 # Set the expected number of centers a priori
-rho = 6.
+rho = 50.
 
 # Fix "s", then: rho_max = rho/s
 # It follows: c = rho_max * (2 pi)^{d/2}
@@ -92,7 +96,7 @@ print(hyperpar)
 
 # Set sampler parameters
 ntrick =10000
-nburn=100000
+nburn=10000
 niter = 10000
 thin= 10
 log_ev=50
@@ -107,5 +111,80 @@ sampler = ConditionalMCMC(hyperpar = hyperpar)
 # Run the algorithm
 sampler.run(ntrick, nburn, niter, thin, data, d, log_every = log_ev)
 
+base_outpath = "data/Eyes_data/out{0}"
+i = 0
+while os.path.exists(base_outpath.format(i)):
+    i = i+1
+outpath = base_outpath.format(i)
+os.makedirs(outpath)
+
 # Save the serialized chain produced by the sampler
-sampler.serialize_chains("data/Eyes_data/chains/chain_2.recordio")
+sampler.serialize_chains(os.path.join(outpath, "chains.recordio"))
+
+
+# save the parameters
+with open(os.path.join(outpath, "params.asciipb"), 'w') as fp:
+    fp.write(text_format.MessageToString(hyperpar))
+
+
+chain = sampler.chains
+
+# plots
+tau_chain = np.array([x.lamb_block.tau for x in chain])
+plt.plot(tau_chain)
+plt.title("tau chain")
+plt.savefig(os.path.join(outpath, "tau_chain.pdf"))
+
+
+first_sbar_chain = np.array([to_numpy(x.sigma_bar)[0] for x in chain])
+plt.plot(first_sbar_chain,color='red')
+last_sbar_chain = np.array([to_numpy(x.sigma_bar)[-1] for x in chain])
+plt.plot(last_sbar_chain,color='blue')
+plt.title("sbar_chain")
+plt.savefig(os.path.join(outpath, "sbar_chain.pdf"))
+
+
+# Compute Posterior Summaries
+
+n_cluster_chain = np.array([x.ma for x in chain])
+plt.plot(n_cluster_chain)
+plt.title("number of clusters chain")
+plt.savefig(os.path.join(outpath, "nclus_chain.pdf"))
+
+n_nonall_chain = np.array([x.mna for x in chain])
+plt.plot(n_nonall_chain)
+plt.title("number of non allocated components chain")
+plt.savefig(os.path.join(outpath, "non_alloc_chain.pdf"))
+
+post_mode_nclus = mode(n_cluster_chain)[0][0] # store in dataframe
+post_avg_nclus = n_cluster_chain.mean() # store in dataframe
+post_avg_nonall =  n_nonall_chain.mean() # store in dataframe
+
+clus_alloc_chain = [x.clus_alloc for x in chain]
+best_clus = cluster_estimate(np.array(clus_alloc_chain))
+n_clus_best_clus = np.size(np.unique(best_clus))
+true_clus = cifu_clustering.to_numpy()
+ari_best_clus = adjusted_rand_score(true_clus, best_clus) # store in dataframe
+aris_chain = np.array([adjusted_rand_score(true_clus, x) for x in clus_alloc_chain])
+mean_aris, sigma_aris = np.mean(aris_chain), np.std(aris_chain) # store mean_aris in dataframe
+CI_aris = norm.interval(0.95, loc=mean_aris, scale=sigma_aris/sqrt(len(aris_chain))) # store in dataframe
+list_performance = list()
+list_performance.append([sampler.means_ar, sampler.lambda_ar, post_mode_nclus,
+                    post_avg_nclus, post_avg_nonall, ari_best_clus, CI_aris])
+df_performance = pd.DataFrame(list_performance, columns=('means_ar','lambda_ar',
+                                      'mode_nclus', 'avg_nclus', 'avg_nonalloc', 'ari_best_clus', 'CI_aris'))
+df_performance.to_csv(os.path.join(outpath, "df_performance.csv"))
+
+theta = np.linspace(0, 2 * np.pi, data.shape[1])
+dx = theta[1] - theta[0]
+fig = plt.figure()
+
+for i in range(n_clus_best_clus):
+    ax = fig.add_subplot(int(sqrt(n_clus_best_clus)),int(sqrt(n_clus_best_clus)),i+1, polar=True)
+
+    ax.plot(theta, data[best_clus == i,:].T)
+    ax.set_xticklabels([])
+    ax.set_yticklabels([])
+
+plt.tight_layout()
+plt.savefig(os.path.join(outpath, "clustered_data.pdf"))

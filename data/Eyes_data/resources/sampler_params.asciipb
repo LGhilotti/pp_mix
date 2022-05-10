@@ -4,18 +4,18 @@ dpp {
 wishart {
   nu: 50
   identity: true
-  sigma: 0.05
+  sigma: 10
 }
 
 a: 0.5
 
-alphajump: 1.0
+alphajump: 0.5
 
-betajump: 3.0
+betajump: 10.0
 
-agamma: 1.0
+agamma: 2.0
 
-bgamma: 0.3
+bgamma: 2.0
 
 mh_sigma_means: 0.00001
 

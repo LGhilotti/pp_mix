@@ -279,6 +279,10 @@ class MultivariateConditionalMCMC {
 
     MatrixXd get_ctilde() const {return Ctilde;}
 
+    void set_clus_alloc(const Eigen::VectorXi _allocs) {
+	    clus_alloc = _allocs;
+    }
+
 };
 
 

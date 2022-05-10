@@ -23,6 +23,6 @@ agamma: 60.
 
 bgamma: 30.
 
-mh_sigma_means: 0.005
+mh_sigma_means: 0.000000000005
 
-mala_step_lambda: 0.001
+mala_step_lambda: 0.00000000001

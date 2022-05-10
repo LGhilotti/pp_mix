@@ -68,7 +68,7 @@ def compute_ranges(params, data, d):
 
     p = data.shape[1]
     max_latent = 0
-    n_samples = 100000
+    n_samples = 100
 
     tau_draws = np.random.gamma(p * d * params.a, 2, size=(n_samples,))
     Psi_draws = np.random.exponential(2.0 , size = (n_samples, p*d))
@@ -93,7 +93,7 @@ def compute_ranges(params, data, d):
     #    max_latent = np.max([np.max(np.abs(lat_fact)),max_latent])
 
 
-    return 2000 * np.array([np.full(d,-max_latent),np.full(d,max_latent)])
+    return 10000 * np.array([np.full(d,-max_latent),np.full(d,max_latent)])
 
 
 def check_ranges(ranges,d):

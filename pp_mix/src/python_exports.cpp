@@ -32,7 +32,8 @@ std::tuple<std::deque<py::bytes>, double , double>
                                   std::string serialized_params,
                                   int d,
                                   std::string serialized_ranges, //const Eigen::MatrixXd &ranges,
-                                  int log_every = 200) {
+                                  std::vector<int> init_allocs,
+				  int log_every = 200) {
   Params params;
   params.ParseFromString(serialized_params);
   Eigen::MatrixXd data;
@@ -52,9 +53,11 @@ std::tuple<std::deque<py::bytes>, double , double>
   BasePrec* g = make_delta(params, d);
 
   MCMCsampler::MultivariateConditionalMCMC sampler(pp_mix, g, params, d);
-
   sampler.initialize(data);
-
+  
+  Eigen::VectorXi init_allocs_ = Eigen::Map<Eigen::VectorXi>(init_allocs.data(), init_allocs.size());
+  sampler.set_clus_alloc(init_allocs_);
+  sampler._relabel(); 
   py::print("Number means in trick phase: ", sampler.get_num_a_means());
 
   for (int i = 0; i < ntrick; i++) {

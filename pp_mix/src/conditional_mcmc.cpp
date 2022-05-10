@@ -54,7 +54,7 @@ void MultivariateConditionalMCMC::initialize(const MatrixXd& dat) {
   Psi = 2.0 * MatrixXi::Ones(dim_data,dim_fact);
 
   Lambda = Map<MatrixXd>(normal_rng( std::vector<double>(dim_data*dim_fact, 0.0),
-        std::vector<double>(dim_data*dim_fact, pow(_a_phi,2) ), Rng::Instance().get() ).data() , dim_data,dim_fact );
+        std::vector<double>(dim_data*dim_fact, _a_phi * _a_phi), Rng::Instance().get() ).data() , dim_data,dim_fact );
 
   // Initialize Sigma_bar
   sigma_bar = _a_gamma/_b_gamma * VectorXd::Ones(dim_data);
@@ -221,54 +221,49 @@ void MultivariateConditionalMCMC::run_one() {
 
 void MultivariateConditionalMCMC::run_one_trick() {
 
-  //std::cout<<"sample u"<<std::endl;
+//  std::cout<<"sample u"<<std::endl;
   sample_u();
 
   //std::cout<<"compute psi"<<std::endl;
 
   //std::cout<<"sample alloca and relabel"<<std::endl;
-
   // sample c | rest and reorganize the all and nall parameters, and c as well
-  sample_allocations_and_relabel();
+  // sample_allocations_and_relabel();
 
   //std::cout<<"sample means na"<<std::endl;
-
-//  Ctilde = pp_mix->compute_Ctilde(get_all_means());
-
   sample_means_obj->perform_update_trick_na(Ctilde);
+  
   //std::cout<<"sample jumps na"<<std::endl;
   sample_jumps_na();
+  
   //std::cout<<"sample deltsa na"<<std::endl;
-
   sample_deltas_na();
-  //std::cout<<"sample means a"<<std::endl;
 
+//  std::cout<<"sample means a"<<std::endl;
   sample_means_obj->perform_update_allocated(Ctilde);
-  //std::cout<<"sample deltas a"<<std::endl;
-
+  
+//  std::cout<<"sample deltas a"<<std::endl;
   sample_deltas_a();
-  //std::cout<<"sample jumps a"<<std::endl;
-
+  
+//  std::cout<<"sample jumps a"<<std::endl;
   sample_jumps_a();
 
-  //std::cout<<"sample etas"<<std::endl;
-  // sample etas
+//  std::cout<<"sample etas"<<std::endl;
   sample_etas();
 
-  //std::cout<<"sample sigmabar"<<std::endl;
-  // sample Sigma bar
+//  std::cout<<"sample sigmabar"<<std::endl;
   sample_sigma_bar();
 
- //std::cout<<"sample Psi"<<std::endl;
-  // sample Lambda block
+//  std::cout<<"sample Psi"<<std::endl;
   sample_Psi();
 
-// std::cout<<"sample tau"<<std::endl;
+//  std::cout<<"sample tau"<<std::endl;
   sample_tau();
 
-  //std::cout<<"sample Phi"<<std::endl;
+//  std::cout<<"sample Phi"<<std::endl;
   sample_Phi();
-  //std::cout<<"before sampling Lambda"<<std::endl;
+  
+//  std::cout<<"before sampling Lambda"<<std::endl;
   sample_lambda->perform(Ctilde);
  //std::cout<<"sample Lambda"<<std::endl;
 
