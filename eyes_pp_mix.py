@@ -72,7 +72,7 @@ print("d= ",d)
 params_file = "data/Eyes_data/resources/sampler_params.asciipb"
 
 # Set the expected number of centers a priori
-rho = 50.
+rho = 100.
 
 # Fix "s", then: rho_max = rho/s
 # It follows: c = rho_max * (2 pi)^{d/2}
@@ -95,10 +95,10 @@ hyperpar.dpp.s = s
 print(hyperpar)
 
 # Set sampler parameters
-ntrick =10000
-nburn=10000
-niter = 10000
-thin= 10
+ntrick =100000
+nburn=100000
+niter = 50000
+thin= 20
 log_ev=50
 
 ###################################
@@ -109,7 +109,7 @@ log_ev=50
 sampler = ConditionalMCMC(hyperpar = hyperpar)
 
 # Run the algorithm
-sampler.run(ntrick, nburn, niter, thin, data, d, log_every = log_ev)
+sampler.run(ntrick, nburn, niter, thin, data_scaled, d, log_every = log_ev)
 
 base_outpath = "data/Eyes_data/out{0}"
 i = 0
@@ -130,31 +130,36 @@ with open(os.path.join(outpath, "params.asciipb"), 'w') as fp:
 chain = sampler.chains
 
 # plots
+fig = plt.figure()
 tau_chain = np.array([x.lamb_block.tau for x in chain])
 plt.plot(tau_chain)
 plt.title("tau chain")
 plt.savefig(os.path.join(outpath, "tau_chain.pdf"))
+plt.close()
 
-
+fig = plt.figure()
 first_sbar_chain = np.array([to_numpy(x.sigma_bar)[0] for x in chain])
 plt.plot(first_sbar_chain,color='red')
 last_sbar_chain = np.array([to_numpy(x.sigma_bar)[-1] for x in chain])
 plt.plot(last_sbar_chain,color='blue')
 plt.title("sbar_chain")
 plt.savefig(os.path.join(outpath, "sbar_chain.pdf"))
-
+plt.close()
 
 # Compute Posterior Summaries
-
+fig = plt.figure()
 n_cluster_chain = np.array([x.ma for x in chain])
 plt.plot(n_cluster_chain)
 plt.title("number of clusters chain")
 plt.savefig(os.path.join(outpath, "nclus_chain.pdf"))
+plt.close()
 
+fig = plt.figure()
 n_nonall_chain = np.array([x.mna for x in chain])
 plt.plot(n_nonall_chain)
 plt.title("number of non allocated components chain")
 plt.savefig(os.path.join(outpath, "non_alloc_chain.pdf"))
+plt.close()
 
 post_mode_nclus = mode(n_cluster_chain)[0][0] # store in dataframe
 post_avg_nclus = n_cluster_chain.mean() # store in dataframe
@@ -162,6 +167,8 @@ post_avg_nonall =  n_nonall_chain.mean() # store in dataframe
 
 clus_alloc_chain = [x.clus_alloc for x in chain]
 best_clus = cluster_estimate(np.array(clus_alloc_chain))
+np.savetxt(os.path.join(outpath, "best_clus.txt"), best_clus)
+
 n_clus_best_clus = np.size(np.unique(best_clus))
 true_clus = cifu_clustering.to_numpy()
 ari_best_clus = adjusted_rand_score(true_clus, best_clus) # store in dataframe

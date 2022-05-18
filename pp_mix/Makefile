@@ -19,7 +19,7 @@ CFLAGS = \
 LDLIBS = \
  	$(shell pkg-config --libs protobuf) -L$(STAN_ROOT_DIR)/lib/tbb \
 	-lgsl -lgslcblas -lpthread -ltbb -Wl,-rpath,"$(STAN_ROOT_DIR)/lib/tbb"
-LDFLAGS = -D_REENTRANT -O3 -fopenmp
+LDFLAGS = -D_REENTRANT -O3 -fopenmp -L~/stan/math/lib/tbb
 
 PROTO_SRCS = $(wildcard $(PROTO_DIR)/cpp/*.cpp)
 SPIKES_SRCS = $(SPIKES_DIR)/test_ctilde_update/test_ctilde.cpp

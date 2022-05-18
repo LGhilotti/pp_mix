@@ -93,7 +93,7 @@ def compute_ranges(params, data, d):
     #    max_latent = np.max([np.max(np.abs(lat_fact)),max_latent])
 
 
-    return 10000 * np.array([np.full(d,-max_latent),np.full(d,max_latent)])
+    return 10 * np.array([np.full(d,-max_latent),np.full(d,max_latent)])
 
 
 def check_ranges(ranges,d):
