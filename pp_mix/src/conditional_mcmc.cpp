@@ -381,36 +381,68 @@ void MultivariateConditionalMCMC::sample_allocations_and_relabel() {
   const VectorXd &curr_a_jumps = a_jumps;
   const VectorXd &curr_na_jumps = na_jumps;
 
-  //#pragma omp parallel for
+  std::vector<MatrixXd> a_prec_matrices;
+  std::vector<MatrixXd> na_prec_matrices;
+
+  MatrixXd log_probas = data_lpdf_in_components();
+  for (int k = 0; k < Ma; k++) {
+      log_probas.row(k) = log_probas.row(k).array() + std::log(a_jumps(k));
+  }
+
+  for (int k = 0; k < Mna; k++) {
+      log_probas.row(k + Ma) = log_probas.row(k + Ma).array() + std::log(na_jumps(k));
+  }
+
   for (int i = 0; i < ndata; i++) {
-    VectorXd probas(Mtot);
-    // VectorXd mean;
-    int newalloc;
-    const VectorXd &eta = etas.row(i).transpose();
-    probas.head(Ma) = curr_a_jumps;
-    probas.tail(Mna) = curr_na_jumps;
-    probas = log(probas);
-
-    for (int k = 0; k < Ma; k++) {
-      probas[k] += lpdf_given_clus(eta, curr_a_means.row(k).transpose(),
-                                   curr_a_deltas[k]);
-    }
-    for (int k = 0; k < Mna; k++) {
-      probas[k + Ma] += lpdf_given_clus(eta, curr_na_means.row(k).transpose(),
-                                        curr_na_deltas[k]);
-    }
-    // now, we have (probas) the updated probabilities (log and just proportional) for sampling the categorical c_i
-
-    // std::cout << "unnormalized_probas: " << probas.transpose() << std::endl;
-
-    // reconvert probas with the updated probabilities normalized (summing to 1)
-    probas = softmax(probas);
-    // std::cout << "normalized: " << probas.transpose() << std::endl;
-    newalloc = categorical_rng(probas, Rng::Instance().get()) - 1;
-    clus_alloc[i] = newalloc;
+    VectorXd probas = softmax(probas.col(i));
+    clus_alloc[i] = categorical_rng(probas, Rng::Instance().get()) - 1;
   }
 
   _relabel();
+}
+
+MatrixXd MultivariateConditionalMCMC::data_lpdf_in_components() {
+  
+    MatrixXd M0(Lambda.transpose() * sigma_bar.asDiagonal());
+    MatrixXd M1( M0 * Lambda);
+
+    MatrixXd out(a_jumps.size() + na_jumps.size(), data.rows());
+
+    for (int i = 0; i < a_jumps.size(); i++) {
+      VectorXd mu = Lambda * a_means.row(i).transpose();
+      MatrixXd cho_fac = LLT<MatrixXd>(M1 + a_deltas[i].get_prec()).matrixL();
+      MatrixXd Sn_bar_cho = stan::math::inverse_spd(cho_fac).transpose();
+      MatrixXd M2 = M0 * (data.rowwise() - mu.transpose());
+      VectorXd num = (M2 * Sn_bar_cho).colwise().squaredNorm();
+      MatrixXd temp = (data.rowwise() - mu.transpose()).array().colwise() * sigma_bar.array();
+      num += temp.rowwise().sum();
+      num = -0.5 * num;
+
+      double log_det_prec = sigma_bar.array().log().sum() + \
+        a_deltas[i].get_log_det() + \
+        Sn_bar_cho.diagonal().array().log().sum();
+
+      out.row(i) = num.array() + 0.5 * log_det_prec;
+    }
+
+    for (int i = 0; i < na_jumps.size(); i++) {
+      VectorXd mu = Lambda * na_means.row(i).transpose();
+      MatrixXd cho_fac = LLT<MatrixXd>(M1 + na_deltas[i].get_prec()).matrixL();
+      MatrixXd Sn_bar_cho = stan::math::inverse_spd(cho_fac).transpose();
+      MatrixXd M2 = M0 * (data.rowwise() - mu.transpose());
+      VectorXd num = (M2 * Sn_bar_cho).colwise().squaredNorm();
+      MatrixXd temp = (data.rowwise() - mu.transpose()).array().colwise() * sigma_bar.array();
+      num += temp.rowwise().sum();
+      num = -0.5 * num;
+
+      double log_det_prec = sigma_bar.array().log().sum() + \
+        na_deltas[i].get_log_det() + \
+        Sn_bar_cho.diagonal().array().log().sum();
+
+      out.row(a_jumps.size() + i) = num.array() + 0.5 * log_det_prec;
+    }
+
+    return out;
 }
 
 void MultivariateConditionalMCMC::_relabel() {

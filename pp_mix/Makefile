@@ -2,7 +2,7 @@ ROOT_DIR := .
 SRC_DIR := $(ROOT_DIR)/src
 SPIKES_DIR := $(SRC_DIR)/spikes
 PROTO_DIR := $(ROOT_DIR)/protos
-STAN_ROOT_DIR := $(if $(STAN_ROOT_DIR),$(STAN_ROOT_DIR),/home/mario/dev/bayesmix/lib/math)
+STAN_ROOT_DIR := $(if $(STAN_ROOT_DIR),$(STAN_ROOT_DIR),/Users/marioberaha/dev/bayesmix_origin/lib/math)
 
 CXX = g++
 CFLAGS = \
@@ -13,9 +13,10 @@ CFLAGS = \
 	-I $(STAN_ROOT_DIR)/lib/boost_*/ \
 	-I $(STAN_ROOT_DIR)/lib/sundials_*/include \
 	-I $(STAN_ROOT_DIR)/lib/tbb_*/include \
-	-I $(PROTO_DIR) \
-	-D_REENTRANT -fPIC \
-	-O3 -march=native -msse2 -funroll-loops -ftree-vectorize -fopenmp -Wfatal-errors
+	-I $(PROTO_DIR) $(shell pkg-config --cflags protobuf) \
+	-I `python3 -m pybind11 --includes` \
+	-D_REENTRANT -fPIC\
+	-O3 -funroll-loops -ftree-vectorize -fopenmp -Wfatal-errors
 LDLIBS = \
  	$(shell pkg-config --libs protobuf) -L$(STAN_ROOT_DIR)/lib/tbb \
 	-lgsl -lgslcblas -lpthread -ltbb -Wl,-rpath,"$(STAN_ROOT_DIR)/lib/tbb"
@@ -48,9 +49,10 @@ SPIKES_OBJS =  $(subst .cpp,.o, $(SPIKES_SRCS))
 all: generate_pybind
 
 generate_pybind: $(OBJS)
-	$(CXX) -shared $(CFLAGS) `/usr/bin/python3 -m pybind11 --includes` \
+	$(CXX) -shared $(CFLAGS) `python3 -m pybind11 --includes` \
+		`python3-config --cflags` `python3-config --libs` `python3-config --ldflags` \
 		src/python_exports.cpp -o \
-		pp_mix_high`/usr/bin/python3-config --extension-suffix` \
+		pp_mix_high`python3-config --extension-suffix` \
 		$(OBJS) $(LDLIBS) -fopenmp
 
 test: $(SPIKES_EXECS)
