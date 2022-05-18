@@ -67,7 +67,7 @@ class MultivariateConditionalMCMC {
     // etas: n x d matrix
     MatrixXd etas;
 
-    //Sigma_bar
+    // Sigma_bar
     VectorXd sigma_bar;
     //Lambda-block
     double tau;
@@ -189,6 +189,10 @@ class MultivariateConditionalMCMC {
     {
         return o_multi_normal_prec_lpdf(x, mu, sigma);
     }
+
+    // Returns a matrix with entries
+    //   out[i, j] = k(y_j, tau_i) = N(y_j, Lambda mu_i, Lambda Delta_i Lambda^T)
+    MatrixXd data_lpdf_in_components();
 
     //virtual VectorXd compute_grad_for_clus(int clus, const VectorXd &mean) = 0;
 
