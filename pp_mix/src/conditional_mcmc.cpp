@@ -407,11 +407,13 @@ MatrixXd MultivariateConditionalMCMC::data_lpdf_in_components() {
     MatrixXd M1( M0 * Lambda);
 
     MatrixXd out(a_jumps.size() + na_jumps.size(), data.rows());
+    int d = a_means.cols();
 
     for (int i = 0; i < a_jumps.size(); i++) {
       VectorXd mu = Lambda * a_means.row(i).transpose();
-      MatrixXd cho_fac = LLT<MatrixXd>(M1 + a_deltas[i].get_prec()).matrixL();
-      MatrixXd Sn_bar_cho = stan::math::inverse_spd(cho_fac).transpose();
+      MatrixXd Sn_bar_cho = LLT<MatrixXd>(
+        M1 + a_deltas[i].get_prec()).solve(MatrixXd::Identity(d, d));
+
       MatrixXd M2 = M0 * (data.rowwise() - mu.transpose());
       VectorXd num = (M2 * Sn_bar_cho).colwise().squaredNorm();
       MatrixXd temp = (data.rowwise() - mu.transpose()).array().colwise() * sigma_bar.array();
@@ -427,8 +429,8 @@ MatrixXd MultivariateConditionalMCMC::data_lpdf_in_components() {
 
     for (int i = 0; i < na_jumps.size(); i++) {
       VectorXd mu = Lambda * na_means.row(i).transpose();
-      MatrixXd cho_fac = LLT<MatrixXd>(M1 + na_deltas[i].get_prec()).matrixL();
-      MatrixXd Sn_bar_cho = stan::math::inverse_spd(cho_fac).transpose();
+      MatrixXd Sn_bar_cho = LLT<MatrixXd>(
+        M1 + a_deltas[i].get_prec()).solve(MatrixXd::Identity(d, d));
       MatrixXd M2 = M0 * (data.rowwise() - mu.transpose());
       VectorXd num = (M2 * Sn_bar_cho).colwise().squaredNorm();
       MatrixXd temp = (data.rowwise() - mu.transpose()).array().colwise() * sigma_bar.array();
