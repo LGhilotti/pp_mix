@@ -9,8 +9,8 @@
 //#include <stan/math/mix.hpp>
 //#include <stan/math/prim.hpp>
 
-#include "../protos/cpp/params.pb.h"
-#include "../protos/cpp/state.pb.h"
+#include "../../../protos/cpp/params.pb.h"
+#include "../../../protos/cpp/state.pb.h"
 #include "../../conditional_mcmc.hpp"
 #include "../../factory.hpp"
 #include "../../utils.hpp"
