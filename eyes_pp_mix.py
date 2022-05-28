@@ -95,7 +95,7 @@ hyperpar.dpp.s = s
 print(hyperpar)
 
 # Set sampler parameters
-ntrick =100000
+ntrick =1
 nburn=100000
 niter = 50000
 thin= 20
