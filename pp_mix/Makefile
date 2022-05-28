@@ -2,63 +2,59 @@ ROOT_DIR := .
 SRC_DIR := $(ROOT_DIR)/src
 SPIKES_DIR := $(SRC_DIR)/spikes
 PROTO_DIR := $(ROOT_DIR)/protos
-STAN_ROOT_DIR := /home/beraha/stan/math
+STAN_ROOT_DIR := $(if $(STAN_ROOT_DIR),$(STAN_ROOT_DIR),/home/mario/dev/bayesmix/lib/math)
 
 CXX = g++
 CFLAGS = \
-	-std=c++1y \
+	-std=c++14 \
 	-MMD \
-	-I$(STAN_ROOT_DIR) \
-	-I$(STAN_ROOT_DIR)/lib/eigen_3.3.9/ \
-	-I$(STAN_ROOT_DIR)/lib/boost_1.75.0/  \
-	-I$(STAN_ROOT_DIR)/lib/sundials_6.0.0/include  \
-	-I$(STAN_ROOT_DIR)/lib/tbb_2020.3/include  \
-	-I$(PROTO_DIR) \
+	-I $(STAN_ROOT_DIR) \
+	-I $(STAN_ROOT_DIR)/lib/eigen_*/ \
+	-I $(STAN_ROOT_DIR)/lib/boost_*/ \
+	-I $(STAN_ROOT_DIR)/lib/sundials_*/include \
+	-I $(STAN_ROOT_DIR)/lib/tbb_*/include \
+	-I $(PROTO_DIR) \
 	-D_REENTRANT -fPIC \
-	-O3 -march=native -msse2 -funroll-loops -ftree-vectorize -fopenmp 
+	-O3 -march=native -msse2 -funroll-loops -ftree-vectorize -fopenmp -Wfatal-errors
 LDLIBS = \
  	$(shell pkg-config --libs protobuf) -L$(STAN_ROOT_DIR)/lib/tbb \
 	-lgsl -lgslcblas -lpthread -ltbb -Wl,-rpath,"$(STAN_ROOT_DIR)/lib/tbb"
 LDFLAGS = -D_REENTRANT -O3 -fopenmp
 
 PROTO_SRCS = $(wildcard $(PROTO_DIR)/cpp/*.cpp)
-PG_SRCS = $(wildcard $(PG_DIR)/*.cpp) $(wildcard $(PG_DIR)/include/*.cpp)
-SPIKES_SRCS = $(wildcard $(SPIKES_DIR)/test_valgrind/*.cpp)
+SPIKES_SRCS = $(SPIKES_DIR)/sim_autodiff_analit/main_memory.cpp \
+				#$(SPIKES_DIR)/test_ctilde_update/test_ctilde.cpp
+				#$(SPIKES_DIR)/test_kappas_reduced/test_kappas.cpp
+				#$(SPIKES_DIR)/test_derivatives/test_derivat.cpp
+				#$(SPIKES_DIR)/test_valgrind/run_test_p6_d4.cpp
+				#$(SPIKES_DIR)/p50_inference_test/test_all_p50_d2_3g_inference.cpp
+				#$(SPIKES_DIR)/first_inference_test/inf_multiple_params/debug_all_p200_d2_3g.cpp
+				#$(SPIKES_DIR)/first_inference_test/test_lambdablock_p4_d2_3g_inference.cpp
+				#$(SPIKES_DIR)/first_inference_test/test_sigmabar_inference.cpp
+				#$(SPIKES_DIR)/first_inference_test/test_lambdablock_p5_inference.cpp
+
 OUR_SRCS = $(wildcard $(SRC_DIR)/*.cpp) \
 		   $(wildcard $(SRC_DIR)/precs/*.cpp) \
-		   $(wildcard $(SRC_DIR)/jumps/*.cpp) \
 		   $(wildcard $(SRC_DIR)/point_process/*.cpp)
 
-PP_SRCS = $(wildcard $(SRC_DIR)/pointprocess/*.cpp)
 OUR_SRCS := $(filter-out ./src/python_exports.cpp, $(OUR_SRCS))
 
-SRCS = $(PROTO_SRCS) $(PG_SRCS) $(OUR_SRCS) $(PP_SRCS)
+SRCS = $(PROTO_SRCS) $(OUR_SRCS)
 OBJS = $(subst .cpp,.o, $(SRCS))
 DEPENDS := $(patsubst %.cpp,%.d,$(SRCS))
 
 SPIKES_EXECS = $(subst .cpp,.out, $(SPIKES_SRCS))
 SPIKES_OBJS =  $(subst .cpp,.o, $(SPIKES_SRCS))
 
-info:
-	@echo " Info..."
-	@echo " ROOT_DIR  = $(ROOT_DIR)"
-	@echo " PROTO_DIR = $(PROTO_DIR)"
-	@echo " SRC_DIR = $(SRC_DIR)"
-	@echo " SPIKES_DIR = $(SPIKES_DIR)"
-	@echo " SOURCES = $(SRCS)"
-	@echo " OBJECTS = $(OBJS)"
-	@echo " EXECS = $(SPIKES_EXECS)"
-	@echo " STAN_ROOT_DIR = $(STAN_ROOT_DIR)"
-	@echo " DEPENDS = $(DEPENDS)
-
-all: generate_pybind $(SPIKES_EXECS)
-
+all: generate_pybind
 
 generate_pybind: $(OBJS)
-	$(CXX) -shared $(CFLAGS) `python3 -m pybind11 --includes` \
+	$(CXX) -shared $(CFLAGS) `/usr/bin/python3.8 -m pybind11 --includes` \
 		src/python_exports.cpp -o \
-		pp_mix_high`python3-config --extension-suffix` \
+		pp_mix_high`/usr/bin/python3.8-config --extension-suffix` \
 		$(OBJS) $(LDLIBS) -fopenmp
+
+test: $(SPIKES_EXECS)
 
 $(SPIKES_EXECS): %.out: %.o $(OBJS)
 	$(CXX) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJS) $< $(LDLIBS)
@@ -69,7 +65,7 @@ $(SPIKES_EXECS): %.out: %.o $(OBJS)
 	$(CXX) $(CFLAGS) -MMD -MP -c $< -o $@
 
 clean:
-	rm $(OBJS) $(SPIKES_OBJS) run_from_file.o $(DEPENDS)
+	rm $(SPIKES_OBJS) $(OBJS) $(DEPENDS)
 
 distclean: clean
 

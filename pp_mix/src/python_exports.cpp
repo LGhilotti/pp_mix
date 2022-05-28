@@ -54,10 +54,10 @@ std::tuple<std::deque<py::bytes>, double , double>
 
   MCMCsampler::MultivariateConditionalMCMC sampler(pp_mix, g, params, d);
   sampler.initialize(data);
-  
+
   Eigen::VectorXi init_allocs_ = Eigen::Map<Eigen::VectorXi>(init_allocs.data(), init_allocs.size());
   sampler.set_clus_alloc(init_allocs_);
-  sampler._relabel(); 
+  sampler._relabel();
   py::print("Number means in trick phase: ", sampler.get_num_a_means());
 
   for (int i = 0; i < ntrick; i++) {

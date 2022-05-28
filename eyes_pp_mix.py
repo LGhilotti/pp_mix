@@ -72,7 +72,7 @@ print("d= ",d)
 params_file = "data/Eyes_data/resources/sampler_params.asciipb"
 
 # Set the expected number of centers a priori
-rho = 100.
+rho = 30.
 
 # Fix "s", then: rho_max = rho/s
 # It follows: c = rho_max * (2 pi)^{d/2}

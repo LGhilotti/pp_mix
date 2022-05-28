@@ -232,19 +232,19 @@ void MultivariateConditionalMCMC::run_one_trick() {
 
   //std::cout<<"sample means na"<<std::endl;
   sample_means_obj->perform_update_trick_na(Ctilde);
-  
+
   //std::cout<<"sample jumps na"<<std::endl;
   sample_jumps_na();
-  
+
   //std::cout<<"sample deltsa na"<<std::endl;
   sample_deltas_na();
 
 //  std::cout<<"sample means a"<<std::endl;
   sample_means_obj->perform_update_allocated(Ctilde);
-  
+
 //  std::cout<<"sample deltas a"<<std::endl;
   sample_deltas_a();
-  
+
 //  std::cout<<"sample jumps a"<<std::endl;
   sample_jumps_a();
 
@@ -262,7 +262,7 @@ void MultivariateConditionalMCMC::run_one_trick() {
 
 //  std::cout<<"sample Phi"<<std::endl;
   sample_Phi();
-  
+
 //  std::cout<<"before sampling Lambda"<<std::endl;
   sample_lambda->perform(Ctilde);
  //std::cout<<"sample Lambda"<<std::endl;
@@ -402,7 +402,7 @@ void MultivariateConditionalMCMC::sample_allocations_and_relabel() {
 }
 
 MatrixXd MultivariateConditionalMCMC::data_lpdf_in_components() {
-  
+
     MatrixXd M0(Lambda.transpose() * sigma_bar.asDiagonal());
     MatrixXd M1( M0 * Lambda);
 
