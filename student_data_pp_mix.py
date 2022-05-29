@@ -51,7 +51,7 @@ n = 4
 #thin= 20
 #log_ev=50
 
-ntrick =3
+ntrick =1
 nburn=2
 niter =2
 thin= 1
@@ -75,7 +75,7 @@ for p,dtrue,M,npc in product(p_s, d_s, M_s, n_percluster_s):
     #######################################
     
     # read the dataset
-    with open("data/Student_data/stud_p_{0}_d_{1}_M_{2}_npc_{3}_data.csv".format(p,dtrue,M,npc), newline='') as my_csv:
+    with open("data/Student_data/datasets/stud_p_{0}_d_{1}_M_{2}_npc_{3}_data.csv".format(p,dtrue,M,npc), newline='') as my_csv:
         data = pd.read_csv(my_csv, sep=',', header=None).values
         
     # scaling of data
@@ -83,20 +83,20 @@ for p,dtrue,M,npc in product(p_s, d_s, M_s, n_percluster_s):
     scaling_var=stat.median(np.std(data,0))
     data_scaled=(data-centering_var)/scaling_var
 
-    # SVD decomposition to estimate the number of latent factors d (following Chandra)
-    svd = TruncatedSVD(n_components=10, n_iter=7, random_state=42)
-    svd.fit(data_scaled)
+    # Read the latent dimension for the current datasets (already computed since used also in Chandra)
+    with open("data/Student_data/latent_dim/stud_p_{0}_d_{1}_M_{2}_npc_{3}_lat_dim.txt".format(p,dtrue,M,npc)) as my_file:
+        d = int(my_file.read())
 
-    # d is set to be the minimum number of eigenbalues explaining at least 90% of the variability in the data.
-    cum_eigs= np.cumsum(svd.singular_values_)/svd.singular_values_.sum()
-    d=np.min(np.where(cum_eigs>.90))
-
+    
+    outpath_d = "data/Student_data/applam/app_p_{0}_d_{1}_M_{2}_npc_{3}_out".format(p,dtrue,M,npc)
+    if not(os.path.exists(outpath_d)):
+        os.makedirs(outpath_d)
     ####################################
     ##### HYPERPARAMETERS ##############
     ####################################
 
     # Set the expected number of centers a priori
-    rho_s = [5, 15, 30]
+    rho_s = [5, 10, 20]
     
     for rho in rho_s:
         
@@ -115,7 +115,7 @@ for p,dtrue,M,npc in product(p_s, d_s, M_s, n_percluster_s):
         hyperpar.dpp.n = n
         hyperpar.dpp.s = s
         
-        #hyperpar.wishart.nu = hyperpar.wishart.nu + d
+        hyperpar.wishart.nu = hyperpar.wishart.nu + d
 
         ###################################
         ######## MCMC SAMPLER #############
@@ -127,13 +127,15 @@ for p,dtrue,M,npc in product(p_s, d_s, M_s, n_percluster_s):
         # Run the algorithm
         sampler.run(ntrick, nburn, niter, thin, data_scaled, d, log_every = log_ev)
 
-        base_outpath = "data/Student_data/out{0}"
-        i = 0
-        while os.path.exists(base_outpath.format(i)):
-            i = i+1
-        outpath = base_outpath.format(i)
-        os.makedirs(outpath)
 
+        # Save results in folder
+        base_outpath_rho = os.path.join(outpath_d, "rho_{0}_out".format(rho)) + "_{0}"
+        i = 0
+        while os.path.exists(base_outpath_rho.format(i)):
+            i = i+1
+        outpath = base_outpath_rho.format(i)
+        os.makedirs(outpath)
+            
         # Save the serialized chain produced by the sampler
         sampler.serialize_chains(os.path.join(outpath, "chains.recordio"))
 

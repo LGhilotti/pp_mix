@@ -42,7 +42,7 @@ class ConditionalMCMC(object):
         else:
             check_ranges(ranges, d)
 
-        print("ranges: \n" , ranges)
+        #print("ranges: \n" , ranges)
 
         self.serialized_data = to_proto(data).SerializeToString()
         self.serialized_ranges = to_proto(ranges).SerializeToString()
@@ -51,7 +51,7 @@ class ConditionalMCMC(object):
         allocs = km.labels_.astype(int)
 
         self._serialized_chains, self.means_ar, self.lambda_ar = pp_mix_high._run_pp_mix(
-            ntrick, nburn, niter, thin, self.serialized_data, self.serialized_params, 
+            ntrick, nburn, niter, thin, self.serialized_data, self.serialized_params,
             d, self.serialized_ranges, allocs, log_every)
 
         objType = MultivariateMixtureState

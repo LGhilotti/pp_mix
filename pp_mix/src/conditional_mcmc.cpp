@@ -161,38 +161,38 @@ bool MultivariateConditionalMCMC::is_inside(const VectorXd & point){
 
 void MultivariateConditionalMCMC::run_one() {
 
-  std::cout<<"sample u"<<std::endl;
+  //std::cout<<"sample u"<<std::endl;
   sample_u();
 
-  std::cout<<"compute psi"<<std::endl;
+  //std::cout<<"compute psi"<<std::endl;
 
   // compute laplace transform psi in u
   double psi_u = laplace(u);
 
-  std::cout<<"sample alloca and relabel"<<std::endl;
+  //std::cout<<"sample alloca and relabel"<<std::endl;
   // sample c | rest and reorganize the all and nall parameters, and c as well
   sample_allocations_and_relabel();
 
-  std::cout<<"sample means na"<<std::endl;
+  //std::cout<<"sample means na"<<std::endl;
   // sample non-allocated variables
   // I can set Ctilde with all the means and then remove or add row/column when na_means is updated.
   //Ctilde = pp_mix->compute_Ctilde(get_all_means());
   sample_means_na(psi_u);
 
-  std::cout<<"sample jumps na"<<std::endl;
+  //std::cout<<"sample jumps na"<<std::endl;
   sample_jumps_na();
 
-  std::cout<<"sample deltsa na"<<std::endl;
+  //std::cout<<"sample deltsa na"<<std::endl;
   sample_deltas_na();
 
-  std::cout<<"sample means a"<<std::endl;
+  //std::cout<<"sample means a"<<std::endl;
   // sample allocated variables
   sample_means_obj->perform_update_allocated(Ctilde);
 
-  std::cout<<"sample deltas a"<<std::endl;
+  //std::cout<<"sample deltas a"<<std::endl;
   sample_deltas_a();
 
-  std::cout<<"sample jumps a"<<std::endl;
+  //std::cout<<"sample jumps a"<<std::endl;
   sample_jumps_a();
 
   //// TEST
@@ -200,11 +200,11 @@ void MultivariateConditionalMCMC::run_one() {
   //std::cout<<"Ctilde_after_alloc:\n"<<Ctilde<<std::endl;
 
   // sample etas
-  std::cout << "sample etas" << std::endl;
+  //std::cout << "sample etas" << std::endl;
   sample_etas();
 
   // sample Sigma bar
-  std::cout << "sample etas" << std::endl;
+  //std::cout << "sample etas" << std::endl;
   sample_sigma_bar();
 
   // sample Lambda block
