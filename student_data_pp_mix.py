@@ -46,17 +46,11 @@ SPECIFIC_PARAMS_FILE = "data/Student_data/resources/pars_p_{0}_d_{1}_M_{2}_npc_{
 n = 4
 
 # Set sampler parameters
-#ntrick =100000
-#nburn=100000
-#niter = 50000
-#thin= 20
-#log_ev=50
-
-ntrick =1
-nburn=2
-niter =2
-thin= 1
-log_ev=1
+ntrick =100000
+nburn=100000
+niter = 50000
+thin= 20
+log_ev=50
 
 if __name__ == "__main__" :
     parser = argparse.ArgumentParser()
