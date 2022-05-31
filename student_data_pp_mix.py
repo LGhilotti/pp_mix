@@ -60,9 +60,9 @@ log_ev=1
 
 if __name__ == "__main__" :
     parser = argparse.ArgumentParser()
-    parser.add_argument("--p_values", nargs="+", default=["100", "200"])
-    parser.add_argument("--d_values", nargs="+", default=["2", "5"])
-    parser.add_argument("--m_values", nargs="+", default=["4", "8"])
+    parser.add_argument("--p_values", nargs="+", default=["100", "200", "400"])
+    parser.add_argument("--d_values", nargs="+", default=["2", "5", "10"])
+    parser.add_argument("--m_values", nargs="+", default=["4", "8", "12"])
     parser.add_argument("--n_by_clus", nargs="+", default=["50"])
     args = parser.parse_args()
 
