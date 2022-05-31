@@ -68,7 +68,7 @@ for (p in p_s){
         diag_psi_iw=20
         niw_kap=1e-3
         nu=d+50
-        conc_dir_s = c(.1,0.2)
+        conc_dir_s = c(0.25, 0.5, 1)
 
         for (conc_dir in conc_dir_s){
           #### Fit the `Lamb` Model
