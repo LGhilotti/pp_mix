@@ -16,7 +16,7 @@ sourceCpp("lamb_code/DL_linear_split_merge_package.cpp") ##This is the souce C++
 set.seed(1234)
 
 nburn=1e3
-niter =5e3
+niter =25e3
 thin= 5
 
 ############################################
