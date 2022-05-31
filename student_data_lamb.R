@@ -15,18 +15,17 @@ sourceCpp("lamb_code/DL_linear_split_merge_package.cpp") ##This is the souce C++
 #################
 set.seed(1234)
 
-#nrun=5e3, burn=1e3
-nburn=2
-niter =2
-thin= 1
+nburn=1e3
+niter =5e3
+thin= 5
 
 ############################################
 ## RUN ON DIFFERENT DATASETS AND SETTINGS ##
 ############################################
 
-p_s = c(100, 200)
-d_s = c(2, 5)
-M_s = c(4, 8)
+p_s = c(100, 200, 400)
+d_s = c(2, 5, 10)
+M_s = c(4, 8, 12)
 n_percluster_s = c(50)
 
 # Outer cycle for reading the different datasets and perform the estimation
