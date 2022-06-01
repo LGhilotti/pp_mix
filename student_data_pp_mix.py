@@ -203,7 +203,7 @@ if __name__ == "__main__" :
             list_performance = list()
             list_performance.append([p,dtrue,d,M,npc,sampler.means_ar, sampler.lambda_ar, rho, post_mode_nclus,
                                 post_avg_nclus, post_avg_nonall, ari_best_clus, CI_aris])
-            df_performance = pd.DataFrame(list_performance, columns=('p','dtrue','d','M','npc','means_ar','lambda_ar', 'rho',
+            df_performance = pd.DataFrame(list_performance, columns=('p','dtrue','d','M','npc','means_ar','lambda_ar', 'intensity',
                                                 'mode_nclus', 'avg_nclus', 'avg_nonalloc', 'ari_best_clus', 'CI_aris'))
             df_performance.to_csv(os.path.join(outpath, "df_performance.csv"))
 
