@@ -201,9 +201,9 @@ if __name__ == "__main__" :
             mean_aris, sigma_aris = np.mean(aris_chain), np.std(aris_chain) # store mean_aris in dataframe
             CI_aris = norm.interval(0.95, loc=mean_aris, scale=sigma_aris/sqrt(len(aris_chain))) # store in dataframe
             list_performance = list()
-            list_performance.append([p,dtrue,d,M,npc,sampler.means_ar, sampler.lambda_ar, post_mode_nclus,
+            list_performance.append([p,dtrue,d,M,npc,sampler.means_ar, sampler.lambda_ar, rho, post_mode_nclus,
                                 post_avg_nclus, post_avg_nonall, ari_best_clus, CI_aris])
-            df_performance = pd.DataFrame(list_performance, columns=('p','dtrue','d','M','npc','means_ar','lambda_ar',
+            df_performance = pd.DataFrame(list_performance, columns=('p','dtrue','d','M','npc','means_ar','lambda_ar', 'rho',
                                                 'mode_nclus', 'avg_nclus', 'avg_nonalloc', 'ari_best_clus', 'CI_aris'))
             df_performance.to_csv(os.path.join(outpath, "df_performance.csv"))
 
