@@ -95,7 +95,7 @@ for (p in p_s){
           write.table(post.samples, file = outpath + "alloc_matrix.csv" , 
                       quote=FALSE, eol="\n", row.names=FALSE, col.names=FALSE,  sep=",")
           
-          write(x=conc_dir, file = outpath + "conc_param")
+          write(x=conc_dir, file = outpath + "conc_param.txt")
           
           
         }
