@@ -433,7 +433,7 @@ double _gig_mode(double lambda, double omega)
   
   
   
-#define ZTOL (DOUBLE_EPS*10.0)
+#define ZTOL (DBL_EPSILON*10.0)
   // [[Rcpp::export]]
   /*---------------------------------------------------------------------------*/
   double rgig( double lambda, double chi, double psi)
