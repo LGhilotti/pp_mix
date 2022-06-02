@@ -10,7 +10,7 @@ library("readxl")
 library("iterators")
 library("glue")
 
-sourceCpp("lamb_code/DL_linear_split_merge_package.cpp") ##This is the souce C++ file
+sourceCpp("lamb_mod/DL_linear_split_merge_package.cpp") ##This is the souce C++ file
 
 
 #################
