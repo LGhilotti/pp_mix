@@ -1,11 +1,6 @@
 library("Rcpp")
-library("pracma")
-#library("tidyverse")
 library("readr")
-library("uwot")
 library("irlba")
-library("mclust")
-library("mcclust")
 library("readxl")
 library("iterators")
 library("glue")
@@ -19,6 +14,7 @@ set.seed(1234)
 nburn=1e3
 niter =25e3
 thin= 5
+
 
 ############################################
 ## RUN ON DIFFERENT DATASETS AND SETTINGS ##
@@ -48,7 +44,7 @@ for (p in p_s){
         
         # Read the latent dimension for the current datasets (already computed since used also in Applam)
         d = strtoi(read_file(file = glue("data/Student_data/latent_dim/stud_p_{p}_d_{dtrue}_M_{M}_npc_{npc}_lat_dim.txt")))
-        
+
         outpath_d = glue("data/Student_data/lamb_out/lamb_p_{p}_d_{dtrue}_M_{M}_npc_{npc}_out")
         if (!(dir.exists(outpath_d))){
           dir.create(outpath_d)
