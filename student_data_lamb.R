@@ -1,6 +1,7 @@
 library("Rcpp")
 library("pracma")
-library("tidyverse")
+#library("tidyverse")
+library("readr")
 library("uwot")
 library("irlba")
 library("mclust")
