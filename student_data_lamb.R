@@ -43,8 +43,9 @@ for (p in p_s){
         data_scaled=as.matrix((data-centering.var)/scaling.var)
         
         # Read the latent dimension for the current datasets (already computed since used also in Applam)
-        d = strtoi(read_file(file = glue("data/Student_data/latent_dim/stud_p_{p}_d_{dtrue}_M_{M}_npc_{npc}_lat_dim.txt")))
-
+        #d = strtoi(read_file(file = glue("data/Student_data/latent_dim/stud_p_{p}_d_{dtrue}_M_{M}_npc_{npc}_lat_dim.txt")))
+        d = dtrue
+          
         outpath_d = glue("data/Student_data/lamb_out/lamb_p_{p}_d_{dtrue}_M_{M}_npc_{npc}_out")
         if (!(dir.exists(outpath_d))){
           dir.create(outpath_d)
@@ -92,7 +93,7 @@ for (p in p_s){
           write.table(post.samples, file = outpath + "alloc_matrix.csv" , 
                       quote=FALSE, eol="\n", row.names=FALSE, col.names=FALSE,  sep=",")
           
-          write(x=conc_dir, file = outpath + "conc_param.txt")
+          write(x=conc_dir, file = outpath + "/conc_param.txt")
           
           
         }

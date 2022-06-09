@@ -46,17 +46,17 @@ SPECIFIC_PARAMS_FILE = "data/Student_data/resources/pars_p_{0}_d_{1}_M_{2}_npc_{
 n = 4
 
 # Set sampler parameters
-ntrick =100000
-nburn=100000
-niter = 50000
-thin= 20
-log_ev=50
+ntrick =1000
+nburn=2000
+niter = 5000
+thin= 5
+log_ev=100
 
 if __name__ == "__main__" :
     parser = argparse.ArgumentParser()
-    parser.add_argument("--p_values", nargs="+", default=["100", "200", "400"])
-    parser.add_argument("--d_values", nargs="+", default=["2", "5", "10"])
-    parser.add_argument("--m_values", nargs="+", default=["4", "8", "12"])
+    parser.add_argument("--p_values", nargs="+", default=["100", "200"])
+    parser.add_argument("--d_values", nargs="+", default=["2", "5"])
+    parser.add_argument("--m_values", nargs="+", default=["4", "8"])
     parser.add_argument("--n_by_clus", nargs="+", default=["50"])
     args = parser.parse_args()
 
@@ -83,9 +83,9 @@ if __name__ == "__main__" :
         data_scaled=(data-centering_var)/scaling_var
 
         # Read the latent dimension for the current datasets (already computed since used also in Chandra)
-        with open("data/Student_data/latent_dim/stud_p_{0}_d_{1}_M_{2}_npc_{3}_lat_dim.txt".format(p,dtrue,M,npc)) as my_file:
-            d = int(my_file.read())
-
+        #with open("data/Student_data/latent_dim/stud_p_{0}_d_{1}_M_{2}_npc_{3}_lat_dim.txt".format(p,dtrue,M,npc)) as my_file:
+        #    d = int(my_file.read())
+        d = dtrue
         
         outpath_d = "data/Student_data/applam/app_p_{0}_d_{1}_M_{2}_npc_{3}_out".format(p,dtrue,M,npc)
         if not(os.path.exists(outpath_d)):
