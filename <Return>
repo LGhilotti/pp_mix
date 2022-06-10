@@ -1,0 +1,2 @@
+#! usr/bin/bash
+mv conc_0.25_out1alloc_matrix.csv conc_0.25_out1/alloc_matrix.cvs
