@@ -47,7 +47,7 @@ n = 4
 
 # Set sampler parameters
 ntrick =1000
-nburn=2000
+nburn=3000
 niter = 5000
 thin= 5
 log_ev=100
