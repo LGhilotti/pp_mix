@@ -11,21 +11,18 @@ sourceCpp("lamb_mod/DL_linear_split_merge_package.cpp") ##This is the souce C++ 
 #################
 set.seed(1234)
 
-nburn=1e3
-niter =25e3
-thin= 5
+nburn=1e5
+niter =1e5
+thin= 50
 
 
 ############################################
 ## RUN ON DIFFERENT DATASETS AND SETTINGS ##
 ############################################
 
-#p_s = c(100, 200, 400)
-p_s = 400
-#d_s = c(2, 5, 10)
-d_s = 10
-#M_s = c(4, 8, 12)
-M_s = 12
+p_s = c(200)
+d_s = c(2, 5)
+M_s = c(4, 8)
 n_percluster_s = c(50)
 
 # Outer cycle for reading the different datasets and perform the estimation
@@ -69,8 +66,7 @@ for (p in p_s){
         diag_psi_iw=20
         niw_kap=1e-3
         nu=d+50
-        #conc_dir_s = c(0.25, 0.5, 1)
-        conc_dir_s = c(0.5,1)
+        conc_dir_s = c(0.1, 0.25, 0.5, 1)
 
         for (conc_dir in conc_dir_s){
           #### Fit the `Lamb` Model
@@ -85,7 +81,6 @@ for (p in p_s){
           
           # Save results in folder
           base_outpath_conc = outpath_d + "/conc_{conc_dir}_out"
-          #i = 0
           i=1
           while (dir.exists(base_outpath_conc + "{i}")){
             i = i+1
