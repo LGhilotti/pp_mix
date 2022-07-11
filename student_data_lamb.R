@@ -21,7 +21,7 @@ thin= 50
 ############################################
 
 p_s = c(200)
-d_s = c(2, 5)
+d_s = c(8)
 M_s = c(4, 8)
 n_percluster_s = c(50)
 
@@ -66,7 +66,7 @@ for (p in p_s){
         diag_psi_iw=20
         niw_kap=1e-3
         nu=d+50
-        conc_dir_s = c(0.1, 0.25, 0.5, 1)
+        conc_dir_s = c(0.1, 0.5, 1)
 
         for (conc_dir in conc_dir_s){
           #### Fit the `Lamb` Model
