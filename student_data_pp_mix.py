@@ -43,12 +43,12 @@ DEFAULT_PARAMS_FILE = "data/Student_data/resources/sampler_params.asciipb"
 SPECIFIC_PARAMS_FILE = "data/Student_data/resources/pars_p_{0}_d_{1}_M_{2}_npc_{3}.asciipb"
 
 # Set the truncation level N (here called n)
-n = 4
+n = 3
 
 # Set sampler parameters
 ntrick =1000
-nburn=3000
-niter = 5000
+nburn=2000
+niter = 4000
 thin= 5
 log_ev=100
 
