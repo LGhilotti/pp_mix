@@ -39,8 +39,8 @@ np.random.seed(12345)
 ##############################################
 
 # Set hyperparameters (agreeing with Chandra)
-DEFAULT_PARAMS_FILE = "data/Student_data/resources/sampler_params.asciipb"
-SPECIFIC_PARAMS_FILE = "data/Student_data/resources/pars_p_{0}_d_{1}_M_{2}_npc_{3}.asciipb"
+DEFAULT_PARAMS_FILE = "data/Student_latent_data/resources/sampler_params.asciipb"
+SPECIFIC_PARAMS_FILE = "data/Student_latent_data/resources/pars_p_{0}_d_{1}_M_{2}_npc_{3}.asciipb"
 
 # Set the truncation level N (here called n)
 n = 3
@@ -54,8 +54,8 @@ log_ev=100
 
 if __name__ == "__main__" :
     parser = argparse.ArgumentParser()
-    parser.add_argument("--p_values", nargs="+", default=["100"])
-    parser.add_argument("--d_values", nargs="+", default=["8"])
+    parser.add_argument("--p_values", nargs="+", default=["100","200"])
+    parser.add_argument("--d_values", nargs="+", default=["2","5","8"])
     parser.add_argument("--m_values", nargs="+", default=["4"])
     parser.add_argument("--n_by_clus", nargs="+", default=["50"])
     args = parser.parse_args()
@@ -74,7 +74,7 @@ if __name__ == "__main__" :
         #######################################
         
         # read the dataset
-        with open("data/Student_data/datasets/stud_p_{0}_d_{1}_M_{2}_npc_{3}_data.csv".format(p,dtrue,M,npc), newline='') as my_csv:
+        with open("data/Student_latent_data/datasets/stud_p_{0}_d_{1}_M_{2}_npc_{3}_data.csv".format(p,dtrue,M,npc), newline='') as my_csv:
             data = pd.read_csv(my_csv, sep=',', header=None).values
             
         # scaling of data
@@ -87,7 +87,7 @@ if __name__ == "__main__" :
         #    d = int(my_file.read())
         d = dtrue
         
-        outpath_d = "data/Student_data/applam/app_p_{0}_d_{1}_M_{2}_npc_{3}_out".format(p,dtrue,M,npc)
+        outpath_d = "data/Student_latent_data/applam/app_p_{0}_d_{1}_M_{2}_npc_{3}_out".format(p,dtrue,M,npc)
         if not(os.path.exists(outpath_d)):
             os.makedirs(outpath_d)
 
@@ -96,7 +96,7 @@ if __name__ == "__main__" :
         ####################################
 
         # Set the expected number of centers a priori
-        rho_s = [20]
+        rho_s = [5,10]
         
         for rho in rho_s:
             
