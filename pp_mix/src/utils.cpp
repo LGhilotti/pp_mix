@@ -145,6 +145,7 @@ VectorXd softmax(const VectorXd &logs) {
       num(j)=exp((logs(j)-logs.maxCoeff()));
     }
   }
+  std::cout<<"num: "<<num<<std::endl;
   return num / num.sum();
   // after a "strange" step, what it returns is (p1/P,...,pM/P), where P=sum(pi)
   // what it receives is (ln(p1),...,ln(pM))
