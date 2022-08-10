@@ -62,7 +62,8 @@ $(SPIKES_EXECS): %.out: %.o $(OBJS)
 -include $(DEPENDS)
 
 %.o : %.cpp
-	$(CXX) $(CFLAGS) -MMD -MP -c $< -o $@
+	$(CXX) $(CFLAGS) `/usr/bin/python3.8 -m pybind11 --includes` \
+	-MMD -MP -c $< -o $@
 
 clean:
 	rm $(SPIKES_OBJS) $(OBJS) $(DEPENDS)
