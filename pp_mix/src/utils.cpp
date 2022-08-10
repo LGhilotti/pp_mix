@@ -1,4 +1,8 @@
 #include "utils.hpp"
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
+namespace py = pybind11;
 
 void delete_row(MatrixXd *x, int ind) {
   int nrow = x->rows() - 1;

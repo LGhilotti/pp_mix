@@ -12,15 +12,11 @@
 #include <stan/math/prim.hpp>
 #include <vector>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-
 #include "../protos/cpp/state.pb.h"
 #include "precs/precmat.hpp"
 
 using namespace Eigen;
 using std::vector;
-namespace py = pybind11;
 
 void delete_row(MatrixXd *x, int ind);
 
