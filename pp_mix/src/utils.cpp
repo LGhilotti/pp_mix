@@ -1,8 +1,4 @@
 #include "utils.hpp"
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-
-namespace py = pybind11;
 
 void delete_row(MatrixXd *x, int ind) {
   int nrow = x->rows() - 1;
@@ -149,7 +145,7 @@ VectorXd softmax(const VectorXd &logs) {
       num(j)=exp((logs(j)-logs.maxCoeff()));
     }
   }
-  py::print("num: ", num);
+  std::cout<<"num: "<<num<<std::endl;
   return num / num.sum();
   // after a "strange" step, what it returns is (p1/P,...,pM/P), where P=sum(pi)
   // what it receives is (ln(p1),...,ln(pM))
