@@ -39,22 +39,29 @@ M load_csv (const std::string & path) {
 }
 
 int main() {
-
-    MatrixXd datacsv = load_csv<MatrixXd>("/home/lorenzo/Documents/Tesi/github_repos/pp_mix/data/Student_data/datasets/stud_p_400_d_8_M_4_npc_50_data.csv");
-
+std::cout<<"begin"<<std::endl;
+    MatrixXd datacsv = load_csv<MatrixXd>("/home/lorenzo/Documents/Tesi/github_repos/pp_mix/data/Student_data/datasets/stud_p_200_d_2_M_4_npc_50_data.csv");
+    std::cout<<"here2"<<std::endl;
     std::string params_file = \
       "/home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/resources/sampler_params.asciipb";
     Params params = loadTextProto<Params>(params_file);
     // NOTE: We use all params
+    std::cout<<"here3"<<std::endl;
     int d = 8;
 
     DeterminantalPP* pp_mix = make_dpp(params, d);
+    std::cout<<"here4"<<std::endl;
     BasePrec* g = make_delta(params, d);
-
+std::cout<<"here5"<<std::endl;
     MCMCsampler::MultivariateConditionalMCMC sampler(pp_mix, g, params, d);
-
+std::cout<<"here6"<<std::endl;
     sampler.initialize(datacsv);
 
+    Eigen::VectorXi init_allocs_ = VectorXi::Zero(datacsv.rows());
+    sampler.set_clus_alloc(init_allocs_);
+    sampler._relabel();
+
+std::cout<<"here7"<<std::endl;
     int log_every=10;
     int ntrick = 100;
     int burnin = 100;
