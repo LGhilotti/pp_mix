@@ -40,10 +40,10 @@ M load_csv (const std::string & path) {
 
 int main() {
 std::cout<<"begin"<<std::endl;
-    MatrixXd datacsv = load_csv<MatrixXd>("/home/lorenzo/Documents/Tesi/github_repos/pp_mix/data/Student_data/datasets/stud_p_200_d_2_M_4_npc_50_data.csv");
+    MatrixXd datacsv = load_csv<MatrixXd>("/home/beraha/pp_mix/data/Student_data/datasets/datasets/stud_p_200_d_2_M_4_npc_50_data.csv");
     std::cout<<"here2"<<std::endl;
     std::string params_file = \
-      "/home/lorenzo/Documents/Tesi/github_repos/pp_mix/pp_mix/resources/sampler_params.asciipb";
+      "/home/beraha/pp_mix/pp_mix/resources/sampler_params.asciipb";
     Params params = loadTextProto<Params>(params_file);
     // NOTE: We use all params
     std::cout<<"here3"<<std::endl;
