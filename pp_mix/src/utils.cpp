@@ -139,6 +139,8 @@ std::vector<VectorXd> to_vector_of_vectors(const MatrixXd &mat) {
 }
 
 VectorXd softmax(const VectorXd &logs) {
+
+  std::cout<<"inside softmax"<<std::endl;
   VectorXd num = VectorXd::Zero(logs.size());
   for (int j = 0; j<logs.size(); j++){
     if (!(isinf(logs(j)) || isnan(logs(j)))){

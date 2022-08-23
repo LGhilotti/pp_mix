@@ -63,9 +63,9 @@ std::cout<<"here6"<<std::endl;
 
 std::cout<<"here7"<<std::endl;
     int log_every=10;
-    int ntrick = 100;
-    int burnin = 100;
-    int niter=100;
+    int ntrick = 0;
+    int burnin = 0;
+    int niter=50;
     int thin = 1;
 
     for (int i = 0; i < ntrick; i++) {
