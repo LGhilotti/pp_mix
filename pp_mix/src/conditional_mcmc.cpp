@@ -395,7 +395,7 @@ void MultivariateConditionalMCMC::sample_allocations_and_relabel() {
   }
 
   for (int i = 0; i < ndata; i++) {
-    VectorXd probas = softmax(log_probas.col(i));
+    VectorXd probas = softmax_fun(log_probas.col(i));
     clus_alloc[i] = categorical_rng(probas, Rng::Instance().get()) - 1;
   }
 

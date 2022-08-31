@@ -96,7 +96,7 @@ if __name__ == "__main__" :
         ####################################
 
         # Set the expected number of centers a priori
-        rho_s = [5,10]
+        rho_s = [5,10,20]
         
         for rho in rho_s:
             

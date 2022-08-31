@@ -40,7 +40,7 @@ M load_csv (const std::string & path) {
 
 int main() {
 std::cout<<"begin"<<std::endl;
-    MatrixXd datacsv = load_csv<MatrixXd>("/home/beraha/pp_mix/data/Student_data/datasets/datasets/stud_p_200_d_2_M_4_npc_50_data.csv");
+    MatrixXd datacsv = load_csv<MatrixXd>("/home/beraha/pp_mix/data/Student_data/datasets/stud_p_400_d_8_M_4_npc_50_data.csv");
     std::cout<<"here2"<<std::endl;
     std::string params_file = \
       "/home/beraha/pp_mix/pp_mix/resources/sampler_params.asciipb";
@@ -62,11 +62,11 @@ std::cout<<"here6"<<std::endl;
     sampler._relabel();
 
 std::cout<<"here7"<<std::endl;
-    int log_every=10;
-    int ntrick = 0;
-    int burnin = 0;
-    int niter=50;
-    int thin = 1;
+    int log_every=100;
+    int ntrick = 1000;
+    int burnin = 2000;
+    int niter=4000;
+    int thin = 10;
 
     for (int i = 0; i < ntrick; i++) {
         sampler.run_one_trick();

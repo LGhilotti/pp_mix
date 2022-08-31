@@ -63,7 +63,7 @@ Eigen::MatrixXd to_eigen(const EigenMatrix &vec);
 
 std::vector<VectorXd> to_vector_of_vectors(const MatrixXd &mat);
 
-VectorXd softmax(const VectorXd &logs);
+VectorXd softmax_fun(const VectorXd &logs);
 
 Eigen::MatrixXd posterior_similarity(const Eigen::MatrixXd &alloc_chain);
 

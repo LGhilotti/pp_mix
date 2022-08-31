@@ -138,16 +138,15 @@ std::vector<VectorXd> to_vector_of_vectors(const MatrixXd &mat) {
   return out;
 }
 
-VectorXd softmax(const VectorXd &logs) {
+VectorXd softmax_fun(const VectorXd &logs) {
 
-  std::cout<<"inside softmax"<<std::endl;
   VectorXd num = VectorXd::Zero(logs.size());
   for (int j = 0; j<logs.size(); j++){
     if (!(isinf(logs(j)) || isnan(logs(j)))){
       num(j)=exp((logs(j)-logs.maxCoeff()));
     }
   }
-  std::cout<<"num: "<<num<<std::endl;
+  //std::cout<<"num: "<<num<<std::endl;
   return num / num.sum();
   // after a "strange" step, what it returns is (p1/P,...,pM/P), where P=sum(pi)
   // what it receives is (ln(p1),...,ln(pM))
