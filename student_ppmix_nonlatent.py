@@ -54,7 +54,7 @@ log_ev=100
 
 if __name__ == "__main__" :
     parser = argparse.ArgumentParser()
-    parser.add_argument("--p_values", nargs="+", default=["400"])
+    parser.add_argument("--p_values", nargs="+", default=["100","200"])
     parser.add_argument("--d_values", nargs="+", default=["8"])
     parser.add_argument("--m_values", nargs="+", default=["4"])
     parser.add_argument("--n_by_clus", nargs="+", default=["50"])
@@ -96,7 +96,7 @@ if __name__ == "__main__" :
         ####################################
 
         # Set the expected number of centers a priori
-        rho_s = [5,10,20]
+        rho_s = [20]
         
         for rho in rho_s:
             
