@@ -20,7 +20,7 @@ thin= 10
 ## RUN ON DIFFERENT DATASETS AND SETTINGS ##
 ############################################
 
-p_s = c(100, 400)
+p_s = c(100,200,400)
 #p_s = 400
 d_s = c(2, 5, 8)
 #d_s = 10
@@ -38,7 +38,7 @@ for (p in p_s){
         #######################################
         
         # read the dataset
-        data = read_csv(file = glue("data/Student_data/datasets/stud_p_{p}_d_{dtrue}_M_{M}_npc_{npc}_data.csv") , col_names = FALSE)
+        data = read_csv(file = glue("data/Student_latent_data/datasets/stud_p_{p}_d_{dtrue}_M_{M}_npc_{npc}_data.csv") , col_names = FALSE)
           
         # scaling of data
         centering.var=median(colMeans(data))
@@ -49,7 +49,7 @@ for (p in p_s){
         #d = strtoi(read_file(file = glue("data/Student_data/latent_dim/stud_p_{p}_d_{dtrue}_M_{M}_npc_{npc}_lat_dim.txt")))
         d = dtrue
           
-        outpath_d = glue("data/Student_data/lamb_out/lamb_p_{p}_d_{dtrue}_M_{M}_npc_{npc}_out")
+        outpath_d = glue("data/Student_latent_data/lamb_out/lamb_p_{p}_d_{dtrue}_M_{M}_npc_{npc}_out")
         if (!(dir.exists(outpath_d))){
           dir.create(outpath_d)
         }
