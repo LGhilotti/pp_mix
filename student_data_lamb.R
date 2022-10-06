@@ -12,7 +12,7 @@ sourceCpp("lamb_mod/DL_linear_split_merge_package.cpp") ##This is the souce C++ 
 set.seed(1234)
 
 nburn=0
-niter =1e1
+niter =1e5
 thin= 10
 
 
@@ -98,7 +98,7 @@ for (p in p_s){
           post.samples=result.lamb[-(1:disc),]+1
           #write.table(post.samples, file = outpath + "/alloc_matrix.csv" , 
           #            quote=FALSE, eol="\n", row.names=FALSE, col.names=FALSE,  sep=",")
-          write.table(post.samples, file = "/alloc_matrix_noburn.csv" , 
+          write.table(post.samples, file = "data/alloc_matrix_noburn.csv" , 
                       quote=FALSE, eol="\n", row.names=FALSE, col.names=FALSE,  sep=",")
           #write(x=conc_dir, file = outpath + "/conc_param.txt")
           
