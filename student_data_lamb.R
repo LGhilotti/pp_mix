@@ -11,8 +11,8 @@ sourceCpp("lamb_mod/DL_linear_split_merge_package.cpp") ##This is the souce C++ 
 #################
 set.seed(1234)
 
-nburn=1e6
-niter =5e4
+nburn=0
+niter =1e5
 thin= 10
 
 
@@ -20,9 +20,9 @@ thin= 10
 ## RUN ON DIFFERENT DATASETS AND SETTINGS ##
 ############################################
 
-p_s = c(100,200,400)
+p_s = c(100)
 #p_s = 400
-d_s = c(2, 5, 8)
+d_s = c(5)
 #d_s = 10
 #M_s = c(4, 8, 12)
 M_s = 4
