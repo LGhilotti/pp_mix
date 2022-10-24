@@ -27,7 +27,7 @@ namespace py = pybind11;
 /////////////////////////// This is the main function provided to Python user
 
 std::tuple<std::deque<py::bytes>, double , double>
- _run_pp_mix_binary(int ntrick, int burnin, int niter, int thin,
+ _run_pp_mix(int ntrick, int burnin, int niter, int thin,
                                   std::string serialized_data, //const Eigen::MatrixXd &data,
                                   std::string serialized_params,
                                   int d,
@@ -100,7 +100,7 @@ std::tuple<std::deque<py::bytes>, double , double>
 /////////////////////////// This is the main function provided to Python user FOR 0/1 RESPONSES
 
 std::tuple<std::deque<py::bytes>, double , double>
- _run_pp_mix(int ntrick, int burnin, int niter, int thin,
+ _run_pp_mix_binary(int ntrick, int burnin, int niter, int thin,
                                   std::string serialized_data, //const Eigen::MatrixXi &data,
                                   std::string serialized_params,
                                   int d,
