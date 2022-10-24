@@ -71,9 +71,11 @@ MatrixXd vstack(const std::vector<VectorXd> &rows) {
   return out;
 }
 
-VectorXd trunc_normal_rng(const ArrayXd& means, const ArrayXd& sigmas,
-                          bool trunc_from_below){
+MatrixXd trunc_normal_rng(const ArrayXd& means, const ArrayXd& sigmas,
+                          const ArrayXi& y){ // y are the data y_i in {0,1}
 
+  int n_data = means.rows();
+  int dim_fact = means.cols();
   int p = means.size();
 
   /* inverse CDF method */
@@ -81,11 +83,11 @@ VectorXd trunc_normal_rng(const ArrayXd& means, const ArrayXd& sigmas,
   // sample U from uniform(0,1)
 
   ArrayXd u = uniform_rng( std::vector<double>(p, 0),
-              std::vector<double>(p, 1), Rng::Instance().get());
+              std::vector<double>(p, 1), Rng::Instance().get(), n_data, dim_fact);
 
-  ArrayXd t1 = 1 - stan::math::Phi(-means/sigmas);
+  ArrayXd t1 = stan::math::Phi(-means/sigmas);
 
-  return sigmas*stan::math::inv_Phi(1-t1 + u*t1) + means;
+  return sigmas*stan::math::inv_Phi(t1*u + (1-u)*y) + means;
 
 }
 
@@ -145,6 +147,17 @@ MatrixXd to_eigen(const EigenMatrix &mat) {
   if (nrow > 0 & ncol > 0) {
     const double *p = &(mat.data())[0];
     out = Map<const MatrixXd>(p, nrow, ncol);
+  }
+  return out;
+}
+
+MatrixXi to_eigen_int(const EigenMatrix &mat) {
+  int nrow = mat.rows();
+  int ncol = mat.cols();
+  Eigen::MatrixXi out;
+  if (nrow > 0 & ncol > 0) {
+    const int *p = &(mat.data())[0];
+    out = Map<const MatrixXi>(p, nrow, ncol);
   }
   return out;
 }

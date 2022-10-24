@@ -105,6 +105,72 @@ void MultivariateConditionalMCMC::initialize(const MatrixXd& dat) {
 }
 
 
+void MultivariateConditionalMCMC::initialize_binary(const MatrixXd& binary_dat) {
+
+  ndata = binary_dat.rows();
+  dim_data = binary_dat.cols();
+
+  this->binary_data = Map<MatrixXi>(binary_dat.data(), ndata, dim_data);
+
+  // Initialize Lambda block: tau, psi, phi and Lambda
+  tau = 2.0 * dim_data * dim_fact * _a_phi ;
+  Phi = 1.0/(dim_data*dim_fact) * MatrixXi::Ones(dim_data,dim_fact) ;
+  Psi = 2.0 * MatrixXi::Ones(dim_data,dim_fact);
+
+  Lambda = Map<MatrixXd>(normal_rng( std::vector<double>(dim_data*dim_fact, 0.0),
+        std::vector<double>(dim_data*dim_fact, _a_phi * _a_phi), Rng::Instance().get() ).data() , dim_data,dim_fact );
+
+  // Initialize Sigma_bar
+  sigma_bar = _a_gamma/_b_gamma * VectorXd::Ones(dim_data);
+
+  // initialize latent data
+  initialize_latent_data(binary_dat);
+
+  // Initialize etas
+  initialize_etas(data);
+
+  // REP-PP BLOCK
+  // Initialize the allocated means
+  initialize_allocated_means();
+  //std::cout << "a_means: \n" << a_means.transpose() << std::endl;
+
+  double nclus = a_means.rows();
+  // Initialize cluster allocations
+  clus_alloc.resize(ndata);
+  // initial vector s(a) has identical element and sums to nclus/(nclus+1)
+  a_jumps = VectorXd::Ones(nclus) / (nclus); // nclus+1 if consider 1 non allocated comp
+
+  // initial vector Delta(a) is equal to the mean (scalar or matrix)
+  a_deltas.resize(nclus);
+  for (int i = 0; i < nclus; i++) {
+    a_deltas[i] = g->mean();
+    // std::cout << "prec: \n" << a_deltas[i] << std::endl;
+  }
+
+  // initial mu(na) is just one, uniformly selected in ranges
+  //na_means = pp_mix->sample_uniform(1);
+  na_means.resize(0,dim_fact);
+  // initial s(na) (just one value) is 1/(nclus + 1) -> this way the full s vector sums to 1!
+  //na_jumps = VectorXd::Ones(na_means.rows()) / (nclus + na_means.rows());
+  na_jumps.resize(0);
+
+  // initial Delta(na) (just one scalar or matrix) is the mean
+  na_deltas.resize(na_means.rows());
+  /*for (int i = 0; i < na_means.rows(); i++) {
+    na_deltas[i] = g->mean();
+  }*/
+  // initial u parameter
+  u = 1.0;
+
+  // DECOMPOSE DPP (in MultiDpp also assign the pointer to Lambda)
+  pp_mix->set_decomposition(&Lambda);
+
+  // TEST UPDATE RELABEL
+  Ctilde = pp_mix->compute_Ctilde(get_all_means());
+
+
+}
+
 void MultivariateConditionalMCMC::initialize_etas(const MatrixXd &dat) {
 
   LLT<MatrixXd> M (Lambda.transpose() * Lambda);
@@ -113,6 +179,14 @@ void MultivariateConditionalMCMC::initialize_etas(const MatrixXd &dat) {
 
   return;
 
+}
+
+void MultivariateConditionalMCMC::initialize_latent_data(const MatrixXi& binary_dat){
+  MatrixXd m = (binary_dat.array() - 0.5)*2;
+  std::vector<double> means( m.data(), m.data() + m.size() );
+
+  data = Map<MatrixXd>(normal_rng( means,
+        std::vector<double>(ndata*dim_data, 0.1), Rng::Instance().get() ).data() , ndata,dim_data );
 }
 
 
@@ -273,6 +347,134 @@ void MultivariateConditionalMCMC::run_one_trick() {
   return;
 }
 
+/////////////////////////////////////////////////////////////////
+//////////// FOR BINARY SAMPLER //////////////////////////////////
+////////////////////////////////////////////////////////////////
+
+void MultivariateConditionalMCMC::run_one_binary() {
+
+  sample_latent_data();
+
+  //std::cout<<"sample u"<<std::endl;
+  sample_u();
+
+  //std::cout<<"compute psi"<<std::endl;
+
+  // compute laplace transform psi in u
+  double psi_u = laplace(u);
+
+  //std::cout<<"sample alloca and relabel"<<std::endl;
+  // sample c | rest and reorganize the all and nall parameters, and c as well
+  sample_allocations_and_relabel();
+
+  //std::cout<<"sample means na"<<std::endl;
+  // sample non-allocated variables
+  // I can set Ctilde with all the means and then remove or add row/column when na_means is updated.
+  //Ctilde = pp_mix->compute_Ctilde(get_all_means());
+  sample_means_na(psi_u);
+
+  //std::cout<<"sample jumps na"<<std::endl;
+  sample_jumps_na();
+
+  //std::cout<<"sample deltsa na"<<std::endl;
+  sample_deltas_na();
+
+  //std::cout<<"sample means a"<<std::endl;
+  // sample allocated variables
+  sample_means_obj->perform_update_allocated(Ctilde);
+
+  //std::cout<<"sample deltas a"<<std::endl;
+  sample_deltas_a();
+
+  //std::cout<<"sample jumps a"<<std::endl;
+  sample_jumps_a();
+
+  //// TEST
+  //std::cout<<"means_trans:\n"<<  ((pp_mix->get_A() * get_all_means().transpose()).colwise() + pp_mix->get_b()).transpose()<<std::endl;
+  //std::cout<<"Ctilde_after_alloc:\n"<<Ctilde<<std::endl;
+
+  // sample etas
+  //std::cout << "sample etas" << std::endl;
+  sample_etas();
+
+  // sample Sigma bar
+  //std::cout << "sample etas" << std::endl;
+  sample_sigma_bar();
+
+  // sample Lambda block
+  sample_Psi();
+  sample_tau();
+  sample_Phi();
+
+  sample_lambda->perform(Ctilde);
+
+  // print_debug_string();
+
+  return;
+}
+
+void MultivariateConditionalMCMC::run_one_trick_binary() {
+
+  sample_latent_data();
+
+//  std::cout<<"sample u"<<std::endl;
+  sample_u();
+
+  //std::cout<<"compute psi"<<std::endl;
+
+  //std::cout<<"sample alloca and relabel"<<std::endl;
+  // sample c | rest and reorganize the all and nall parameters, and c as well
+  // sample_allocations_and_relabel();
+
+  //std::cout<<"sample means na"<<std::endl;
+  sample_means_obj->perform_update_trick_na(Ctilde);
+
+  //std::cout<<"sample jumps na"<<std::endl;
+  sample_jumps_na();
+
+  //std::cout<<"sample deltsa na"<<std::endl;
+  sample_deltas_na();
+
+//  std::cout<<"sample means a"<<std::endl;
+  sample_means_obj->perform_update_allocated(Ctilde);
+
+//  std::cout<<"sample deltas a"<<std::endl;
+  sample_deltas_a();
+
+//  std::cout<<"sample jumps a"<<std::endl;
+  sample_jumps_a();
+
+//  std::cout<<"sample etas"<<std::endl;
+  sample_etas();
+
+//  std::cout<<"sample sigmabar"<<std::endl;
+  sample_sigma_bar();
+
+//  std::cout<<"sample Psi"<<std::endl;
+  sample_Psi();
+
+//  std::cout<<"sample tau"<<std::endl;
+  sample_tau();
+
+//  std::cout<<"sample Phi"<<std::endl;
+  sample_Phi();
+
+//  std::cout<<"before sampling Lambda"<<std::endl;
+  sample_lambda->perform(Ctilde);
+ //std::cout<<"sample Lambda"<<std::endl;
+
+  // print_debug_string();
+
+  return;
+}
+
+
+void MultivariateConditionalMCMC::sample_latent_data(){
+
+  ArrayXd sigmas = (1/sigma_bar.array()).replicate(ndata,1);
+  data = trunc_normal_rng((Lambda*etas.transpose()).transpose(), sigmas, binary_data);
+}
+//////////////////////////////////////////////////////////////////////////////////////
 
 void MultivariateConditionalMCMC::sample_jumps_na()
 {

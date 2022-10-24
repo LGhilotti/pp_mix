@@ -42,7 +42,8 @@ class MultivariateConditionalMCMC {
     int dim_fact;
     int dim_data;
     int ndata;
-    MatrixXd data;
+    MatrixXd data; //also called data if latent, when binary responses: data are there called binary_data
+    MatrixXi binary_data;
     // fixed hyperparameters
     double _a_phi; // Dirichlet parameter
     double _alpha_jump, _beta_jump; // Gamma jump parameters
@@ -111,10 +112,12 @@ class MultivariateConditionalMCMC {
     // initializes some of the members (data, dim, ndata,..) and state of sampler
     // The constructor only initialize some other members (pointers) and params field
     void initialize(const MatrixXd& dat);
+    void initialize_binary(const MatrixXd& binary_dat);
 
     // initializes the etas, projecting the data onto Col(Lambda):
     // it is for both uni/multi factor cases, but implemented differently because of the least square systems.
     void initialize_etas(const MatrixXd &dat);
+    void initialize_latent_data(const MatrixXi& binary_dat);
 
     void initialize_allocated_means();
 
@@ -125,6 +128,10 @@ class MultivariateConditionalMCMC {
     void run_one();
     void run_one_trick();
 
+    void run_one_binary();
+    void run_one_trick_binary();
+    void sample_latent_data();
+    
     // SAMPLING (UPDATE) METHODS
     // REP-PP BLOCK
     // sample non-allocated jumps

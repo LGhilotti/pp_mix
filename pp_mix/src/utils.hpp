@@ -45,8 +45,8 @@ T loadTextProto(std::string filename) {
   return out;
 }
 
-VectorXd trunc_normal_rng(const VectorXd& means, const VectorXd& sigmas,
-                          bool trunc_from_below);
+MatrixXd trunc_normal_rng(const ArrayXd& means, const ArrayXd& sigmas,
+                          const ArrayXi& y);
 
 double o_multi_normal_prec_lpdf(const VectorXd &x, const VectorXd &mu,
                                 const PrecMat &sigma);
@@ -63,6 +63,8 @@ void to_proto(const VectorXd &vec, EigenVector *out);
 Eigen::VectorXd to_eigen(const EigenVector &vec);
 
 Eigen::MatrixXd to_eigen(const EigenMatrix &vec);
+
+Eigen::MatrixXi to_eigen_int(const EigenMatrix &vec);
 
 std::vector<VectorXd> to_vector_of_vectors(const MatrixXd &mat);
 

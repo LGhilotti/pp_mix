@@ -6,6 +6,12 @@ message EigenMatrix {
     repeated double data = 3;
 }
 
+message EigenMatrixInt {
+    uint32 rows = 1;
+    uint32 cols = 2;
+    repeated int32 data = 3;
+}
+
 message EigenVector {
     uint32 size = 1;
     repeated double data = 2;
