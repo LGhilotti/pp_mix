@@ -61,8 +61,6 @@ Eigen::VectorXd to_eigen(const EigenVector &vec);
 
 Eigen::MatrixXd to_eigen(const EigenMatrix &vec);
 
-Eigen::MatrixXi to_eigen_int(const EigenMatrix &vec);
-
 std::vector<VectorXd> to_vector_of_vectors(const MatrixXd &mat);
 
 VectorXd softmax_fun(const VectorXd &logs);

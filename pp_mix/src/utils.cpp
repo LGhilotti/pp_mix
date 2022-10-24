@@ -132,16 +132,6 @@ MatrixXd to_eigen(const EigenMatrix &mat) {
   return out;
 }
 
-MatrixXi to_eigen_int(const EigenMatrix &mat) {
-  int nrow = mat.rows();
-  int ncol = mat.cols();
-  Eigen::MatrixXi out;
-  if (nrow > 0 & ncol > 0) {
-    const int *p = &(mat.data())[0];
-    out = Map<const MatrixXi>(p, nrow, ncol);
-  }
-  return out;
-}
 
 std::vector<VectorXd> to_vector_of_vectors(const MatrixXd &mat) {
   std::vector<VectorXd> out(mat.rows());

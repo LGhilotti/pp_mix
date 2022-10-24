@@ -110,7 +110,7 @@ void MultivariateConditionalMCMC::initialize_binary(const MatrixXd& binary_dat) 
   ndata = binary_dat.rows();
   dim_data = binary_dat.cols();
 
-  this->binary_data = Map<MatrixXi>(binary_dat.data(), ndata, dim_data);
+  this->binary_data = binary_dat;
 
   // Initialize Lambda block: tau, psi, phi and Lambda
   tau = 2.0 * dim_data * dim_fact * _a_phi ;
@@ -486,8 +486,8 @@ MatrixXd MultivariateConditionalMCMC::trunc_normal_rng(const ArrayXd& means, con
 
   // sample U from uniform(0,1)
 
-  ArrayXd u = uniform_rng( std::vector<double>(p, 0),
-              std::vector<double>(p, 1), Rng::Instance().get(), n_data, dim_fact);
+  ArrayXd u = Map<ArrayXd>( uniform_rng( std::vector<double>(p, 0),
+              std::vector<double>(p, 1), Rng::Instance().get()).data(), n_data, dim_fact);
 
   ArrayXd t1 = stan::math::Phi(-means/sigmas);
 
