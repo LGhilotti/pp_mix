@@ -71,25 +71,6 @@ MatrixXd vstack(const std::vector<VectorXd> &rows) {
   return out;
 }
 
-MatrixXd trunc_normal_rng(const ArrayXd& means, const ArrayXd& sigmas,
-                          const ArrayXi& y){ // y are the data y_i in {0,1}
-
-  int n_data = means.rows();
-  int dim_fact = means.cols();
-  int p = means.size();
-
-  /* inverse CDF method */
-
-  // sample U from uniform(0,1)
-
-  ArrayXd u = uniform_rng( std::vector<double>(p, 0),
-              std::vector<double>(p, 1), Rng::Instance().get(), n_data, dim_fact);
-
-  ArrayXd t1 = stan::math::Phi(-means/sigmas);
-
-  return sigmas*stan::math::inv_Phi(t1*u + (1-u)*y) + means;
-
-}
 
 double o_multi_normal_prec_lpdf(const VectorXd &x, const VectorXd &mu,
                                 const PrecMat &sigma) {

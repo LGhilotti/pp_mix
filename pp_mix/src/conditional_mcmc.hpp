@@ -131,7 +131,9 @@ class MultivariateConditionalMCMC {
     void run_one_binary();
     void run_one_trick_binary();
     void sample_latent_data();
-    
+    MatrixXd trunc_normal_rng(const ArrayXd& means, const ArrayXd& sigmas,
+                              const ArrayXi& y);
+
     // SAMPLING (UPDATE) METHODS
     // REP-PP BLOCK
     // sample non-allocated jumps

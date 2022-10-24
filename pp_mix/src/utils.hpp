@@ -45,9 +45,6 @@ T loadTextProto(std::string filename) {
   return out;
 }
 
-MatrixXd trunc_normal_rng(const ArrayXd& means, const ArrayXd& sigmas,
-                          const ArrayXi& y);
-
 double o_multi_normal_prec_lpdf(const VectorXd &x, const VectorXd &mu,
                                 const PrecMat &sigma);
 

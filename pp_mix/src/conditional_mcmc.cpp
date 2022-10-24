@@ -474,6 +474,27 @@ void MultivariateConditionalMCMC::sample_latent_data(){
   ArrayXd sigmas = (1/sigma_bar.array()).replicate(ndata,1);
   data = trunc_normal_rng((Lambda*etas.transpose()).transpose(), sigmas, binary_data);
 }
+
+MatrixXd MultivariateConditionalMCMC::trunc_normal_rng(const ArrayXd& means, const ArrayXd& sigmas,
+                          const ArrayXi& y){ // y are the data y_i in {0,1}
+
+  int n_data = means.rows();
+  int dim_fact = means.cols();
+  int p = means.size();
+
+  /* inverse CDF method */
+
+  // sample U from uniform(0,1)
+
+  ArrayXd u = uniform_rng( std::vector<double>(p, 0),
+              std::vector<double>(p, 1), Rng::Instance().get(), n_data, dim_fact);
+
+  ArrayXd t1 = stan::math::Phi(-means/sigmas);
+
+  return sigmas*stan::math::inv_Phi(t1*u + (1-u)*y) + means;
+
+}
+
 //////////////////////////////////////////////////////////////////////////////////////
 
 void MultivariateConditionalMCMC::sample_jumps_na()
