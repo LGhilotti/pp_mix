@@ -64,7 +64,9 @@ class ConditionalMCMC(object):
         check_params(self.params, binary_data, d)
 
         if ranges == 0 :
-            ranges = compute_ranges_binary(self.params, binary_data, d);
+            raise ValueError(
+                "Method not yet implemented")
+            #ranges = compute_ranges_binary(self.params, binary_data, d);
         else:
             check_ranges(ranges, d)
 
