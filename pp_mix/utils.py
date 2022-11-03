@@ -5,7 +5,7 @@ from pp_mix.protos.py.state_pb2 import EigenMatrix, EigenVector
 from scipy.stats import norm
 
 
-def trunc_normal_rng(sigmas, binary_data , size):
+def truncated_norm_rng(sigmas, binary_data , size):
     u = np.random.uniform(size=size)
     return np.stack([norm.ppf(0.5* (u[i,:,:]+binary_data)) * sigmas[i,None, :] for i in range(size[0]) ])
 

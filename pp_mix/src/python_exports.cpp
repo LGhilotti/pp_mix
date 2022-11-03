@@ -132,8 +132,12 @@ std::tuple<std::deque<py::bytes>, double , double>
   sampler.set_clus_alloc(init_allocs_);
   sampler._relabel();
   py::print("Number means in trick phase: ", sampler.get_num_a_means());
+  py::print("initial mean abs zetas: ", sampler.get_data().array().abs().mean());
 
   for (int i = 0; i < ntrick; i++) {
+    //py::print("current mean abs zetas: ", sampler.get_data().array().abs().mean());
+    //py::print("current mean abs etas: ", sampler.get_etas().array().abs().mean());
+
     sampler.run_one_trick_binary();
     if ((i + 1) % log_every == 0) {
       py::print("Trick, iter #", i + 1, " / ", ntrick);
@@ -141,6 +145,9 @@ std::tuple<std::deque<py::bytes>, double , double>
   }
 
   for (int i = 0; i < burnin; i++) {
+    //py::print("current mean abs zetas: ", sampler.get_data().array().abs().mean());
+    //py::print("current mean abs etas: ", sampler.get_etas().array().abs().mean());
+
     sampler.run_one_binary();
     if ((i + 1) % log_every == 0) {
       py::print("Burnin, iter #", i + 1, " / ", burnin);
@@ -227,6 +234,8 @@ PYBIND11_MODULE(pp_mix_high, m) {
   m.doc() = "aaa";  // optional module docstring
 
   m.def("_run_pp_mix", &_run_pp_mix, "aaa");
+
+  m.def("_run_pp_mix_binary", &_run_pp_mix_binary, "aaa");
 
   m.def("cluster_estimate", &cluster_estimate, "aaa");
 }

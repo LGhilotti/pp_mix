@@ -22,7 +22,7 @@ LDLIBS = \
 LDFLAGS = -D_REENTRANT -O3 -fopenmp
 
 PROTO_SRCS = $(wildcard $(PROTO_DIR)/cpp/*.cpp)
-SPIKES_SRCS = $(SPIKES_DIR)/test_softmax/test_sm.cpp \
+SPIKES_SRCS = $(SPIKES_DIR)/test_binary/test_binary.cpp \
 				#$(SPIKES_DIR)/test_ctilde_update/test_ctilde.cpp
 				#$(SPIKES_DIR)/test_kappas_reduced/test_kappas.cpp
 				#$(SPIKES_DIR)/test_derivatives/test_derivat.cpp

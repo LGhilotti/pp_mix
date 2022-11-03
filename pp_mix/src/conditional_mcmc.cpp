@@ -186,7 +186,7 @@ void MultivariateConditionalMCMC::initialize_latent_data(const MatrixXi& binary_
   std::vector<double> means( m.data(), m.data() + m.size() );
 
   data = Map<MatrixXd>(normal_rng( means,
-        std::vector<double>(ndata*dim_data, 0.1), Rng::Instance().get() ).data() , ndata,dim_data );
+        std::vector<double>(ndata*dim_data, 0.01), Rng::Instance().get() ).data() , ndata,dim_data );
 }
 
 
@@ -414,10 +414,8 @@ void MultivariateConditionalMCMC::run_one_binary() {
 }
 
 void MultivariateConditionalMCMC::run_one_trick_binary() {
+  //sample_latent_data();
 
-  sample_latent_data();
-
-//  std::cout<<"sample u"<<std::endl;
   sample_u();
 
   //std::cout<<"compute psi"<<std::endl;
@@ -426,7 +424,6 @@ void MultivariateConditionalMCMC::run_one_trick_binary() {
   // sample c | rest and reorganize the all and nall parameters, and c as well
   // sample_allocations_and_relabel();
 
-  //std::cout<<"sample means na"<<std::endl;
   sample_means_obj->perform_update_trick_na(Ctilde);
 
   //std::cout<<"sample jumps na"<<std::endl;
@@ -435,31 +432,31 @@ void MultivariateConditionalMCMC::run_one_trick_binary() {
   //std::cout<<"sample deltsa na"<<std::endl;
   sample_deltas_na();
 
-//  std::cout<<"sample means a"<<std::endl;
+  //std::cout<<"sample means a"<<std::endl;
   sample_means_obj->perform_update_allocated(Ctilde);
 
-//  std::cout<<"sample deltas a"<<std::endl;
+  //std::cout<<"sample deltas a"<<std::endl;
   sample_deltas_a();
 
-//  std::cout<<"sample jumps a"<<std::endl;
+  //std::cout<<"sample jumps a"<<std::endl;
   sample_jumps_a();
 
-//  std::cout<<"sample etas"<<std::endl;
+  //std::cout<<"sample etas"<<std::endl;
   sample_etas();
 
-//  std::cout<<"sample sigmabar"<<std::endl;
+  //std::cout<<"sample sigmabar"<<std::endl;
   sample_sigma_bar();
 
-//  std::cout<<"sample Psi"<<std::endl;
+  //std::cout<<"sample Psi"<<std::endl;
   sample_Psi();
 
-//  std::cout<<"sample tau"<<std::endl;
+  //std::cout<<"sample tau"<<std::endl;
   sample_tau();
 
-//  std::cout<<"sample Phi"<<std::endl;
+  //std::cout<<"sample Phi"<<std::endl;
   sample_Phi();
 
-//  std::cout<<"before sampling Lambda"<<std::endl;
+  //std::cout<<"before sampling Lambda"<<std::endl;
   sample_lambda->perform(Ctilde);
  //std::cout<<"sample Lambda"<<std::endl;
 
@@ -471,25 +468,27 @@ void MultivariateConditionalMCMC::run_one_trick_binary() {
 
 void MultivariateConditionalMCMC::sample_latent_data(){
 
-  ArrayXd sigmas = (1/sigma_bar.array()).replicate(ndata,1);
+
+  ArrayXXd sigmas = (1/sigma_bar.array()).sqrt().matrix().transpose().replicate(ndata,1);
+
   data = trunc_normal_rng((Lambda*etas.transpose()).transpose(), sigmas, binary_data);
 }
 
-MatrixXd MultivariateConditionalMCMC::trunc_normal_rng(const ArrayXd& means, const ArrayXd& sigmas,
-                          const ArrayXi& y){ // y are the data y_i in {0,1}
+MatrixXd MultivariateConditionalMCMC::trunc_normal_rng(const ArrayXXd& means, const ArrayXXd& sigmas,
+                          const ArrayXXi& y){ // y are the data y_i in {0,1}
 
   int n_data = means.rows();
-  int dim_fact = means.cols();
-  int p = means.size();
+  int dim_data = means.cols();
+  int n_times_p = means.size();
 
   /* inverse CDF method */
 
   // sample U from uniform(0,1)
 
-  ArrayXd u = Map<ArrayXd>( uniform_rng( std::vector<double>(p, 0),
-              std::vector<double>(p, 1), Rng::Instance().get()).data(), n_data, dim_fact);
+  ArrayXXd u = Map<ArrayXXd>( uniform_rng( std::vector<double>(n_times_p, 0),
+              std::vector<double>(n_times_p, 1), Rng::Instance().get()).data(), n_data, dim_data);
 
-  ArrayXd t1 = stan::math::Phi(-means/sigmas);
+  ArrayXXd t1 = stan::math::Phi(-means/sigmas);
 
   return sigmas*stan::math::inv_Phi(t1*u + (1-u)*y) + means;
 
