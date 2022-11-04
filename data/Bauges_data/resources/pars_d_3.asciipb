@@ -13,9 +13,9 @@ alphajump: 1.
 
 betajump: 3.0
 
-agamma: 1.0
+agamma: 10
 
-bgamma: 0.3
+bgamma: 3
 
 mh_sigma_means: 0.003
 

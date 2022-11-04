@@ -47,8 +47,8 @@ n = 3
 
 # Set sampler parameters
 ntrick =1000
-nburn=4000
-niter = 5000
+nburn=10000
+niter = 4000
 thin= 5
 log_ev=100
 
@@ -81,7 +81,7 @@ if __name__ == "__main__" :
         ####################################
 
         # Set the expected number of centers a priori
-        rho_s = [5,10,20]
+        rho_s = [5,10,15]
 
         for rho in rho_s:
 
@@ -110,7 +110,7 @@ if __name__ == "__main__" :
             hyperpar.wishart.nu = hyperpar.wishart.nu + d
 
             # different hyperquares side length
-            sidelength_s = [10,100, 200]
+            sidelength_s = [10, 20, 40]
 
             for sidelength in sidelength_s:
 
