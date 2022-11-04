@@ -54,7 +54,7 @@ log_ev=100
 
 if __name__ == "__main__" :
     parser = argparse.ArgumentParser()
-    parser.add_argument("--d_values", nargs="+", default=["3"])
+    parser.add_argument("--d_values", nargs="+", default=["3","4"])
     args = parser.parse_args()
 
     d_s = list(map(int, args.d_values))
