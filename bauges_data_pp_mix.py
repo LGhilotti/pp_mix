@@ -47,8 +47,8 @@ n = 3
 
 # Set sampler parameters
 ntrick =1000
-nburn=2000
-niter = 4000
+nburn=4000
+niter = 5000
 thin= 5
 log_ev=100
 
@@ -66,12 +66,12 @@ if __name__ == "__main__" :
 
     # read the dataset
     with open("data/Bauges_data/Bauges_data.csv", newline='') as my_csv:
-            data_names = pd.read_csv(my_csv, sep=',', index_col=0)     
-    
+            data_names = pd.read_csv(my_csv, sep=',', index_col=0)
+
     data = data_names.values
 
     for d in d_s:
-            
+
         outpath_d = "data/Bauges_data/applam_d_{0}_out".format(d)
         if not(os.path.exists(outpath_d)):
             os.makedirs(outpath_d)
@@ -108,19 +108,19 @@ if __name__ == "__main__" :
             hyperpar.dpp.s = s
 
             hyperpar.wishart.nu = hyperpar.wishart.nu + d
-            
-            # different hyperquares side length            
-            sidelength_s = [30,60]
-            
+
+            # different hyperquares side length
+            sidelength_s = [10,100, 200]
+
             for sidelength in sidelength_s:
-                
+
                 ###################################
                 ######## MCMC SAMPLER #############
                 ###################################
 
                 # Build the sampler
                 sampler = ConditionalMCMC(hyperpar = hyperpar)
-                
+
                 # Run the algorithm
                 sampler.run_binary(ntrick, nburn, niter, thin, data, d, sidelength, log_every = log_ev)
                 # with no ranges should return ERROR
@@ -185,6 +185,11 @@ if __name__ == "__main__" :
                 best_clus = cluster_estimate(np.array(clus_alloc_chain))
                 np.savetxt(os.path.join(outpath, "best_clus.txt"), best_clus)
 
+                unique_bc, counts_bc = np.unique(best_clus, return_counts=True)
+
+                num_best_clus = np.size(unique_bc)
+                num_sigleton_cl = np.sum(counts_bc==1)
+
                 #true_clus = np.repeat(range(M),npc)
                 #ari_best_clus = adjusted_rand_score(true_clus, best_clus) # store in dataframe
                 #aris_chain = np.array([adjusted_rand_score(true_clus, x) for x in clus_alloc_chain])
@@ -192,8 +197,7 @@ if __name__ == "__main__" :
                 #CI_aris = norm.interval(0.95, loc=mean_aris, scale=sigma_aris/sqrt(len(aris_chain))) # store in dataframe
                 list_performance = list()
                 list_performance.append([d,sampler.means_ar, sampler.lambda_ar, rho, post_mode_nclus,
-                                    post_avg_nclus, post_avg_nonall])
+                                    post_avg_nclus, post_avg_nonall, num_best_clus, num_sigleton_cl])
                 df_performance = pd.DataFrame(list_performance, columns=('d','means_ar','lambda_ar', 'intensity',
-                                                    'mode_nclus', 'avg_nclus', 'avg_nonalloc'))
+                                                    'mode_nclus', 'avg_nclus', 'avg_nonalloc', 'num_best_clus','num_sigleton_cl'))
                 df_performance.to_csv(os.path.join(outpath, "df_performance.csv"))
-
