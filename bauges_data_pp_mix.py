@@ -110,7 +110,7 @@ if __name__ == "__main__" :
             hyperpar.wishart.nu = hyperpar.wishart.nu + d
 
             # different hyperquares side length
-            sidelength_s = [10, 20, 40]
+            sidelength_s = [15]
 
             for sidelength in sidelength_s:
 
