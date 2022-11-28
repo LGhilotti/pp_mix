@@ -38,9 +38,9 @@ np.random.seed(12345)
 # COMMON QUANTITIES TO ALL RUNS OF ALGORITHM #
 ##############################################
 
-# Set hyperparameters (agreeing with Chandra)
-DEFAULT_PARAMS_FILE = "data/Bauges_data/resources/sampler_params.asciipb"
-SPECIFIC_PARAMS_FILE = "data/Bauges_data/resources/pars_d_{0}.asciipb"
+# Set hyperparameters (fixing the covariance matrices equal to the identity, both Sigma e Deltas)
+DEFAULT_PARAMS_FILE = "data/Bauges_data/resources/sampler_params_fixed.asciipb"
+SPECIFIC_PARAMS_FILE = "data/Bauges_data/resources/pars_d_{0}_fixed.asciipb"
 
 # Set the truncation level N (here called n)
 n = 3
@@ -72,7 +72,7 @@ if __name__ == "__main__" :
 
     for d in d_s:
 
-        outpath_d = "data/Bauges_data/applam_d_{0}_out".format(d)
+        outpath_d = "data/Bauges_data/applam_d_{0}_fixed_out".format(d)
         if not(os.path.exists(outpath_d)):
             os.makedirs(outpath_d)
 
@@ -107,7 +107,7 @@ if __name__ == "__main__" :
             hyperpar.dpp.n = n
             hyperpar.dpp.s = s
 
-            hyperpar.wishart.nu = hyperpar.wishart.nu + d
+            #hyperpar.wishart.nu = hyperpar.wishart.nu + d
 
             # different hyperquares side length
             sidelength_s = [5]
@@ -153,14 +153,16 @@ if __name__ == "__main__" :
                 plt.savefig(os.path.join(outpath, "tau_chain.pdf"))
                 plt.close()
 
-                fig = plt.figure()
-                first_sbar_chain = np.array([to_numpy(x.sigma_bar)[0] for x in chain])
-                plt.plot(first_sbar_chain,color='red')
-                last_sbar_chain = np.array([to_numpy(x.sigma_bar)[-1] for x in chain])
-                plt.plot(last_sbar_chain,color='blue')
-                plt.title("sbar_chain")
-                plt.savefig(os.path.join(outpath, "sbar_chain.pdf"))
-                plt.close()
+                # IN FIXED VERSION SIGMA_BAR IS NOT UPDATED
+                #fig = plt.figure()
+                #first_sbar_chain = np.array([to_numpy(x.sigma_bar)[0] for x in chain])
+                #plt.plot(first_sbar_chain,color='red')
+                #last_sbar_chain = np.array([to_numpy(x.sigma_bar)[-1] for x in chain])
+                #plt.plot(last_sbar_chain,color='blue')
+                #plt.title("sbar_chain")
+                #plt.savefig(os.path.join(outpath, "sbar_chain.pdf"))
+                #plt.close()
+
 
                 # Compute Posterior Summaries
                 fig = plt.figure()

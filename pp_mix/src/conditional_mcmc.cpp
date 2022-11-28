@@ -399,7 +399,8 @@ void MultivariateConditionalMCMC::run_one_binary() {
 
   // sample Sigma bar
   //std::cout << "sample etas" << std::endl;
-  sample_sigma_bar();
+  // FIXED TO THE IDENTITY FOR THE APPLICATION
+  //sample_sigma_bar();
 
   // sample Lambda block
   sample_Psi();
@@ -445,7 +446,8 @@ void MultivariateConditionalMCMC::run_one_trick_binary() {
   sample_etas();
 
   //std::cout<<"sample sigmabar"<<std::endl;
-  sample_sigma_bar();
+  // FIXED TO THE IDENTITY FOR THE APPLICATION
+  //sample_sigma_bar();
 
   //std::cout<<"sample Psi"<<std::endl;
   sample_Psi();
