@@ -27,12 +27,12 @@ def check_params(params, data, d):
                  found wishart.nu={1} instead""".format(
                      d, params.wishart.nu))
 
-    if params.wishart.identity is False:
-        raise ValueError(
+        if params.wishart.identity is False:
+            raise ValueError(
             "Only 'True' is supported for parametr wishart.identity")
 
-    if params.wishart.sigma <= 0:
-        raise ValueError(
+        if params.wishart.sigma <= 0:
+            raise ValueError(
             "Parameter wishart.sigma should be grater than 0, "
             "found wishart.wigma={0} instead".format(params.wishart.sigma))
 
