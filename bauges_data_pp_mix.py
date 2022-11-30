@@ -54,7 +54,7 @@ log_ev=100
 
 if __name__ == "__main__" :
     parser = argparse.ArgumentParser()
-    parser.add_argument("--d_values", nargs="+", default=["4"])
+    parser.add_argument("--d_values", nargs="+", default=["3","4"])
     args = parser.parse_args()
 
     d_s = list(map(int, args.d_values))
@@ -110,7 +110,7 @@ if __name__ == "__main__" :
             #hyperpar.wishart.nu = hyperpar.wishart.nu + d
 
             # different hyperquares side length
-            sidelength_s = [5]
+            sidelength_s = [10,15,20]
 
             for sidelength in sidelength_s:
 

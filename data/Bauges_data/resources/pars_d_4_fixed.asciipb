@@ -15,6 +15,6 @@ agamma: 1
 
 bgamma: 1
 
-mh_sigma_means: 0.001
+mh_sigma_means: 0.01
 
-mala_step_lambda: 0.000000005
+mala_step_lambda: 0.000000003

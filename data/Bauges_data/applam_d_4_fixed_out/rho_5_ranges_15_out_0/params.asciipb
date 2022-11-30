@@ -1,0 +1,15 @@
+dpp {
+  c: 394.78417604357435
+  n: 3
+  s: 0.5
+}
+fixed_multi_prec {
+  sigma: 1.0
+}
+a: 0.5
+alphajump: 1.0
+betajump: 3.0
+agamma: 1.0
+bgamma: 1.0
+mh_sigma_means: 0.01
+mala_step_lambda: 3e-09
