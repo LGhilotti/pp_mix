@@ -81,7 +81,7 @@ if __name__ == "__main__" :
         ####################################
 
         # Set the expected number of centers a priori
-        rho_s = [5,10,15]
+        rho_s = [20,30,40]
 
         for rho in rho_s:
 
@@ -110,7 +110,7 @@ if __name__ == "__main__" :
             #hyperpar.wishart.nu = hyperpar.wishart.nu + d
 
             # different hyperquares side length
-            sidelength_s = [10,15,20]
+            sidelength_s = [20,30,40]
 
             for sidelength in sidelength_s:
 
