@@ -7,9 +7,9 @@ fixed_multi_prec {
 
 a: 0.5
 
-alphajump: 1.
+alphajump: 10
 
-betajump: 3.0
+betajump: 30
 
 agamma: 1
 
