@@ -72,7 +72,7 @@ if __name__ == "__main__" :
 
     for d in d_s:
 
-        outpath_d = "data/Bauges_data/applam_d_{0}_fixed_out".format(d)
+        outpath_d = "data/Bauges_data/applam_d_{0}_fixed_moreclusters_out".format(d)
         if not(os.path.exists(outpath_d)):
             os.makedirs(outpath_d)
 
