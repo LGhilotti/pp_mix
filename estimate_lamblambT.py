@@ -27,4 +27,4 @@ for i in range(len(prod_col)):
     est = est + prod_col[i]
 
 est = est/len(prod_col)
-np.savetxt("est_lamb_lambT", est)
+np.savetxt("est_lamb_lambT.txt", est)
