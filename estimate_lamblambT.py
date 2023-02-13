@@ -10,7 +10,7 @@ from pp_mix.protos.py.params_pb2 import Params
 
 chain = loadChains("data/Bauges_data/applam_d_4_fixed_out/rho_50_ranges_50_out_0/chains.recordio", MultivariateMixtureState)
 
-prod_col = np.empty(len(chain))
+prod_col = np.empty(len(chain),dtype=object)
 i=0
 for x in chain:
     lamb_eigen = x.lamb_block.lamb
@@ -20,9 +20,9 @@ for x in chain:
     i=i+1
 
 p = chain[0].lamb_block.lamb.rows
-d = chain[0].lamb_block.lamb.cols
+#d = chain[0].lamb_block.lamb.cols
 
-est = np.zeros((p,d))
+est = np.zeros((p,p))
 for i in range(len(prod_col)):
     est = est + prod_col[i]
 
