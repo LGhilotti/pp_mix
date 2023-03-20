@@ -1,5 +1,5 @@
-#ifndef BASE_COV_HPP
-#define BASE_COV_HPP
+#ifndef BASE_PREC_HPP
+#define BASE_PREC_HPP
 
 #include <vector>
 #include <Eigen/Dense>
@@ -17,14 +17,16 @@ public:
 class BaseUnivPrec: public BasePrec {
 public:
     virtual ~BaseUnivPrec() {};
-    
+
+    // Sample from full-cond of Delta^(na): non allocated are distributed as prior
     virtual double sample_prior() = 0;
 
-    virtual double sample_given_data(
+    // Sample from full-cond of Delta^(a): allocated
+    virtual double sample_alloc(
         const std::vector<double> &data, const double &curr,
         const VectorXd &mean) = 0;
 
-    virtual double mean() const = 0;
+    virtual double mean() const = 0; // prior mean
 
     virtual double lpdf(double val) const = 0;
 };
@@ -34,9 +36,11 @@ class BaseMultiPrec: public BasePrec {
 public:
     virtual ~BaseMultiPrec(){};
 
+    // Sample from full-cond of Delta^(na): non allocated are distributed as prior
     virtual PrecMat sample_prior() = 0;
 
-    virtual PrecMat sample_given_data(
+    // Sample from full-cond of Delta^(a): allocated
+    virtual PrecMat sample_alloc(
         const std::vector<VectorXd> &data, const PrecMat &curr,
         const VectorXd &mean) = 0;
 

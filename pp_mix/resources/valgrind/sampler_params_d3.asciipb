@@ -1,0 +1,28 @@
+dpp {
+  c: 20
+  n: 15
+  s: 0.8
+}
+
+wishart {
+  nu: 6
+  identity: true
+  sigma: 0.5
+  dim: 3
+}
+
+dimf: 3
+
+a: 1.0
+
+alphajump: 2.0
+
+betajump: 3.0
+
+agamma: 60.
+
+bgamma: 30.
+
+mala_step_means: 0.05
+
+mh_sigma_lambda: 0.00001

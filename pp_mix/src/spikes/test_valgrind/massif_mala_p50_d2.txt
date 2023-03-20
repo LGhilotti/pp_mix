@@ -1,0 +1,752 @@
+--------------------------------------------------------------------------------
+Command:            ./src/spikes/MALA/run_test_p50_d2.out
+Massif arguments:   --massif-out-file=massif.out
+ms_print arguments: massif.out
+--------------------------------------------------------------------------------
+
+
+    MB
+73.85^                                          :                             
+     |            #::::::::::::::::::::@:::::@@:::::@::::@:::::::::::::@::::::
+     |            #::::::: ::::: :: :: @:::::@ :::: @: ::@: :::::::::::@::::::
+     |            #::::::: ::::: :: :: @:::::@ :::: @: ::@: :::::::::::@::::::
+     |            #::::::: ::::: :: :: @:::::@ :::: @: ::@: :::::::::::@::::::
+     |            #::::::: ::::: :: :: @:::::@ :::: @: ::@: :::::::::::@::::::
+     |            #::::::: ::::: :: :: @:::::@ :::: @: ::@: :::::::::::@::::::
+     |            #::::::: ::::: :: :: @:::::@ :::: @: ::@: :::::::::::@::::::
+     |            #::::::: ::::: :: :: @:::::@ :::: @: ::@: :::::::::::@::::::
+     |            #::::::: ::::: :: :: @:::::@ :::: @: ::@: :::::::::::@::::::
+     |            #::::::: ::::: :: :: @:::::@ :::: @: ::@: :::::::::::@::::::
+     |            #::::::: ::::: :: :: @:::::@ :::: @: ::@: :::::::::::@::::::
+     |            #::::::: ::::: :: :: @:::::@ :::: @: ::@: :::::::::::@::::::
+     |            #::::::: ::::: :: :: @:::::@ :::: @: ::@: :::::::::::@::::::
+     |            #::::::: ::::: :: :: @:::::@ :::: @: ::@: :::::::::::@::::::
+     | ::::::@@:::#::::::: ::::: :: :: @:::::@ :::: @: ::@: :::::::::::@::::::
+     | :::: :@ :::#::::::: ::::: :: :: @:::::@ :::: @: ::@: :::::::::::@::::::
+     | :::: :@ :::#::::::: ::::: :: :: @:::::@ :::: @: ::@: :::::::::::@::::::
+     | :::: :@ :::#::::::: ::::: :: :: @:::::@ :::: @: ::@: :::::::::::@::::::
+     | :::: :@ :::#::::::: ::::: :: :: @:::::@ :::: @: ::@: :::::::::::@::::::
+   0 +----------------------------------------------------------------------->Gi
+     0                                                                   271.8
+
+Number of snapshots: 68
+ Detailed snapshots: [6, 10 (peak), 28, 34, 39, 43, 58]
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+  0              0                0                0             0            0
+  1  7,056,563,468       19,360,160       19,325,539        34,621            0
+  2 11,232,060,360       19,362,416       19,327,747        34,669            0
+  3 15,710,216,643       19,360,160       19,325,539        34,621            0
+  4 20,036,783,346       19,361,184       19,326,563        34,621            0
+  5 24,363,902,875       19,361,184       19,326,563        34,621            0
+  6 30,854,663,673       19,361,296       19,326,659        34,637            0
+99.82% (19,326,659B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->86.31% (16,711,680B) 0x14D455: stan::math::internal::eight_byte_aligned_malloc(unsigned long) (stack_alloc.hpp:39)
+| ->85.98% (16,646,144B) 0x179191: stan::math::stack_alloc::move_to_next_block(unsigned long) (stack_alloc.hpp:108)
+| | ->85.98% (16,646,144B) 0x1792EB: stan::math::stack_alloc::alloc(unsigned long) (stack_alloc.hpp:175)
+| |   ->48.74% (9,437,184B) 0x18F29C: stan::math::var_value<double, void>* stan::math::stack_alloc::alloc_array<stan::math::var_value<double, void> >(unsigned long) (stack_alloc.hpp:190)
+| |   | ->43.33% (8,388,608B) 0x1A0AE8: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >& stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::operator=<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> >(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:108)
+| |   | | ->43.33% (8,388,608B) 0x1917A1: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::arena_matrix<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0>(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:65)
+| |   | |   ->43.33% (8,388,608B) 0x18A9FA: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:57)
+| |   | |     ->43.33% (8,388,608B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |   | |       ->43.33% (8,388,608B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | |         ->43.33% (8,388,608B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |   | |           ->43.33% (8,388,608B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |   | |             ->43.33% (8,388,608B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | |               
+| |   | ->05.42% (1,048,576B) 0x191776: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::arena_matrix<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0>(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:64)
+| |   |   ->05.42% (1,048,576B) 0x18A9FA: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:57)
+| |   |     ->05.42% (1,048,576B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |   |       ->05.42% (1,048,576B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   |         ->05.42% (1,048,576B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |   |           ->05.42% (1,048,576B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |   |             ->05.42% (1,048,576B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   |               
+| |   ->37.23% (7,208,960B) 0x1794B1: stan::math::vari_base::operator new(unsigned long) (vari.hpp:51)
+| |     ->22.34% (4,325,376B) 0x180106: stan::math::var_value<double, void> stan::math::operator*<double, (void*)0>(double, stan::math::var_value<double, void> const&) (operator_multiplication.hpp:123)
+| |     | ->21.66% (4,194,304B) 0x182F4E: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:54)
+| |     | | ->21.66% (4,194,304B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |     | |   ->21.66% (4,194,304B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |     | |     ->21.66% (4,194,304B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |     | |       ->21.66% (4,194,304B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |     | |         
+| |     | ->00.68% (131,072B) in 1+ places, all below ms_print's threshold (01.00%)
+| |     | 
+| |     ->10.83% (2,097,152B) 0x1A0F66: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&)::{lambda(auto:1 const&)
+| |     | ->10.83% (2,097,152B) 0x191AAF: stan::math::var_value<stan::plain_type<double, void>::type, void> stan::math::make_callback_var<double, stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&)::{lambda(auto:1 const&)
+| |     |   ->10.83% (2,097,152B) 0x18AAA2: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:59)
+| |     |     ->10.83% (2,097,152B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |     |       ->10.83% (2,097,152B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |     |         ->10.83% (2,097,152B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |     |           ->10.83% (2,097,152B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |     |             ->10.83% (2,097,152B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |     |               
+| |     ->02.71% (524,288B) 0x18008C: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::cos(stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+| |     | ->02.71% (524,288B) 0x17B770: stan::math::var_value<stan::plain_type<double, void>::type, void> stan::math::make_callback_var<double, stan::math::cos(stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+| |     |   ->02.71% (524,288B) 0x179EE3: stan::math::cos(stan::math::var_value<double, void> const&) (cos.hpp:49)
+| |     |     ->02.71% (524,288B) 0x182F64: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:54)
+| |     |       ->02.71% (524,288B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |     |         ->02.71% (524,288B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |     |           ->02.71% (524,288B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |     |             ->02.71% (524,288B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |     |               
+| |     ->01.35% (262,144B) 0x1A9364: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::var_value<double, void> stan::math::operator-<double, (void*)0>(stan::math::var_value<double, void> const&, double)::{lambda(auto:1 const&)
+| |       ->01.35% (262,144B) 0x1A3AD3: stan::math::var_value<double, void> stan::math::operator-<double, (void*)0>(stan::math::var_value<double, void> const&, double) (operator_subtraction.hpp:87)
+| |         ->01.35% (262,144B) 0x1DAC6D: Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>::operator()(stan::math::var_value<double, void> const&, double const&) const (BinaryFunctors.h:332)
+| |           ->01.35% (262,144B) 0x1D7A2B: Eigen::internal::binary_evaluator<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, Eigen::internal::IndexBased, Eigen::internal::IndexBased, stan::math::var_value<double, void>, double>::coeff(long) const (CoreEvaluators.h:719)
+| |             ->01.35% (262,144B) 0x1D1B55: Eigen::internal::generic_dense_assignment_kernel<Eigen::internal::evaluator<Eigen::Map<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1>, 0, Eigen::Stride<0, 0> > >, Eigen::internal::evaluator<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> >, Eigen::internal::assign_op<stan::math::var_value<double, void>, stan::math::var_value<double, void> >, 0>::assignCoeff(long) (AssignEvaluator.h:637)
+| |               ->01.35% (262,144B) 0x1CDE96: Eigen::internal::dense_assignment_loop<Eigen::internal::generic_dense_assignment_kernel<Eigen::internal::evaluator<Eigen::Map<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1>, 0, Eigen::Stride<0, 0> > >, Eigen::internal::evaluator<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> >, Eigen::internal::assign_op<stan::math::var_value<double, void>, stan::math::var_value<double, void> >, 0>, 1, 0>::run(Eigen::internal::generic_dense_assignment_kernel<Eigen::internal::evaluator<Eigen::Map<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1>, 0, Eigen::Stride<0, 0> > >, Eigen::internal::evaluator<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> >, Eigen::internal::assign_op<stan::math::var_value<double, void>, stan::math::var_value<double, void> >, 0>&) (AssignEvaluator.h:497)
+| |                 ->01.35% (262,144B) 0x1CA1CE: void Eigen::internal::call_dense_assignment_loop<Eigen::Map<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1>, 0, Eigen::Stride<0, 0> >, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, Eigen::internal::assign_op<stan::math::var_value<double, void>, stan::math::var_value<double, void> > >(Eigen::Map<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1>, 0, Eigen::Stride<0, 0> >&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&, Eigen::internal::assign_op<stan::math::var_value<double, void>, stan::math::var_value<double, void> > const&) (AssignEvaluator.h:741)
+| |                   ->01.35% (262,144B) 0x1C372F: Eigen::internal::Assignment<Eigen::Map<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1>, 0, Eigen::Stride<0, 0> >, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, Eigen::internal::assign_op<stan::math::var_value<double, void>, stan::math::var_value<double, void> >, Eigen::internal::Dense2Dense, void>::run(Eigen::Map<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1>, 0, Eigen::Stride<0, 0> >&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&, Eigen::internal::assign_op<stan::math::var_value<double, void>, stan::math::var_value<double, void> > const&) (AssignEvaluator.h:879)
+| |                     ->01.35% (262,144B) 0x1BC044: void Eigen::internal::call_assignment_no_alias<Eigen::Map<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1>, 0, Eigen::Stride<0, 0> >, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, Eigen::internal::assign_op<stan::math::var_value<double, void>, stan::math::var_value<double, void> > >(Eigen::Map<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1>, 0, Eigen::Stride<0, 0> >&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&, Eigen::internal::assign_op<stan::math::var_value<double, void>, stan::math::var_value<double, void> > const&) (AssignEvaluator.h:836)
+| |                       ->01.35% (262,144B) 0x1B3F9C: void Eigen::internal::call_assignment<Eigen::Map<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1>, 0, Eigen::Stride<0, 0> >, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, Eigen::internal::assign_op<stan::math::var_value<double, void>, stan::math::var_value<double, void> > >(Eigen::Map<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1>, 0, Eigen::Stride<0, 0> >&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&, Eigen::internal::assign_op<stan::math::var_value<double, void>, stan::math::var_value<double, void> > const&, Eigen::internal::enable_if<!Eigen::internal::evaluator_assume_aliasing<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, Eigen::internal::evaluator_traits<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> >::Shape>::value, void*>::type) (AssignEvaluator.h:804)
+| |                         ->01.35% (262,144B) 0x1ACDA5: void Eigen::internal::call_assignment<Eigen::Map<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1>, 0, Eigen::Stride<0, 0> >, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> >(Eigen::Map<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1>, 0, Eigen::Stride<0, 0> >&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (AssignEvaluator.h:782)
+| |                           ->01.35% (262,144B) 0x1A6DF4: Eigen::Map<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1>, 0, Eigen::Stride<0, 0> >& Eigen::MatrixBase<Eigen::Map<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1>, 0, Eigen::Stride<0, 0> > >::operator=<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> >(Eigen::DenseBase<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> > const&) (Assign.h:66)
+| |                             ->01.35% (262,144B) 0x1A0B59: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >& stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::operator=<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> >(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:111)
+| |                               ->01.35% (262,144B) 0x1917A1: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::arena_matrix<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0>(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:65)
+| |                                 ->01.35% (262,144B) 0x18A9FA: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:57)
+| |                                   ->01.35% (262,144B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |                                     ->01.35% (262,144B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |                                       ->01.35% (262,144B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |                                         ->01.35% (262,144B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |                                           ->01.35% (262,144B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |                                             
+| ->00.34% (65,536B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->10.84% (2,099,200B) 0x19D999: __gnu_cxx::new_allocator<stan::math::vari_base*>::allocate(unsigned long, void const*) (new_allocator.h:114)
+| ->10.84% (2,099,200B) 0x18CE5C: std::allocator_traits<std::allocator<stan::math::vari_base*> >::allocate(std::allocator<stan::math::vari_base*>&, unsigned long) (alloc_traits.h:444)
+|   ->10.84% (2,099,200B) 0x185F0B: std::_Vector_base<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::_M_allocate(unsigned long) (stl_vector.h:343)
+|     ->10.84% (2,099,200B) 0x18CB26: void std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::_M_realloc_insert<stan::math::vari_base*>(__gnu_cxx::__normal_iterator<stan::math::vari_base**, std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> > >, stan::math::vari_base*&&) (vector.tcc:440)
+|       ->10.84% (2,099,200B) 0x185D91: void std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::emplace_back<stan::math::vari_base*>(stan::math::vari_base*&&) (vector.tcc:121)
+|         ->10.84% (2,099,200B) 0x17F683: std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::push_back(stan::math::vari_base*&&) (stl_vector.h:1201)
+|           ->10.83% (2,097,152B) 0x17B338: stan::math::vari_value<double, void>::vari_value<double, (void*)0>(double) (vari.hpp:110)
+|           | ->10.83% (2,097,152B) 0x17FF58: stan::math::internal::callback_vari<double, stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+|           | | ->10.83% (2,097,152B) 0x17B671: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+|           | |   ->10.83% (2,097,152B) 0x1798A8: stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&) (operator_addition.hpp:54)
+|           | |     ->10.83% (2,097,152B) 0x1807EE: stan::math::var_value<double, void>::operator+=(stan::math::var_value<double, void> const&) (operator_plus_equal.hpp:14)
+|           | |     | ->10.83% (2,097,152B) 0x182FD5: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:54)
+|           | |     |   ->10.83% (2,097,152B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+|           | |     |     ->10.83% (2,097,152B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+|           | |     |       ->10.83% (2,097,152B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+|           | |     |         ->10.83% (2,097,152B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+|           | |     |           
+|           | |     ->00.00% (0B) in 1+ places, all below ms_print's threshold (01.00%)
+|           | |     
+|           | ->00.00% (0B) in 1+ places, all below ms_print's threshold (01.00%)
+|           | 
+|           ->00.01% (2,048B) in 1+ places, all below ms_print's threshold (01.00%)
+|           
+->02.66% (515,779B) in 157 places, all below massif's threshold (1.00%)
+  
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+  7 37,193,734,004       19,363,392       19,328,723        34,669            0
+  8 41,520,096,714       19,363,392       19,328,723        34,669            0
+  9 46,574,669,394       19,688,120       19,653,419        34,701            0
+ 10 49,294,972,014       77,386,560       77,228,427       158,133            0
+99.80% (77,228,427B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->86.63% (67,043,328B) 0x14D455: stan::math::internal::eight_byte_aligned_malloc(unsigned long) (stack_alloc.hpp:39)
+| ->86.55% (66,977,792B) 0x179191: stan::math::stack_alloc::move_to_next_block(unsigned long) (stack_alloc.hpp:108)
+| | ->86.55% (66,977,792B) 0x1792EB: stan::math::stack_alloc::alloc(unsigned long) (stack_alloc.hpp:175)
+| |   ->74.35% (57,540,608B) 0x1794B1: stan::math::vari_base::operator new(unsigned long) (vari.hpp:51)
+| |   | ->43.36% (33,554,432B) 0x260703: stan::math::var_value<double, void> stan::math::operator*<double, (void*)0>(stan::math::var_value<double, void> const&, double) (operator_multiplication.hpp:103)
+| |   | | ->43.36% (33,554,432B) 0x2630FB: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (lambda_sampler_imp.hpp:93)
+| |   | |   ->43.36% (33,554,432B) 0x25FCC1: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | |     ->43.36% (33,554,432B) 0x25C0FE: MCMCsampler::LambdaSamplerMala::perform() (lambda_sampler.cpp:97)
+| |   | |       ->43.36% (33,554,432B) 0x218F8C: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+| |   | |         ->43.36% (33,554,432B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | |           
+| |   | ->21.68% (16,777,216B) 0x17B65B: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+| |   | | ->21.68% (16,777,216B) 0x1798A8: stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&) (operator_addition.hpp:54)
+| |   | |   ->21.68% (16,777,216B) 0x1807EE: stan::math::var_value<double, void>::operator+=(stan::math::var_value<double, void> const&) (operator_plus_equal.hpp:14)
+| |   | |     ->21.68% (16,777,216B) 0x26311B: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (lambda_sampler_imp.hpp:93)
+| |   | |       ->21.68% (16,777,216B) 0x25FCC1: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | |         ->21.68% (16,777,216B) 0x25C0FE: MCMCsampler::LambdaSamplerMala::perform() (lambda_sampler.cpp:97)
+| |   | |           ->21.68% (16,777,216B) 0x218F8C: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+| |   | |             ->21.68% (16,777,216B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | |               
+| |   | ->05.59% (4,325,376B) 0x180106: stan::math::var_value<double, void> stan::math::operator*<double, (void*)0>(double, stan::math::var_value<double, void> const&) (operator_multiplication.hpp:123)
+| |   | | ->05.42% (4,194,304B) 0x182F4E: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:54)
+| |   | | | ->05.42% (4,194,304B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | | |   ->05.42% (4,194,304B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |   | | |     ->05.42% (4,194,304B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |   | | |       ->05.42% (4,194,304B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | | |         
+| |   | | ->00.17% (131,072B) in 1+ places, all below ms_print's threshold (01.00%)
+| |   | | 
+| |   | ->02.71% (2,097,152B) 0x1A0F66: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&)::{lambda(auto:1 const&)
+| |   | | ->02.71% (2,097,152B) 0x191AAF: stan::math::var_value<stan::plain_type<double, void>::type, void> stan::math::make_callback_var<double, stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&)::{lambda(auto:1 const&)
+| |   | |   ->02.71% (2,097,152B) 0x18AAA2: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:59)
+| |   | |     ->02.71% (2,097,152B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |   | |       ->02.71% (2,097,152B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | |         ->02.71% (2,097,152B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |   | |           ->02.71% (2,097,152B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |   | |             ->02.71% (2,097,152B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | |               
+| |   | ->01.02% (786,432B) in 2 places, all below massif's threshold (1.00%)
+| |   |   
+| |   ->12.19% (9,437,184B) 0x18F29C: stan::math::var_value<double, void>* stan::math::stack_alloc::alloc_array<stan::math::var_value<double, void> >(unsigned long) (stack_alloc.hpp:190)
+| |     ->10.84% (8,388,608B) 0x1A0AE8: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >& stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::operator=<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> >(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:108)
+| |     | ->10.84% (8,388,608B) 0x1917A1: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::arena_matrix<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0>(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:65)
+| |     |   ->10.84% (8,388,608B) 0x18A9FA: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:57)
+| |     |     ->10.84% (8,388,608B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |     |       ->10.84% (8,388,608B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |     |         ->10.84% (8,388,608B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |     |           ->10.84% (8,388,608B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |     |             ->10.84% (8,388,608B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |     |               
+| |     ->01.35% (1,048,576B) 0x191776: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::arena_matrix<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0>(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:64)
+| |       ->01.35% (1,048,576B) 0x18A9FA: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:57)
+| |         ->01.35% (1,048,576B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |           ->01.35% (1,048,576B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |             ->01.35% (1,048,576B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |               ->01.35% (1,048,576B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |                 ->01.35% (1,048,576B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |                   
+| ->00.08% (65,536B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->11.52% (8,912,896B) 0x19D999: __gnu_cxx::new_allocator<stan::math::vari_base*>::allocate(unsigned long, void const*) (new_allocator.h:114)
+| ->11.52% (8,912,896B) 0x18CE5C: std::allocator_traits<std::allocator<stan::math::vari_base*> >::allocate(std::allocator<stan::math::vari_base*>&, unsigned long) (alloc_traits.h:444)
+|   ->11.52% (8,912,896B) 0x185F0B: std::_Vector_base<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::_M_allocate(unsigned long) (stl_vector.h:343)
+|     ->11.52% (8,912,896B) 0x18CB26: void std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::_M_realloc_insert<stan::math::vari_base*>(__gnu_cxx::__normal_iterator<stan::math::vari_base**, std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> > >, stan::math::vari_base*&&) (vector.tcc:440)
+|       ->11.52% (8,912,896B) 0x185D91: void std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::emplace_back<stan::math::vari_base*>(stan::math::vari_base*&&) (vector.tcc:121)
+|         ->11.52% (8,912,896B) 0x17F683: std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::push_back(stan::math::vari_base*&&) (stl_vector.h:1201)
+|           ->10.84% (8,388,608B) 0x17B338: stan::math::vari_value<double, void>::vari_value<double, (void*)0>(double) (vari.hpp:110)
+|           | ->10.84% (8,388,608B) 0x17FF58: stan::math::internal::callback_vari<double, stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+|           | | ->10.84% (8,388,608B) 0x17B671: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+|           | |   ->10.84% (8,388,608B) 0x1798A8: stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&) (operator_addition.hpp:54)
+|           | |     ->10.84% (8,388,608B) 0x1807EE: stan::math::var_value<double, void>::operator+=(stan::math::var_value<double, void> const&) (operator_plus_equal.hpp:14)
+|           | |     | ->10.84% (8,388,608B) 0x26311B: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (lambda_sampler_imp.hpp:93)
+|           | |     | | ->10.84% (8,388,608B) 0x25FCC1: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+|           | |     | |   ->10.84% (8,388,608B) 0x25C0FE: MCMCsampler::LambdaSamplerMala::perform() (lambda_sampler.cpp:97)
+|           | |     | |     ->10.84% (8,388,608B) 0x218F8C: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+|           | |     | |       ->10.84% (8,388,608B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+|           | |     | |         
+|           | |     | ->00.00% (0B) in 1+ places, all below ms_print's threshold (01.00%)
+|           | |     | 
+|           | |     ->00.00% (0B) in 1+ places, all below ms_print's threshold (01.00%)
+|           | |     
+|           | ->00.00% (0B) in 1+ places, all below ms_print's threshold (01.00%)
+|           | 
+|           ->00.68% (524,288B) in 1+ places, all below ms_print's threshold (01.00%)
+|           
+->01.64% (1,272,203B) in 178 places, all below massif's threshold (1.00%)
+  
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 11 52,688,362,224       77,357,192       77,189,195       167,997            0
+ 12 58,106,259,668       76,557,000       76,510,195        46,805            0
+ 13 62,586,597,473       76,554,936       76,508,163        46,773            0
+ 14 66,761,985,385       76,557,144       76,510,339        46,805            0
+ 15 71,240,139,595       76,554,936       76,508,163        46,773            0
+ 16 75,566,899,320       76,554,936       76,508,163        46,773            0
+ 17 79,893,843,253       76,554,936       76,508,163        46,773            0
+ 18 86,384,440,362       76,555,048       76,508,259        46,789            0
+ 19 92,723,232,977       76,557,048       76,510,227        46,821            0
+ 20 97,200,670,425       76,554,936       76,508,163        46,773            0
+ 21 100,322,924,340       77,249,056       77,095,955       153,101            0
+ 22 104,767,215,945       77,251,448       77,098,339       153,109            0
+ 23 111,612,264,862       76,555,352       76,508,515        46,837            0
+ 24 116,637,419,400       76,557,832       76,510,947        46,885            0
+ 25 121,830,190,504       76,557,976       76,511,107        46,869            0
+ 26 127,023,724,806       76,557,944       76,511,075        46,869            0
+ 27 129,620,669,002       76,558,072       76,511,171        46,901            0
+ 28 134,813,717,127       76,558,136       76,511,219        46,917            0
+99.94% (76,511,219B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->87.57% (67,043,328B) 0x14D455: stan::math::internal::eight_byte_aligned_malloc(unsigned long) (stack_alloc.hpp:39)
+| ->87.49% (66,977,792B) 0x179191: stan::math::stack_alloc::move_to_next_block(unsigned long) (stack_alloc.hpp:108)
+| | ->87.49% (66,977,792B) 0x1792EB: stan::math::stack_alloc::alloc(unsigned long) (stack_alloc.hpp:175)
+| |   ->75.16% (57,540,608B) 0x1794B1: stan::math::vari_base::operator new(unsigned long) (vari.hpp:51)
+| |   | ->43.83% (33,554,432B) 0x260703: stan::math::var_value<double, void> stan::math::operator*<double, (void*)0>(stan::math::var_value<double, void> const&, double) (operator_multiplication.hpp:103)
+| |   | | ->43.83% (33,554,432B) 0x2630FB: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (lambda_sampler_imp.hpp:93)
+| |   | |   ->43.83% (33,554,432B) 0x25FCC1: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | |     ->43.83% (33,554,432B) 0x25C0FE: MCMCsampler::LambdaSamplerMala::perform() (lambda_sampler.cpp:97)
+| |   | |       ->43.83% (33,554,432B) 0x218F8C: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+| |   | |         ->43.83% (33,554,432B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | |           
+| |   | ->21.91% (16,777,216B) 0x17B65B: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+| |   | | ->21.91% (16,777,216B) 0x1798A8: stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&) (operator_addition.hpp:54)
+| |   | |   ->21.91% (16,777,216B) 0x1807EE: stan::math::var_value<double, void>::operator+=(stan::math::var_value<double, void> const&) (operator_plus_equal.hpp:14)
+| |   | |     ->21.91% (16,777,216B) 0x26311B: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (lambda_sampler_imp.hpp:93)
+| |   | |       ->21.91% (16,777,216B) 0x25FCC1: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | |         ->21.91% (16,777,216B) 0x25C0FE: MCMCsampler::LambdaSamplerMala::perform() (lambda_sampler.cpp:97)
+| |   | |           ->21.91% (16,777,216B) 0x218F8C: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+| |   | |             ->21.91% (16,777,216B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | |               
+| |   | ->05.65% (4,325,376B) 0x180106: stan::math::var_value<double, void> stan::math::operator*<double, (void*)0>(double, stan::math::var_value<double, void> const&) (operator_multiplication.hpp:123)
+| |   | | ->05.48% (4,194,304B) 0x182F4E: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:54)
+| |   | | | ->05.48% (4,194,304B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | | |   ->05.48% (4,194,304B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |   | | |     ->05.48% (4,194,304B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |   | | |       ->05.48% (4,194,304B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | | |         
+| |   | | ->00.17% (131,072B) in 1+ places, all below ms_print's threshold (01.00%)
+| |   | | 
+| |   | ->02.74% (2,097,152B) 0x1A0F66: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&)::{lambda(auto:1 const&)
+| |   | | ->02.74% (2,097,152B) 0x191AAF: stan::math::var_value<stan::plain_type<double, void>::type, void> stan::math::make_callback_var<double, stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&)::{lambda(auto:1 const&)
+| |   | |   ->02.74% (2,097,152B) 0x18AAA2: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:59)
+| |   | |     ->02.74% (2,097,152B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |   | |       ->02.74% (2,097,152B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | |         ->02.74% (2,097,152B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |   | |           ->02.74% (2,097,152B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |   | |             ->02.74% (2,097,152B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | |               
+| |   | ->01.03% (786,432B) in 2 places, all below massif's threshold (1.00%)
+| |   |   
+| |   ->12.33% (9,437,184B) 0x18F29C: stan::math::var_value<double, void>* stan::math::stack_alloc::alloc_array<stan::math::var_value<double, void> >(unsigned long) (stack_alloc.hpp:190)
+| |     ->10.96% (8,388,608B) 0x1A0AE8: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >& stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::operator=<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> >(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:108)
+| |     | ->10.96% (8,388,608B) 0x1917A1: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::arena_matrix<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0>(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:65)
+| |     |   ->10.96% (8,388,608B) 0x18A9FA: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:57)
+| |     |     ->10.96% (8,388,608B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |     |       ->10.96% (8,388,608B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |     |         ->10.96% (8,388,608B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |     |           ->10.96% (8,388,608B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |     |             ->10.96% (8,388,608B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |     |               
+| |     ->01.37% (1,048,576B) 0x191776: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::arena_matrix<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0>(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:64)
+| |       ->01.37% (1,048,576B) 0x18A9FA: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:57)
+| |         ->01.37% (1,048,576B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |           ->01.37% (1,048,576B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |             ->01.37% (1,048,576B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |               ->01.37% (1,048,576B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |                 ->01.37% (1,048,576B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |                   
+| ->00.09% (65,536B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->11.64% (8,912,896B) 0x19D999: __gnu_cxx::new_allocator<stan::math::vari_base*>::allocate(unsigned long, void const*) (new_allocator.h:114)
+| ->11.64% (8,912,896B) 0x18CE5C: std::allocator_traits<std::allocator<stan::math::vari_base*> >::allocate(std::allocator<stan::math::vari_base*>&, unsigned long) (alloc_traits.h:444)
+|   ->11.64% (8,912,896B) 0x185F0B: std::_Vector_base<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::_M_allocate(unsigned long) (stl_vector.h:343)
+|     ->11.64% (8,912,896B) 0x18CB26: void std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::_M_realloc_insert<stan::math::vari_base*>(__gnu_cxx::__normal_iterator<stan::math::vari_base**, std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> > >, stan::math::vari_base*&&) (vector.tcc:440)
+|       ->11.64% (8,912,896B) 0x185D91: void std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::emplace_back<stan::math::vari_base*>(stan::math::vari_base*&&) (vector.tcc:121)
+|         ->11.64% (8,912,896B) 0x17F683: std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::push_back(stan::math::vari_base*&&) (stl_vector.h:1201)
+|           ->10.96% (8,388,608B) 0x17B338: stan::math::vari_value<double, void>::vari_value<double, (void*)0>(double) (vari.hpp:110)
+|           | ->10.96% (8,388,608B) 0x17FF58: stan::math::internal::callback_vari<double, stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+|           | | ->10.96% (8,388,608B) 0x17B671: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+|           | |   ->10.96% (8,388,608B) 0x1798A8: stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&) (operator_addition.hpp:54)
+|           | |     ->10.96% (8,388,608B) 0x1807EE: stan::math::var_value<double, void>::operator+=(stan::math::var_value<double, void> const&) (operator_plus_equal.hpp:14)
+|           | |     | ->10.96% (8,388,608B) 0x26311B: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (lambda_sampler_imp.hpp:93)
+|           | |     | | ->10.96% (8,388,608B) 0x25FCC1: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+|           | |     | |   ->10.96% (8,388,608B) 0x25C0FE: MCMCsampler::LambdaSamplerMala::perform() (lambda_sampler.cpp:97)
+|           | |     | |     ->10.96% (8,388,608B) 0x218F8C: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+|           | |     | |       ->10.96% (8,388,608B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+|           | |     | |         
+|           | |     | ->00.00% (0B) in 1+ places, all below ms_print's threshold (01.00%)
+|           | |     | 
+|           | |     ->00.00% (0B) in 1+ places, all below ms_print's threshold (01.00%)
+|           | |     
+|           | ->00.00% (0B) in 1+ places, all below ms_print's threshold (01.00%)
+|           | 
+|           ->00.68% (524,288B) in 1+ places, all below ms_print's threshold (01.00%)
+|           
+->00.72% (554,995B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 29 140,006,186,587       76,557,912       76,511,011        46,901            0
+ 30 142,603,190,414       76,558,152       76,511,283        46,869            0
+ 31 147,796,956,832       76,558,072       76,511,203        46,869            0
+ 32 150,394,115,509       76,558,200       76,511,299        46,901            0
+ 33 155,586,690,150       76,557,928       76,511,027        46,901            0
+ 34 160,779,848,649       76,558,184       76,511,283        46,901            0
+99.94% (76,511,283B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->87.57% (67,043,328B) 0x14D455: stan::math::internal::eight_byte_aligned_malloc(unsigned long) (stack_alloc.hpp:39)
+| ->87.49% (66,977,792B) 0x179191: stan::math::stack_alloc::move_to_next_block(unsigned long) (stack_alloc.hpp:108)
+| | ->87.49% (66,977,792B) 0x1792EB: stan::math::stack_alloc::alloc(unsigned long) (stack_alloc.hpp:175)
+| |   ->75.16% (57,540,608B) 0x1794B1: stan::math::vari_base::operator new(unsigned long) (vari.hpp:51)
+| |   | ->43.83% (33,554,432B) 0x260703: stan::math::var_value<double, void> stan::math::operator*<double, (void*)0>(stan::math::var_value<double, void> const&, double) (operator_multiplication.hpp:103)
+| |   | | ->43.83% (33,554,432B) 0x2630FB: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (lambda_sampler_imp.hpp:93)
+| |   | |   ->43.83% (33,554,432B) 0x25FCC1: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | |     ->43.83% (33,554,432B) 0x25C0FE: MCMCsampler::LambdaSamplerMala::perform() (lambda_sampler.cpp:97)
+| |   | |       ->43.83% (33,554,432B) 0x218F8C: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+| |   | |         ->43.83% (33,554,432B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | |           
+| |   | ->21.91% (16,777,216B) 0x17B65B: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+| |   | | ->21.91% (16,777,216B) 0x1798A8: stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&) (operator_addition.hpp:54)
+| |   | |   ->21.91% (16,777,216B) 0x1807EE: stan::math::var_value<double, void>::operator+=(stan::math::var_value<double, void> const&) (operator_plus_equal.hpp:14)
+| |   | |     ->21.91% (16,777,216B) 0x26311B: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (lambda_sampler_imp.hpp:93)
+| |   | |       ->21.91% (16,777,216B) 0x25FCC1: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | |         ->21.91% (16,777,216B) 0x25C0FE: MCMCsampler::LambdaSamplerMala::perform() (lambda_sampler.cpp:97)
+| |   | |           ->21.91% (16,777,216B) 0x218F8C: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+| |   | |             ->21.91% (16,777,216B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | |               
+| |   | ->05.65% (4,325,376B) 0x180106: stan::math::var_value<double, void> stan::math::operator*<double, (void*)0>(double, stan::math::var_value<double, void> const&) (operator_multiplication.hpp:123)
+| |   | | ->05.48% (4,194,304B) 0x182F4E: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:54)
+| |   | | | ->05.48% (4,194,304B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | | |   ->05.48% (4,194,304B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |   | | |     ->05.48% (4,194,304B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |   | | |       ->05.48% (4,194,304B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | | |         
+| |   | | ->00.17% (131,072B) in 1+ places, all below ms_print's threshold (01.00%)
+| |   | | 
+| |   | ->02.74% (2,097,152B) 0x1A0F66: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&)::{lambda(auto:1 const&)
+| |   | | ->02.74% (2,097,152B) 0x191AAF: stan::math::var_value<stan::plain_type<double, void>::type, void> stan::math::make_callback_var<double, stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&)::{lambda(auto:1 const&)
+| |   | |   ->02.74% (2,097,152B) 0x18AAA2: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:59)
+| |   | |     ->02.74% (2,097,152B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |   | |       ->02.74% (2,097,152B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | |         ->02.74% (2,097,152B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |   | |           ->02.74% (2,097,152B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |   | |             ->02.74% (2,097,152B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | |               
+| |   | ->01.03% (786,432B) in 2 places, all below massif's threshold (1.00%)
+| |   |   
+| |   ->12.33% (9,437,184B) 0x18F29C: stan::math::var_value<double, void>* stan::math::stack_alloc::alloc_array<stan::math::var_value<double, void> >(unsigned long) (stack_alloc.hpp:190)
+| |     ->10.96% (8,388,608B) 0x1A0AE8: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >& stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::operator=<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> >(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:108)
+| |     | ->10.96% (8,388,608B) 0x1917A1: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::arena_matrix<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0>(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:65)
+| |     |   ->10.96% (8,388,608B) 0x18A9FA: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:57)
+| |     |     ->10.96% (8,388,608B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |     |       ->10.96% (8,388,608B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |     |         ->10.96% (8,388,608B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |     |           ->10.96% (8,388,608B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |     |             ->10.96% (8,388,608B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |     |               
+| |     ->01.37% (1,048,576B) 0x191776: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::arena_matrix<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0>(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:64)
+| |       ->01.37% (1,048,576B) 0x18A9FA: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:57)
+| |         ->01.37% (1,048,576B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |           ->01.37% (1,048,576B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |             ->01.37% (1,048,576B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |               ->01.37% (1,048,576B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |                 ->01.37% (1,048,576B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |                   
+| ->00.09% (65,536B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->11.64% (8,912,896B) 0x19D999: __gnu_cxx::new_allocator<stan::math::vari_base*>::allocate(unsigned long, void const*) (new_allocator.h:114)
+| ->11.64% (8,912,896B) 0x18CE5C: std::allocator_traits<std::allocator<stan::math::vari_base*> >::allocate(std::allocator<stan::math::vari_base*>&, unsigned long) (alloc_traits.h:444)
+|   ->11.64% (8,912,896B) 0x185F0B: std::_Vector_base<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::_M_allocate(unsigned long) (stl_vector.h:343)
+|     ->11.64% (8,912,896B) 0x18CB26: void std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::_M_realloc_insert<stan::math::vari_base*>(__gnu_cxx::__normal_iterator<stan::math::vari_base**, std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> > >, stan::math::vari_base*&&) (vector.tcc:440)
+|       ->11.64% (8,912,896B) 0x185D91: void std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::emplace_back<stan::math::vari_base*>(stan::math::vari_base*&&) (vector.tcc:121)
+|         ->11.64% (8,912,896B) 0x17F683: std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::push_back(stan::math::vari_base*&&) (stl_vector.h:1201)
+|           ->10.96% (8,388,608B) 0x17B338: stan::math::vari_value<double, void>::vari_value<double, (void*)0>(double) (vari.hpp:110)
+|           | ->10.96% (8,388,608B) 0x17FF58: stan::math::internal::callback_vari<double, stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+|           | | ->10.96% (8,388,608B) 0x17B671: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+|           | |   ->10.96% (8,388,608B) 0x1798A8: stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&) (operator_addition.hpp:54)
+|           | |     ->10.96% (8,388,608B) 0x1807EE: stan::math::var_value<double, void>::operator+=(stan::math::var_value<double, void> const&) (operator_plus_equal.hpp:14)
+|           | |     | ->10.96% (8,388,608B) 0x26311B: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (lambda_sampler_imp.hpp:93)
+|           | |     | | ->10.96% (8,388,608B) 0x25FCC1: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+|           | |     | |   ->10.96% (8,388,608B) 0x25C0FE: MCMCsampler::LambdaSamplerMala::perform() (lambda_sampler.cpp:97)
+|           | |     | |     ->10.96% (8,388,608B) 0x218F8C: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+|           | |     | |       ->10.96% (8,388,608B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+|           | |     | |         
+|           | |     | ->00.00% (0B) in 1+ places, all below ms_print's threshold (01.00%)
+|           | |     | 
+|           | |     ->00.00% (0B) in 1+ places, all below ms_print's threshold (01.00%)
+|           | |     
+|           | ->00.00% (0B) in 1+ places, all below ms_print's threshold (01.00%)
+|           | 
+|           ->00.68% (524,288B) in 1+ places, all below ms_print's threshold (01.00%)
+|           
+->00.73% (555,059B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 35 168,136,274,302       77,404,272       77,228,835       175,437            0
+ 36 173,069,256,076       77,438,840       77,263,443       175,397            0
+ 37 177,265,932,002       76,557,616       76,510,739        46,877            0
+ 38 181,596,799,046       76,557,520       76,510,627        46,893            0
+ 39 188,092,390,792       76,557,552       76,510,675        46,877            0
+99.94% (76,510,675B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->87.57% (67,043,328B) 0x14D455: stan::math::internal::eight_byte_aligned_malloc(unsigned long) (stack_alloc.hpp:39)
+| ->87.49% (66,977,792B) 0x179191: stan::math::stack_alloc::move_to_next_block(unsigned long) (stack_alloc.hpp:108)
+| | ->87.49% (66,977,792B) 0x1792EB: stan::math::stack_alloc::alloc(unsigned long) (stack_alloc.hpp:175)
+| |   ->75.16% (57,540,608B) 0x1794B1: stan::math::vari_base::operator new(unsigned long) (vari.hpp:51)
+| |   | ->43.83% (33,554,432B) 0x260703: stan::math::var_value<double, void> stan::math::operator*<double, (void*)0>(stan::math::var_value<double, void> const&, double) (operator_multiplication.hpp:103)
+| |   | | ->43.83% (33,554,432B) 0x2630FB: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (lambda_sampler_imp.hpp:93)
+| |   | |   ->43.83% (33,554,432B) 0x25FCC1: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | |     ->43.83% (33,554,432B) 0x25C0FE: MCMCsampler::LambdaSamplerMala::perform() (lambda_sampler.cpp:97)
+| |   | |       ->43.83% (33,554,432B) 0x218F8C: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+| |   | |         ->43.83% (33,554,432B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | |           
+| |   | ->21.91% (16,777,216B) 0x17B65B: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+| |   | | ->21.91% (16,777,216B) 0x1798A8: stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&) (operator_addition.hpp:54)
+| |   | |   ->21.91% (16,777,216B) 0x1807EE: stan::math::var_value<double, void>::operator+=(stan::math::var_value<double, void> const&) (operator_plus_equal.hpp:14)
+| |   | |     ->21.91% (16,777,216B) 0x26311B: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (lambda_sampler_imp.hpp:93)
+| |   | |       ->21.91% (16,777,216B) 0x25FCC1: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | |         ->21.91% (16,777,216B) 0x25C0FE: MCMCsampler::LambdaSamplerMala::perform() (lambda_sampler.cpp:97)
+| |   | |           ->21.91% (16,777,216B) 0x218F8C: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+| |   | |             ->21.91% (16,777,216B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | |               
+| |   | ->05.65% (4,325,376B) 0x180106: stan::math::var_value<double, void> stan::math::operator*<double, (void*)0>(double, stan::math::var_value<double, void> const&) (operator_multiplication.hpp:123)
+| |   | | ->05.48% (4,194,304B) 0x182F4E: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:54)
+| |   | | | ->05.48% (4,194,304B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | | |   ->05.48% (4,194,304B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |   | | |     ->05.48% (4,194,304B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |   | | |       ->05.48% (4,194,304B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | | |         
+| |   | | ->00.17% (131,072B) in 1+ places, all below ms_print's threshold (01.00%)
+| |   | | 
+| |   | ->02.74% (2,097,152B) 0x1A0F66: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&)::{lambda(auto:1 const&)
+| |   | | ->02.74% (2,097,152B) 0x191AAF: stan::math::var_value<stan::plain_type<double, void>::type, void> stan::math::make_callback_var<double, stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&)::{lambda(auto:1 const&)
+| |   | |   ->02.74% (2,097,152B) 0x18AAA2: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:59)
+| |   | |     ->02.74% (2,097,152B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |   | |       ->02.74% (2,097,152B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | |         ->02.74% (2,097,152B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |   | |           ->02.74% (2,097,152B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |   | |             ->02.74% (2,097,152B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | |               
+| |   | ->01.03% (786,432B) in 2 places, all below massif's threshold (1.00%)
+| |   |   
+| |   ->12.33% (9,437,184B) 0x18F29C: stan::math::var_value<double, void>* stan::math::stack_alloc::alloc_array<stan::math::var_value<double, void> >(unsigned long) (stack_alloc.hpp:190)
+| |     ->10.96% (8,388,608B) 0x1A0AE8: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >& stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::operator=<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> >(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:108)
+| |     | ->10.96% (8,388,608B) 0x1917A1: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::arena_matrix<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0>(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:65)
+| |     |   ->10.96% (8,388,608B) 0x18A9FA: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:57)
+| |     |     ->10.96% (8,388,608B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |     |       ->10.96% (8,388,608B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |     |         ->10.96% (8,388,608B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |     |           ->10.96% (8,388,608B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |     |             ->10.96% (8,388,608B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |     |               
+| |     ->01.37% (1,048,576B) 0x191776: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::arena_matrix<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0>(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:64)
+| |       ->01.37% (1,048,576B) 0x18A9FA: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:57)
+| |         ->01.37% (1,048,576B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |           ->01.37% (1,048,576B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |             ->01.37% (1,048,576B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |               ->01.37% (1,048,576B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |                 ->01.37% (1,048,576B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |                   
+| ->00.09% (65,536B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->11.64% (8,912,896B) 0x19D999: __gnu_cxx::new_allocator<stan::math::vari_base*>::allocate(unsigned long, void const*) (new_allocator.h:114)
+| ->11.64% (8,912,896B) 0x18CE5C: std::allocator_traits<std::allocator<stan::math::vari_base*> >::allocate(std::allocator<stan::math::vari_base*>&, unsigned long) (alloc_traits.h:444)
+|   ->11.64% (8,912,896B) 0x185F0B: std::_Vector_base<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::_M_allocate(unsigned long) (stl_vector.h:343)
+|     ->11.64% (8,912,896B) 0x18CB26: void std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::_M_realloc_insert<stan::math::vari_base*>(__gnu_cxx::__normal_iterator<stan::math::vari_base**, std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> > >, stan::math::vari_base*&&) (vector.tcc:440)
+|       ->11.64% (8,912,896B) 0x185D91: void std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::emplace_back<stan::math::vari_base*>(stan::math::vari_base*&&) (vector.tcc:121)
+|         ->11.64% (8,912,896B) 0x17F683: std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::push_back(stan::math::vari_base*&&) (stl_vector.h:1201)
+|           ->10.96% (8,388,608B) 0x17B338: stan::math::vari_value<double, void>::vari_value<double, (void*)0>(double) (vari.hpp:110)
+|           | ->10.96% (8,388,608B) 0x17FF58: stan::math::internal::callback_vari<double, stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+|           | | ->10.96% (8,388,608B) 0x17B671: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+|           | |   ->10.96% (8,388,608B) 0x1798A8: stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&) (operator_addition.hpp:54)
+|           | |     ->10.96% (8,388,608B) 0x1807EE: stan::math::var_value<double, void>::operator+=(stan::math::var_value<double, void> const&) (operator_plus_equal.hpp:14)
+|           | |     | ->10.96% (8,388,608B) 0x26311B: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (lambda_sampler_imp.hpp:93)
+|           | |     | | ->10.96% (8,388,608B) 0x25FCC1: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+|           | |     | |   ->10.96% (8,388,608B) 0x25C0FE: MCMCsampler::LambdaSamplerMala::perform() (lambda_sampler.cpp:97)
+|           | |     | |     ->10.96% (8,388,608B) 0x218F8C: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+|           | |     | |       ->10.96% (8,388,608B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+|           | |     | |         
+|           | |     | ->00.00% (0B) in 1+ places, all below ms_print's threshold (01.00%)
+|           | |     | 
+|           | |     ->00.00% (0B) in 1+ places, all below ms_print's threshold (01.00%)
+|           | |     
+|           | ->00.00% (0B) in 1+ places, all below ms_print's threshold (01.00%)
+|           | 
+|           ->00.68% (524,288B) in 1+ places, all below ms_print's threshold (01.00%)
+|           
+->00.72% (554,451B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 40 192,422,757,483       76,557,552       76,510,691        46,861            0
+ 41 198,917,852,634       76,557,552       76,510,659        46,893            0
+ 42 203,248,360,516       76,557,712       76,510,835        46,877            0
+ 43 209,744,552,534       76,557,680       76,510,835        46,845            0
+99.94% (76,510,835B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->87.57% (67,043,328B) 0x14D455: stan::math::internal::eight_byte_aligned_malloc(unsigned long) (stack_alloc.hpp:39)
+| ->87.49% (66,977,792B) 0x179191: stan::math::stack_alloc::move_to_next_block(unsigned long) (stack_alloc.hpp:108)
+| | ->87.49% (66,977,792B) 0x1792EB: stan::math::stack_alloc::alloc(unsigned long) (stack_alloc.hpp:175)
+| |   ->75.16% (57,540,608B) 0x1794B1: stan::math::vari_base::operator new(unsigned long) (vari.hpp:51)
+| |   | ->43.83% (33,554,432B) 0x260703: stan::math::var_value<double, void> stan::math::operator*<double, (void*)0>(stan::math::var_value<double, void> const&, double) (operator_multiplication.hpp:103)
+| |   | | ->43.83% (33,554,432B) 0x2630FB: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (lambda_sampler_imp.hpp:93)
+| |   | |   ->43.83% (33,554,432B) 0x25FCC1: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | |     ->43.83% (33,554,432B) 0x25C0FE: MCMCsampler::LambdaSamplerMala::perform() (lambda_sampler.cpp:97)
+| |   | |       ->43.83% (33,554,432B) 0x218F8C: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+| |   | |         ->43.83% (33,554,432B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | |           
+| |   | ->21.91% (16,777,216B) 0x17B65B: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+| |   | | ->21.91% (16,777,216B) 0x1798A8: stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&) (operator_addition.hpp:54)
+| |   | |   ->21.91% (16,777,216B) 0x1807EE: stan::math::var_value<double, void>::operator+=(stan::math::var_value<double, void> const&) (operator_plus_equal.hpp:14)
+| |   | |     ->21.91% (16,777,216B) 0x26311B: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (lambda_sampler_imp.hpp:93)
+| |   | |       ->21.91% (16,777,216B) 0x25FCC1: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | |         ->21.91% (16,777,216B) 0x25C0FE: MCMCsampler::LambdaSamplerMala::perform() (lambda_sampler.cpp:97)
+| |   | |           ->21.91% (16,777,216B) 0x218F8C: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+| |   | |             ->21.91% (16,777,216B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | |               
+| |   | ->05.65% (4,325,376B) 0x180106: stan::math::var_value<double, void> stan::math::operator*<double, (void*)0>(double, stan::math::var_value<double, void> const&) (operator_multiplication.hpp:123)
+| |   | | ->05.48% (4,194,304B) 0x182F4E: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:54)
+| |   | | | ->05.48% (4,194,304B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | | |   ->05.48% (4,194,304B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |   | | |     ->05.48% (4,194,304B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |   | | |       ->05.48% (4,194,304B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | | |         
+| |   | | ->00.17% (131,072B) in 1+ places, all below ms_print's threshold (01.00%)
+| |   | | 
+| |   | ->02.74% (2,097,152B) 0x1A0F66: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&)::{lambda(auto:1 const&)
+| |   | | ->02.74% (2,097,152B) 0x191AAF: stan::math::var_value<stan::plain_type<double, void>::type, void> stan::math::make_callback_var<double, stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&)::{lambda(auto:1 const&)
+| |   | |   ->02.74% (2,097,152B) 0x18AAA2: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:59)
+| |   | |     ->02.74% (2,097,152B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |   | |       ->02.74% (2,097,152B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | |         ->02.74% (2,097,152B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |   | |           ->02.74% (2,097,152B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |   | |             ->02.74% (2,097,152B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | |               
+| |   | ->01.03% (786,432B) in 2 places, all below massif's threshold (1.00%)
+| |   |   
+| |   ->12.33% (9,437,184B) 0x18F29C: stan::math::var_value<double, void>* stan::math::stack_alloc::alloc_array<stan::math::var_value<double, void> >(unsigned long) (stack_alloc.hpp:190)
+| |     ->10.96% (8,388,608B) 0x1A0AE8: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >& stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::operator=<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> >(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:108)
+| |     | ->10.96% (8,388,608B) 0x1917A1: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::arena_matrix<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0>(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:65)
+| |     |   ->10.96% (8,388,608B) 0x18A9FA: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:57)
+| |     |     ->10.96% (8,388,608B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |     |       ->10.96% (8,388,608B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |     |         ->10.96% (8,388,608B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |     |           ->10.96% (8,388,608B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |     |             ->10.96% (8,388,608B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |     |               
+| |     ->01.37% (1,048,576B) 0x191776: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::arena_matrix<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0>(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:64)
+| |       ->01.37% (1,048,576B) 0x18A9FA: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:57)
+| |         ->01.37% (1,048,576B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |           ->01.37% (1,048,576B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |             ->01.37% (1,048,576B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |               ->01.37% (1,048,576B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |                 ->01.37% (1,048,576B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |                   
+| ->00.09% (65,536B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->11.64% (8,912,896B) 0x19D999: __gnu_cxx::new_allocator<stan::math::vari_base*>::allocate(unsigned long, void const*) (new_allocator.h:114)
+| ->11.64% (8,912,896B) 0x18CE5C: std::allocator_traits<std::allocator<stan::math::vari_base*> >::allocate(std::allocator<stan::math::vari_base*>&, unsigned long) (alloc_traits.h:444)
+|   ->11.64% (8,912,896B) 0x185F0B: std::_Vector_base<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::_M_allocate(unsigned long) (stl_vector.h:343)
+|     ->11.64% (8,912,896B) 0x18CB26: void std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::_M_realloc_insert<stan::math::vari_base*>(__gnu_cxx::__normal_iterator<stan::math::vari_base**, std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> > >, stan::math::vari_base*&&) (vector.tcc:440)
+|       ->11.64% (8,912,896B) 0x185D91: void std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::emplace_back<stan::math::vari_base*>(stan::math::vari_base*&&) (vector.tcc:121)
+|         ->11.64% (8,912,896B) 0x17F683: std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::push_back(stan::math::vari_base*&&) (stl_vector.h:1201)
+|           ->10.96% (8,388,608B) 0x17B338: stan::math::vari_value<double, void>::vari_value<double, (void*)0>(double) (vari.hpp:110)
+|           | ->10.96% (8,388,608B) 0x17FF58: stan::math::internal::callback_vari<double, stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+|           | | ->10.96% (8,388,608B) 0x17B671: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+|           | |   ->10.96% (8,388,608B) 0x1798A8: stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&) (operator_addition.hpp:54)
+|           | |     ->10.96% (8,388,608B) 0x1807EE: stan::math::var_value<double, void>::operator+=(stan::math::var_value<double, void> const&) (operator_plus_equal.hpp:14)
+|           | |     | ->10.96% (8,388,608B) 0x26311B: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (lambda_sampler_imp.hpp:93)
+|           | |     | | ->10.96% (8,388,608B) 0x25FCC1: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+|           | |     | |   ->10.96% (8,388,608B) 0x25C0FE: MCMCsampler::LambdaSamplerMala::perform() (lambda_sampler.cpp:97)
+|           | |     | |     ->10.96% (8,388,608B) 0x218F8C: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+|           | |     | |       ->10.96% (8,388,608B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+|           | |     | |         
+|           | |     | ->00.00% (0B) in 1+ places, all below ms_print's threshold (01.00%)
+|           | |     | 
+|           | |     ->00.00% (0B) in 1+ places, all below ms_print's threshold (01.00%)
+|           | |     
+|           | ->00.00% (0B) in 1+ places, all below ms_print's threshold (01.00%)
+|           | 
+|           ->00.68% (524,288B) in 1+ places, all below ms_print's threshold (01.00%)
+|           
+->00.72% (554,611B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 44 214,502,594,361       77,402,520       77,226,835       175,685            0
+ 45 218,867,975,276       77,404,120       77,228,499       175,621            0
+ 46 223,216,335,205       76,555,416       76,508,679        46,737            0
+ 47 228,530,545,557       76,555,304       76,508,583        46,721            0
+ 48 231,940,572,198       76,557,208       76,510,423        46,785            0
+ 49 237,253,741,314       76,557,560       76,510,775        46,785            0
+ 50 240,794,608,054       76,557,176       76,510,391        46,785            0
+ 51 244,335,642,961       76,557,208       76,510,407        46,801            0
+ 52 247,877,046,770       76,557,288       76,510,503        46,785            0
+ 53 251,418,521,418       76,557,464       76,510,679        46,785            0
+ 54 254,048,177,338       77,341,024       77,165,831       175,193            0
+ 55 256,911,365,457       77,437,048       77,261,847       175,201            0
+ 56 259,856,144,980       77,403,856       77,228,583       175,273            0
+ 57 263,118,144,546       77,438,728       77,263,511       175,217            0
+ 58 265,892,135,235       76,557,576       76,510,851        46,725            0
+99.94% (76,510,851B) (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+->87.57% (67,043,328B) 0x14D455: stan::math::internal::eight_byte_aligned_malloc(unsigned long) (stack_alloc.hpp:39)
+| ->87.49% (66,977,792B) 0x179191: stan::math::stack_alloc::move_to_next_block(unsigned long) (stack_alloc.hpp:108)
+| | ->87.49% (66,977,792B) 0x1792EB: stan::math::stack_alloc::alloc(unsigned long) (stack_alloc.hpp:175)
+| |   ->75.16% (57,540,608B) 0x1794B1: stan::math::vari_base::operator new(unsigned long) (vari.hpp:51)
+| |   | ->43.83% (33,554,432B) 0x260703: stan::math::var_value<double, void> stan::math::operator*<double, (void*)0>(stan::math::var_value<double, void> const&, double) (operator_multiplication.hpp:103)
+| |   | | ->43.83% (33,554,432B) 0x2630FB: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (lambda_sampler_imp.hpp:93)
+| |   | |   ->43.83% (33,554,432B) 0x25FCC1: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | |     ->43.83% (33,554,432B) 0x25C0FE: MCMCsampler::LambdaSamplerMala::perform() (lambda_sampler.cpp:97)
+| |   | |       ->43.83% (33,554,432B) 0x218F8C: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+| |   | |         ->43.83% (33,554,432B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | |           
+| |   | ->21.91% (16,777,216B) 0x17B65B: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+| |   | | ->21.91% (16,777,216B) 0x1798A8: stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&) (operator_addition.hpp:54)
+| |   | |   ->21.91% (16,777,216B) 0x1807EE: stan::math::var_value<double, void>::operator+=(stan::math::var_value<double, void> const&) (operator_plus_equal.hpp:14)
+| |   | |     ->21.91% (16,777,216B) 0x26311B: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (lambda_sampler_imp.hpp:93)
+| |   | |       ->21.91% (16,777,216B) 0x25FCC1: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | |         ->21.91% (16,777,216B) 0x25C0FE: MCMCsampler::LambdaSamplerMala::perform() (lambda_sampler.cpp:97)
+| |   | |           ->21.91% (16,777,216B) 0x218F8C: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+| |   | |             ->21.91% (16,777,216B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | |               
+| |   | ->05.65% (4,325,376B) 0x180106: stan::math::var_value<double, void> stan::math::operator*<double, (void*)0>(double, stan::math::var_value<double, void> const&) (operator_multiplication.hpp:123)
+| |   | | ->05.48% (4,194,304B) 0x182F4E: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:54)
+| |   | | | ->05.48% (4,194,304B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | | |   ->05.48% (4,194,304B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |   | | |     ->05.48% (4,194,304B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |   | | |       ->05.48% (4,194,304B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | | |         
+| |   | | ->00.17% (131,072B) in 1+ places, all below ms_print's threshold (01.00%)
+| |   | | 
+| |   | ->02.74% (2,097,152B) 0x1A0F66: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&)::{lambda(auto:1 const&)
+| |   | | ->02.74% (2,097,152B) 0x191AAF: stan::math::var_value<stan::plain_type<double, void>::type, void> stan::math::make_callback_var<double, stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&)::{lambda(auto:1 const&)
+| |   | |   ->02.74% (2,097,152B) 0x18AAA2: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:59)
+| |   | |     ->02.74% (2,097,152B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |   | |       ->02.74% (2,097,152B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |   | |         ->02.74% (2,097,152B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |   | |           ->02.74% (2,097,152B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |   | |             ->02.74% (2,097,152B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |   | |               
+| |   | ->01.03% (786,432B) in 2 places, all below massif's threshold (1.00%)
+| |   |   
+| |   ->12.33% (9,437,184B) 0x18F29C: stan::math::var_value<double, void>* stan::math::stack_alloc::alloc_array<stan::math::var_value<double, void> >(unsigned long) (stack_alloc.hpp:190)
+| |     ->10.96% (8,388,608B) 0x1A0AE8: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >& stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::operator=<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> >(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:108)
+| |     | ->10.96% (8,388,608B) 0x1917A1: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::arena_matrix<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0>(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:65)
+| |     |   ->10.96% (8,388,608B) 0x18A9FA: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:57)
+| |     |     ->10.96% (8,388,608B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |     |       ->10.96% (8,388,608B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |     |         ->10.96% (8,388,608B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |     |           ->10.96% (8,388,608B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |     |             ->10.96% (8,388,608B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |     |               
+| |     ->01.37% (1,048,576B) 0x191776: stan::math::arena_matrix<Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> >::arena_matrix<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0>(Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (arena_matrix.hpp:64)
+| |       ->01.37% (1,048,576B) 0x18A9FA: stan::math::var_value<double, void> stan::math::dot_product<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const>, (void*)0, (void*)0, (void*)0>(Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> const&, Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<stan::math::var_value<double, void>, double>, Eigen::Matrix<stan::math::var_value<double, void>, 1, -1, 1, 1, -1> const, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> const> const&) (dot_product.hpp:57)
+| |         ->01.37% (1,048,576B) 0x182F2F: stan::math::var_value<double, void> MCMCsampler::MeansSamplerMala::alloc_means_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (alloc_means_sampler_imp.hpp:53)
+| |           ->01.37% (1,048,576B) 0x17D655: void stan::math::gradient<MCMCsampler::MeansSamplerMala::alloc_means_target_function>(MCMCsampler::MeansSamplerMala::alloc_means_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+| |             ->01.37% (1,048,576B) 0x175D2A: MCMCsampler::MeansSamplerMala::perform_update_allocated() (alloc_means_sampler.cpp:108)
+| |               ->01.37% (1,048,576B) 0x218F13: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:262)
+| |                 ->01.37% (1,048,576B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+| |                   
+| ->00.09% (65,536B) in 1+ places, all below ms_print's threshold (01.00%)
+| 
+->11.64% (8,912,896B) 0x19D999: __gnu_cxx::new_allocator<stan::math::vari_base*>::allocate(unsigned long, void const*) (new_allocator.h:114)
+| ->11.64% (8,912,896B) 0x18CE5C: std::allocator_traits<std::allocator<stan::math::vari_base*> >::allocate(std::allocator<stan::math::vari_base*>&, unsigned long) (alloc_traits.h:444)
+|   ->11.64% (8,912,896B) 0x185F0B: std::_Vector_base<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::_M_allocate(unsigned long) (stl_vector.h:343)
+|     ->11.64% (8,912,896B) 0x18CB26: void std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::_M_realloc_insert<stan::math::vari_base*>(__gnu_cxx::__normal_iterator<stan::math::vari_base**, std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> > >, stan::math::vari_base*&&) (vector.tcc:440)
+|       ->11.64% (8,912,896B) 0x185D91: void std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::emplace_back<stan::math::vari_base*>(stan::math::vari_base*&&) (vector.tcc:121)
+|         ->11.64% (8,912,896B) 0x17F683: std::vector<stan::math::vari_base*, std::allocator<stan::math::vari_base*> >::push_back(stan::math::vari_base*&&) (stl_vector.h:1201)
+|           ->10.96% (8,388,608B) 0x17B338: stan::math::vari_value<double, void>::vari_value<double, (void*)0>(double) (vari.hpp:110)
+|           | ->10.96% (8,388,608B) 0x17FF58: stan::math::internal::callback_vari<double, stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+|           | | ->10.96% (8,388,608B) 0x17B671: stan::math::internal::callback_vari<stan::plain_type<double, void>::type, stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&)::{lambda(auto:1 const&)
+|           | |   ->10.96% (8,388,608B) 0x1798A8: stan::math::operator+(stan::math::var_value<double, void> const&, stan::math::var_value<double, void> const&) (operator_addition.hpp:54)
+|           | |     ->10.96% (8,388,608B) 0x1807EE: stan::math::var_value<double, void>::operator+=(stan::math::var_value<double, void> const&) (operator_plus_equal.hpp:14)
+|           | |     | ->10.96% (8,388,608B) 0x26311B: stan::math::var_value<double, void> MCMCsampler::LambdaSamplerMala::lambda_target_function::operator()<stan::math::var_value<double, void> >(Eigen::Matrix<stan::math::var_value<double, void>, -1, 1, 0, -1, 1> const&) const (lambda_sampler_imp.hpp:93)
+|           | |     | | ->10.96% (8,388,608B) 0x25FCC1: void stan::math::gradient<MCMCsampler::LambdaSamplerMala::lambda_target_function>(MCMCsampler::LambdaSamplerMala::lambda_target_function const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, double&, Eigen::Matrix<double, -1, 1, 0, -1, 1>&) (gradient.hpp:47)
+|           | |     | |   ->10.96% (8,388,608B) 0x25C0FE: MCMCsampler::LambdaSamplerMala::perform() (lambda_sampler.cpp:97)
+|           | |     | |     ->10.96% (8,388,608B) 0x218F8C: MCMCsampler::MultivariateConditionalMCMC::run_one_trick() (conditional_mcmc.cpp:288)
+|           | |     | |       ->10.96% (8,388,608B) 0x2D01D9: main (run_test_p50_d2.cpp:121)
+|           | |     | |         
+|           | |     | ->00.00% (0B) in 1+ places, all below ms_print's threshold (01.00%)
+|           | |     | 
+|           | |     ->00.00% (0B) in 1+ places, all below ms_print's threshold (01.00%)
+|           | |     
+|           | ->00.00% (0B) in 1+ places, all below ms_print's threshold (01.00%)
+|           | 
+|           ->00.68% (524,288B) in 1+ places, all below ms_print's threshold (01.00%)
+|           
+->00.72% (554,627B) in 1+ places, all below ms_print's threshold (01.00%)
+
+--------------------------------------------------------------------------------
+  n        time(i)         total(B)   useful-heap(B) extra-heap(B)    stacks(B)
+--------------------------------------------------------------------------------
+ 59 268,724,362,508       76,557,944       76,511,219        46,725            0
+ 60 271,556,158,565       76,557,480       76,510,755        46,725            0
+ 61 274,388,357,958       76,557,816       76,511,091        46,725            0
+ 62 277,219,750,494       76,557,368       76,510,643        46,725            0
+ 63 280,051,222,621       76,557,416       76,510,691        46,725            0
+ 64 282,883,114,390       76,557,416       76,510,675        46,741            0
+ 65 285,715,099,100       76,557,608       76,510,883        46,725            0
+ 66 288,562,971,601       77,402,368       77,227,203       175,165            0
+ 67 291,792,810,670       77,404,048       77,228,867       175,181            0

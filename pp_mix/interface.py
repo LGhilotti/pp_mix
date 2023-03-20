@@ -7,19 +7,20 @@ from joblib import Parallel, delayed, effective_n_jobs
 from google.protobuf import text_format
 from itertools import combinations, product
 from scipy.stats import multivariate_normal, norm
+from sklearn.cluster import KMeans
+from kmodes.kmodes import KModes
 
 import pp_mix.protos.py.params_pb2 as params_pb2
-from pp_mix.protos.py.state_pb2 import (
-    UnivariateMixtureState, MultivariateMixtureState)
+from pp_mix.protos.py.state_pb2 import MultivariateMixtureState, EigenVector
 from pp_mix.protos.py.params_pb2 import Params
-from pp_mix.utils import loadChains, writeChains, to_numpy, gen_even_slices
-from pp_mix.params_helper import check_params, make_params
+from pp_mix.utils import loadChains, writeChains, to_numpy, to_proto, gen_even_slices
+from pp_mix.params_helper import check_params, compute_ranges, check_ranges
 from pp_mix.precision import PrecMat
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
-import pp_mix_cpp  # noqa
-   
-   
+import pp_mix_high  # noqa
+
+
 def getDeserialized(serialized, objType):
     out = objType()
     out.ParseFromString(serialized)
@@ -27,184 +28,80 @@ def getDeserialized(serialized, objType):
 
 
 class ConditionalMCMC(object):
-    def __init__(self, params_file="", pp_params=None, prec_params=None,
-                 jump_params=None, mala_stepsize=0.1):
-        if params_file != "":
-            with open(params_file, 'r') as fp:
-                self.params = Params()
-                text_format.Parse(fp.read(), self.params)
+    def __init__(self, hyperpar):
 
-        else:
-            self.params = make_params(pp_params, prec_params, 
-                                      jump_params)
-        
-        self.params.mala_stepsize = mala_stepsize
+        self.params = Params()
+        self.params = hyperpar
         self.serialized_params = self.params.SerializeToString()
 
-    def run(self, nburn, niter, thin, data, log_every=200, bernoulli=False):
-        check_params(self.params, data, bernoulli)
-        if data.ndim == 1:
-            self.dim = 1
-        else:
-            self.dim = data.shape[1]
+    def run(self, ntrick, nburn, niter, thin, data, d, ranges = 0, log_every=200):
 
-        self._serialized_chains = pp_mix_cpp._run_pp_mix(
-            nburn, niter, thin, data, self.serialized_params, bernoulli, log_every)
+        check_params(self.params, data, d)
 
-        if self.dim == 1:
-            objType = UnivariateMixtureState
+        if ranges == 0 :
+            ranges = compute_ranges(self.params, data, d);
         else:
-            objType = MultivariateMixtureState
+            check_ranges(ranges, d)
+
+        #print("ranges: \n" , ranges)
+
+        self.serialized_data = to_proto(data).SerializeToString()
+        self.serialized_ranges = to_proto(ranges).SerializeToString()
+        km = KMeans(6)
+        km.fit(data)
+        allocs = km.labels_.astype(int)
+
+        self._serialized_chains, self.means_ar, self.lambda_ar = pp_mix_high._run_pp_mix(
+            ntrick, nburn, niter, thin, self.serialized_data, self.serialized_params,
+            d, self.serialized_ranges, allocs, log_every)
+
+        objType = MultivariateMixtureState
 
         self.chains = list(map(
             lambda x: getDeserialized(x, objType), self._serialized_chains))
 
-    def serialize_chains(self, filename):
-        writeChains(self.chains, filename)
+    def run_binary(self, ntrick, nburn, niter, thin, binary_data, d, sidelength = 0, log_every=200):
 
-    def sample_predictive(self):
-        if self.dim == 1:
-            out = pp_mix_cpp._sample_predictive_univ(self._serialized_chains)
+        check_params(self.params, binary_data, d)
+
+        if sidelength == 0 :
+            raise ValueError(
+                "Method not yet implemented")
+            #ranges = compute_ranges_binary(self.params, binary_data, d);
         else:
-            out = pp_mix_cpp._sample_predictive_multi(
-                self._serialized_chains, self.dim)
-        return out
+            ranges = np.array([[-sidelength]*d, [sidelength]*d])
+            check_ranges(ranges, d)
 
+        #print("ranges: \n" , ranges)
 
-class RJMCMC(object):
-    def __init__(self, params_file="", pp_params=None, prec_params=None):
-        if params_file != "":
-            with open(params_file, 'r') as fp:
-                self.params = Params()
-                text_format.Parse(fp.read(), self.params)
+        self.serialized_data = to_proto(binary_data).SerializeToString()
+        self.serialized_ranges = to_proto(ranges).SerializeToString()
+        #km = KMeans(6)
+        #km.fit(binary_data)
+        #allocs = km.labels_.astype(int)
 
-        else:
-            self.params = make_params(pp_params, prec_params)
-        
-        self.serialized_params = self.params.SerializeToString()
+        km = KModes(n_clusters=6, init='Huang', n_init=2)
+        allocs = km.fit_predict(binary_data)
 
-    def run(self, nburn, niter, thin, data, log_every=200, bernoulli=False):
-        check_params(self.params, data, bernoulli)
-        if data.ndim == 1:
-            self.dim = 1
-        else:
-            self.dim = data.shape[1]
+        self._serialized_chains, self.means_ar, self.lambda_ar = pp_mix_high._run_pp_mix_binary(
+            ntrick, nburn, niter, thin, self.serialized_data, self.serialized_params,
+            d, self.serialized_ranges, allocs, log_every)
 
-        self._serialized_chains = pp_mix_cpp._run_rj(
-            nburn, niter, thin, data, self.serialized_params, log_every)
-
-        if self.dim == 1:
-            objType = UnivariateMixtureState
-        else:
-            objType = MultivariateMixtureState
+        objType = MultivariateMixtureState
 
         self.chains = list(map(
             lambda x: getDeserialized(x, objType), self._serialized_chains))
 
+
     def serialize_chains(self, filename):
         writeChains(self.chains, filename)
 
-    def sample_predictive(self):
-        if self.dim == 1:
-            out = pp_mix_cpp._sample_predictive_univ(self._serialized_chains)
-        else:
-            out = pp_mix_cpp._sample_predictive_multi(
-                self._serialized_chains, self.dim)
-        return out
-
-
-def simulate_strauss2d(ranges, beta, gamma, R):
-    return pp_mix_cpp._simulate_strauss2D(ranges, beta, gamma, R)
-
-
-def estimate_multi_density(state, grid):
-    dim = grid.shape[1]
-    norm_ = multivariate_normal
-    T = np.sum(state.a_jumps.data) + np.sum(state.na_jumps.data)
-    out = np.zeros(grid.shape[0])
-    for i in range(state.ma):
-        prec = PrecMat(to_numpy(state.a_precs[i]))
-        out += state.a_jumps.data[i] / T * np.exp(
-            norm_._logpdf(grid, to_numpy(state.a_means[i]), prec.prec_cho,
-                         prec.log_det_inv, dim))
-
-    for i in range(state.mna):
-        prec = PrecMat(to_numpy(state.na_precs[i]))
-        out += state.na_jumps.data[i] / T * np.exp(
-            norm_._logpdf(grid, to_numpy(state.na_means[i]), prec.prec_cho,
-                         prec.log_det_inv, dim))
-
-    return out
-
-
-def estimate_univ_density(state, grid):
-    T = np.sum(state.a_jumps.data) + np.sum(state.na_jumps.data)
-    out = np.zeros(grid.shape[0])
-    for i in range(state.ma):
-        sd = 1.0 / np.sqrt(state.a_precs.data[i])
-        out += state.a_jumps.data[i] / T * norm.pdf(
-            grid, state.a_means.data[i], sd)
-
-    for i in range(state.mna):
-        sd = 1.0 / np.sqrt(state.na_precs.data[i])
-        out += state.na_jumps.data[i] / T * norm.pdf(
-            grid, state.na_means.data[i], sd)
-    return out
 
 
 
-def estimate_density_seq(mcmc_chains, grid):
-    dim = grid.ndim
-    
-    if dim == 1:
-        out = np.zeros((len(mcmc_chains), len(grid)))
-        dens_func = estimate_univ_density
-    else:
-        out = np.zeros((len(mcmc_chains), grid.shape[0]))
-        dens_func = estimate_multi_density
-
-    for i, state in enumerate(mcmc_chains):
-        out[i, :] = dens_func(state, grid)
-    return out
-
-
-def lpml(data, chains):
-    densities = estimate_density_seq(chains, data) 
-    cpos = 1 / np.mean(1 / densities, axis=0)
-    return np.mean(np.log(cpos))
-
-
-def minbinder_clus(chains, njobs=-1):
-    def _loss_fun(clus, psm):
-        aff_matrix = np.zeros((ndata, ndata))
-        clus_vals = np.unique(clus)
-        for k in clus_vals:
-            for i, j in combinations(np.where(clus == k)[0], 2):
-                aff_matrix[i, j] = 1
-            
-        aff_matrix += np.transpose(aff_matrix)
-        np.fill_diagonal(aff_matrix, 1.0)
-        
-        return np.sum((aff_matrix - psm) ** 2) 
-            
-
-    clus_chain = np.vstack([x.clus_alloc for x in chains])
-    ndata = clus_chain.shape[1]
-    psm = np.zeros((ndata, ndata))
-    for i in range(ndata):
-        psm[i, i] = 0.5
-        for j in range(i):
-            psm[i, j] = np.mean(clus_chain[:, i] == clus_chain[:, j])
-        
-    psm += np.transpose(psm)
-
-    if njobs < 1:
-        njobs = joblib.cpu_count() + njobs
-    
-    fd = delayed(_loss_fun)
-    losses = Parallel(n_jobs=njobs)(
-        fd(clus_chain[s, :], psm)
-        for s in gen_even_slices(len(chains), effective_n_jobs(njobs)))
-
-    best = np.argmin(losses)
-    return clus_chain[best, :]
+def cluster_estimate(ca_matrix):
+    serialized_ca_matrix = to_proto(ca_matrix).SerializeToString()
+    serialized_best_cluster = pp_mix_high.cluster_estimate(serialized_ca_matrix)
+    best_cluster = EigenVector()
+    best_cluster.ParseFromString(serialized_best_cluster)
+    return to_numpy(best_cluster)

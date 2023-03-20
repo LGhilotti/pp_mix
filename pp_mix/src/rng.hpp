@@ -1,6 +1,7 @@
 #ifndef RNG_HPP
 #define RNG_HPP
 
+#include <stan/math/prim.hpp>
 #include <random>
 
 class Rng

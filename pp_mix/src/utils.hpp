@@ -20,14 +20,19 @@ using std::vector;
 
 void delete_row(MatrixXd *x, int ind);
 
+void delete_column(MatrixXd *x, int ind);
+
 void delete_elem(VectorXd *x, int ind);
 
 MatrixXd delete_row(const MatrixXd &x, int ind);
+
+MatrixXd delete_column(const MatrixXd &x, int ind);
 
 VectorXd delete_elem(const VectorXd &x, int ind);
 
 MatrixXd vstack(const std::vector<VectorXd> &rows);
 
+// used for testing the code in spikes folder
 template <typename T>
 T loadTextProto(std::string filename) {
   std::ifstream ifs(filename);
@@ -43,17 +48,10 @@ T loadTextProto(std::string filename) {
 double o_multi_normal_prec_lpdf(const VectorXd &x, const VectorXd &mu,
                                 const PrecMat &sigma);
 
+
+// this is just proportional (-n*p/2 log(2pi) misses): we just need it for MH step so it is enough
 double o_multi_normal_prec_lpdf(const std::vector<VectorXd> &x,
                                 const VectorXd &mu, const PrecMat &sigma);
-
-double trunc_normal_rng(double mu, double sigma, double lower, double upper,
-                        std::mt19937_64 &rng);
-
-double trunc_normal_rng_inversion(double mu, double sigma, double lower,
-                                  double upper, std::mt19937_64 &rng);
-
-double trunc_normal_lpdf(double x, double mu, double sigma, double lower,
-                         double upper);
 
 void to_proto(const MatrixXd &mat, EigenMatrix *out);
 
@@ -65,15 +63,9 @@ Eigen::MatrixXd to_eigen(const EigenMatrix &vec);
 
 std::vector<VectorXd> to_vector_of_vectors(const MatrixXd &mat);
 
-MatrixXd pairwise_dist_sq(const MatrixXd &x, const MatrixXd &y);
+VectorXd softmax_fun(const VectorXd &logs);
 
-MatrixXd pairwise_dist_sq(const MatrixXd &x);
-
-VectorXd softmax(const VectorXd &logs);
-
-MatrixXd posterior_sim_matrix(const MatrixXi& alloc_chain);
-
-// VectorXd minbinder(const MatrixXi& alloc_chain);
+Eigen::MatrixXd posterior_similarity(const Eigen::MatrixXd &alloc_chain);
 
 template<typename T>
 vector<vector<T>> cart_product(const vector<vector<T>> &v) {
@@ -88,7 +80,7 @@ vector<vector<T>> cart_product(const vector<vector<T>> &v) {
     }
     s = move(r);
   }
-  return s;
+  return vector<vector<T>>(s.end()-(s.size()/2 +1), s.end());
 }
 
 template <typename T>

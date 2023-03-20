@@ -2,7 +2,12 @@ import numpy as np
 from google.protobuf.internal.encoder import _VarintBytes
 from google.protobuf.internal.decoder import _DecodeVarint32
 from pp_mix.protos.py.state_pb2 import EigenMatrix, EigenVector
+from scipy.stats import norm
 
+
+def truncated_norm_rng(sigmas, binary_data , size):
+    u = np.random.uniform(size=size)
+    return np.stack([norm.ppf(0.5* (u[i,:,:]+binary_data)) * sigmas[i,None, :] for i in range(size[0]) ])
 
 def gen_even_slices(n, n_packs, n_samples=None):
     start = 0
@@ -51,7 +56,7 @@ def writeChains(chains, filename):
                 fp.write(delimiter + msgStr)
             except Exception as e:
                 print(e)
-                break   
+                break
 
 
 def to_numpy(obj):

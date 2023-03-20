@@ -1,41 +1,71 @@
-#include <pybind11/eigen.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-
-#include <Eigen/Dense>
 #include <deque>
 #include <string>
+#include <tuple>
+//#include <stan/math/fwd.hpp>
+//#include <stan/math/mix.hpp>
+//#include <stan/math/prim.hpp>
+//#include <Eigen/Dense>
+#include <stan/math/prim.hpp>
+#include <Eigen/Dense>
+#include <Eigen/SparseCore>
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+/// COLPA DI QUESTO EIGEN.H
+//#include <pybind11/eigen.h>
+
 
 #include "../protos/cpp/params.pb.h"
 #include "../protos/cpp/state.pb.h"
 #include "conditional_mcmc.hpp"
 #include "factory.hpp"
-#include "point_process/strauss_pp.hpp"
-#include "precs/fake_prec.hpp"
-#include "rj_mcmc.hpp"
-#include "simulate_straus.hpp"
 #include "utils.hpp"
+
 
 namespace py = pybind11;
 
-std::deque<py::bytes> run_pp_mix_univ(int burnin, int niter, int thin,
-                                      const Eigen::MatrixXd &data,
-                                      Params params, int log_every) {
-  Eigen::MatrixXd ranges(2, data.cols());
-  ranges.row(0) = data.colwise().minCoeff();
-  ranges.row(1) = data.colwise().maxCoeff();
-  ranges *= 2;
-  std::cout << "ranges: \n" << ranges << std::endl;
+/////////////////////////// This is the main function provided to Python user
+
+std::tuple<std::deque<py::bytes>, double , double>
+ _run_pp_mix(int ntrick, int burnin, int niter, int thin,
+                                  std::string serialized_data, //const Eigen::MatrixXd &data,
+                                  std::string serialized_params,
+                                  int d,
+                                  std::string serialized_ranges, //const Eigen::MatrixXd &ranges,
+                                  std::vector<int> init_allocs,
+				  int log_every = 200) {
+  Params params;
+  params.ParseFromString(serialized_params);
+  Eigen::MatrixXd data;
+  Eigen::MatrixXd ranges;
+
+  {
+    EigenMatrix data_proto;
+    data_proto.ParseFromString(serialized_data);
+    data = to_eigen(data_proto);
+    EigenMatrix ranges_proto;
+    ranges_proto.ParseFromString(serialized_ranges);
+    ranges = to_eigen(ranges_proto);
+  }
 
   std::deque<py::bytes> out;
-  BasePP *pp_mix = make_pp(params);
-  BaseJump *h = make_jump(params);
-  BasePrec *g = make_prec(params);
-  pp_mix->set_ranges(ranges);
+  DeterminantalPP* pp_mix = make_dpp(params, ranges);
+  BasePrec* g = make_delta(params, d);
 
-  UnivariateConditionalMCMC sampler(pp_mix, h, g, params);
-  const std::vector<double> datavec(data.data(), data.data() + data.size());
-  sampler.initialize(datavec);
+  MCMCsampler::MultivariateConditionalMCMC sampler(pp_mix, g, params, d);
+  sampler.initialize(data);
+
+  Eigen::VectorXi init_allocs_ = Eigen::Map<Eigen::VectorXi>(init_allocs.data(), init_allocs.size());
+  sampler.set_clus_alloc(init_allocs_);
+  sampler._relabel();
+  py::print("Number means in trick phase: ", sampler.get_num_a_means());
+
+  for (int i = 0; i < ntrick; i++) {
+    sampler.run_one_trick();
+    if ((i + 1) % log_every == 0) {
+      py::print("Trick, iter #", i + 1, " / ", ntrick);
+    }
+  }
 
   for (int i = 0; i < burnin; i++) {
     sampler.run_one();
@@ -44,50 +74,6 @@ std::deque<py::bytes> run_pp_mix_univ(int burnin, int niter, int thin,
     }
   }
 
-  for (int i = 0; i < niter; i++) {
-    sampler.run_one();
-    if (i % thin == 0) {
-      std::string s;
-      UnivariateMixtureState curr;
-      sampler.get_state_as_proto(&curr);
-      curr.SerializeToString(&s);
-      out.push_back((py::bytes)s);
-    }
-
-    if ((i + 1) % log_every == 0) {
-      py::print("Running, iter #", i + 1, " / ", niter);
-    }
-  }
-  return out;
-}
-
-std::deque<py::bytes> run_pp_mix_multi(int burnin, int niter, int thin,
-                                       const Eigen::MatrixXd &data,
-                                       Params params, int log_every) {
-  Eigen::MatrixXd ranges(2, data.cols());
-  ranges.row(0) = data.colwise().minCoeff();
-  ranges.row(1) = data.colwise().maxCoeff();
-  ranges *= 2;
-  std::cout << "ranges: \n" << ranges << std::endl;
-
-  std::deque<py::bytes> out;
-  BasePP *pp_mix = make_pp(params);
-  BaseJump *h = make_jump(params);
-  BasePrec *g = make_prec(params);
-  pp_mix->set_ranges(ranges);
-
-  MultivariateConditionalMCMC sampler(pp_mix, h, g, params);
-  std::vector<Eigen::VectorXd> datavec = to_vector_of_vectors(data);
-  sampler.initialize(datavec);
-
-  for (int i = 0; i < burnin; i++) {
-    sampler.run_one();
-    if ((i + 1) % log_every == 0) {
-      py::print("Burnin, iter #", i + 1, " / ", burnin);
-    }
-  }
-
-  // sampler.set_verbose();
   for (int i = 0; i < niter; i++) {
     sampler.run_one();
     if (i % thin == 0) {
@@ -102,100 +88,77 @@ std::deque<py::bytes> run_pp_mix_multi(int burnin, int niter, int thin,
       py::print("Running, iter #", i + 1, " / ", niter);
     }
   }
-  return out;
+
+  py::object Decimal = py::module_::import("decimal").attr("Decimal");
+
+  py::print("Allocated Means acceptance rate ", Decimal(sampler.a_means_acceptance_rate()));
+  py::print("Lambda acceptance rate ", Decimal(sampler.Lambda_acceptance_rate()));
+
+  return std::make_tuple(out,sampler.a_means_acceptance_rate(),sampler.Lambda_acceptance_rate());
 }
 
-std::deque<py::bytes> run_pp_mix_bernoulli(int burnin, int niter, int thin,
-                                           const Eigen::MatrixXd &data,
-                                           Params params, int log_every) {
-  Eigen::MatrixXd ranges(2, data.cols());
-  for (int i = 0; i < data.cols(); i++) {
-    ranges(0, i) = 0.0;
-    ranges(1, i) = 1.0;
-  }
+/////////////////////////// This is the main function provided to Python user FOR 0/1 RESPONSES
 
-  std::deque<py::bytes> out;
-  BasePP *pp_mix = make_pp(params);
-  BaseJump *h = make_jump(params);
-  BasePrec *g = new FakePrec();
-  pp_mix->set_ranges(ranges);
-
-  BernoulliConditionalMCMC sampler(pp_mix, h, g, params);
-  std::vector<Eigen::VectorXd> datavec = to_vector_of_vectors(data);
-  sampler.initialize(datavec);
-
-  for (int i = 0; i < burnin; i++) {
-    sampler.run_one();
-    if ((i + 1) % log_every == 0) {
-      py::print("Burnin, iter #", i + 1, " / ", burnin);
-    }
-  }
-
-  // sampler.set_verbose();
-  for (int i = 0; i < niter; i++) {
-    sampler.run_one();
-    if (i % thin == 0) {
-      std::string s;
-      BernoulliMixtureState curr;
-      sampler.get_state_as_proto(&curr);
-      curr.SerializeToString(&s);
-      out.push_back((py::bytes)s);
-    }
-
-    if ((i + 1) % log_every == 0) {
-      py::print("Running, iter #", i + 1, " / ", niter);
-    }
-  }
-  return out;
-}
-
-std::deque<py::bytes> _run_pp_mix(int burnin, int niter, int thin,
-                                  const Eigen::MatrixXd &data,
+std::tuple<std::deque<py::bytes>, double , double>
+ _run_pp_mix_binary(int ntrick, int burnin, int niter, int thin,
+                                  std::string serialized_data, //const Eigen::MatrixXi &data,
                                   std::string serialized_params,
-                                  bool bernoulli = false, int log_every = 200) {
+                                  int d,
+                                  std::string serialized_ranges, //const Eigen::MatrixXd &ranges,
+                                  std::vector<int> init_allocs,
+				  int log_every = 200) {
   Params params;
   params.ParseFromString(serialized_params);
+  Eigen::MatrixXd data;
+  Eigen::MatrixXd ranges;
 
-  if (bernoulli)
-    return run_pp_mix_bernoulli(burnin, niter, thin, data, params, log_every);
-
-  else if (data.rows() == 1 || data.cols() == 1)
-    return run_pp_mix_univ(burnin, niter, thin, data, params, log_every);
-
-  else
-    return run_pp_mix_multi(burnin, niter, thin, data, params, log_every);
-}
-
-std::deque<py::bytes> run_rj_univ(int burnin, int niter, int thin,
-                                  const Eigen::MatrixXd &data, Params params,
-                                  int log_every) {
-  Eigen::MatrixXd ranges(2, data.cols());
-  ranges.row(0) = data.colwise().minCoeff();
-  ranges.row(1) = data.colwise().maxCoeff();
-  ranges *= 2;
-  std::cout << "ranges: \n" << ranges << std::endl;
+  {
+    EigenMatrix data_proto;
+    data_proto.ParseFromString(serialized_data);
+    data = to_eigen(data_proto);
+    EigenMatrix ranges_proto;
+    ranges_proto.ParseFromString(serialized_ranges);
+    ranges = to_eigen(ranges_proto);
+  }
 
   std::deque<py::bytes> out;
-  BasePP *pp_mix = make_pp(params);
-  BasePrec *g = make_prec(params);
-  pp_mix->set_ranges(ranges);
+  DeterminantalPP* pp_mix = make_dpp(params, ranges);
+  BasePrec* g = make_delta(params, d);
 
-  UnivariateRJMCMC sampler(pp_mix, g, params);
-  const std::vector<double> datavec(data.data(), data.data() + data.size());
-  sampler.initialize(datavec);
+  MCMCsampler::MultivariateConditionalMCMC sampler(pp_mix, g, params, d);
+  sampler.initialize_binary(data);
+
+  Eigen::VectorXi init_allocs_ = Eigen::Map<Eigen::VectorXi>(init_allocs.data(), init_allocs.size());
+  sampler.set_clus_alloc(init_allocs_);
+  sampler._relabel();
+  py::print("Number means in trick phase: ", sampler.get_num_a_means());
+  py::print("initial mean abs zetas: ", sampler.get_data().array().abs().mean());
+
+  for (int i = 0; i < ntrick; i++) {
+    //py::print("current mean abs zetas: ", sampler.get_data().array().abs().mean());
+    //py::print("current mean abs etas: ", sampler.get_etas().array().abs().mean());
+
+    sampler.run_one_trick_binary();
+    if ((i + 1) % log_every == 0) {
+      py::print("Trick, iter #", i + 1, " / ", ntrick);
+    }
+  }
 
   for (int i = 0; i < burnin; i++) {
-    sampler.run_one();
+    //py::print("current mean abs zetas: ", sampler.get_data().array().abs().mean());
+    //py::print("current mean abs etas: ", sampler.get_etas().array().abs().mean());
+
+    sampler.run_one_binary();
     if ((i + 1) % log_every == 0) {
       py::print("Burnin, iter #", i + 1, " / ", burnin);
     }
   }
 
   for (int i = 0; i < niter; i++) {
-    sampler.run_one();
+    sampler.run_one_binary();
     if (i % thin == 0) {
       std::string s;
-      UnivariateMixtureState curr;
+      MultivariateMixtureState curr;
       sampler.get_state_as_proto(&curr);
       curr.SerializeToString(&s);
       out.push_back((py::bytes)s);
@@ -205,116 +168,74 @@ std::deque<py::bytes> run_rj_univ(int burnin, int niter, int thin,
       py::print("Running, iter #", i + 1, " / ", niter);
     }
   }
-  return out;
+
+  py::object Decimal = py::module_::import("decimal").attr("Decimal");
+
+  py::print("Allocated Means acceptance rate ", Decimal(sampler.a_means_acceptance_rate()));
+  py::print("Lambda acceptance rate ", Decimal(sampler.Lambda_acceptance_rate()));
+
+  return std::make_tuple(out,sampler.a_means_acceptance_rate(),sampler.Lambda_acceptance_rate());
 }
 
-std::deque<py::bytes> _run_rj(int burnin, int niter, int thin,
-                              const Eigen::MatrixXd &data,
-                              std::string serialized_params,
-                              int log_every = 200) {
-  Params params;
-  params.ParseFromString(serialized_params);
 
-  // if (data.rows() == 1 || data.cols() == 1)
-  return run_rj_univ(burnin, niter, thin, data, params, log_every);
-}
 
-Eigen::MatrixXd _simulate_strauss2D(const Eigen::MatrixXd &ranges, double beta,
-                                    double gamma, double R) {
-  return simulate_strauss_moller(ranges, beta, gamma, R);
-}
-
-Eigen::MatrixXd _simulate_strauss_our(const Eigen::MatrixXd &ranges,
-                                      double beta, double gamma, double R) {
-  StraussPP pp(beta, gamma, R);
-  pp.set_ranges(ranges);
-  return simulate_strauss_our(&pp);
-}
-
-Eigen::VectorXd _sample_predictive_univ(
-    const std::vector<std::string> &serialized_chains) {
-  int niter = serialized_chains.size();
-  Eigen::VectorXd out(niter);
-
-  Eigen::VectorXd a_means;
-  Eigen::MatrixXd a_precs;
-  Eigen::VectorXd na_means;
-  Eigen::MatrixXd na_precs;
-  double mu, sig;
-
-  int k;
-  for (int i = 0; i < niter; i++) {
-    UnivariateMixtureState state;
-    state.ParseFromString(serialized_chains[i]);
-    a_means = to_eigen(state.a_means());
-    a_precs = to_eigen(state.a_precs());
-    na_means = to_eigen(state.na_means());
-    na_precs = to_eigen(state.na_precs());
-
-    Eigen::VectorXd probas(state.ma() + state.mna());
-    probas.head(state.ma()) = to_eigen(state.a_jumps());
-    probas.tail(state.mna()) = to_eigen(state.na_jumps());
-    probas /= probas.sum();
-
-    k = stan::math::categorical_rng(probas, Rng::Instance().get()) - 1;
-    if (k < state.ma()) {
-      mu = a_means(k);
-      sig = 1.0 / sqrt(a_precs(k));
-    } else {
-      int pos = k - state.ma();
-      mu = na_means(k - state.ma());
-      sig = 1.0 / sqrt(na_precs(k - state.ma()));
-    }
-    out(i) = stan::math::normal_rng(mu, sig, Rng::Instance().get());
+//params: coll Collector containing the algorithm chain
+//return: Index of the iteration containing the best estimate
+py::bytes cluster_estimate( //const Eigen::MatrixXd &alloc_chain
+            std::string serialized_alloc_chain) {
+  // Initialize objects
+  Eigen::MatrixXd alloc_chain;
+  {
+    EigenMatrix alloc_chain_proto;
+    alloc_chain_proto.ParseFromString(serialized_alloc_chain);
+    alloc_chain = to_eigen(alloc_chain_proto);
   }
-  return out;
-}
+  unsigned n_iter = alloc_chain.rows();
+  unsigned int n_data = alloc_chain.cols();
+  std::vector<Eigen::SparseMatrix<double> > all_diss;
+  //progresscpp::ProgressBar bar(n_iter, 60);
 
-Eigen::MatrixXd _sample_predictive_multi(
-    const std::vector<std::string> &serialized_chains, int dim) {
-  int niter = serialized_chains.size();
+  // Compute mean
+  std::cout << "(Computing mean dissimilarity... " << std::flush;
+  Eigen::MatrixXd mean_diss = posterior_similarity(alloc_chain);
+  std::cout << "Done)" << std::endl;
 
-  Eigen::MatrixXd out(niter, dim);
-  Eigen::VectorXd mu;
-  Eigen::MatrixXd prec;
-
-  int k;
-  for (int i = 0; i < niter; i++) {
-    MultivariateMixtureState state;
-    state.ParseFromString(serialized_chains[i]);
-
-    Eigen::VectorXd probas(state.ma() + state.mna());
-    probas.head(state.ma()) = to_eigen(state.a_jumps());
-    probas.tail(state.mna()) = to_eigen(state.na_jumps());
-    probas /= probas.sum();
-    k = stan::math::categorical_rng(probas, Rng::Instance().get()) - 1;
-
-    if (k < state.ma()) {
-      mu = to_eigen(state.a_means()[k]);
-      prec = to_eigen(state.a_precs()[k]);
-    } else {
-      mu = to_eigen(state.na_means()[k - state.ma()]);
-      prec = to_eigen(state.na_precs()[k - state.ma()]);
+  // Compute Frobenius norm error of all iterations
+  Eigen::VectorXd errors(n_iter);
+  for (int k = 0; k < n_iter; k++) {
+    for (int i = 0; i < n_data; i++) {
+      for (int j = 0; j < i; j++) {
+        int x = (alloc_chain(k, i) == alloc_chain(k, j));
+        errors(k) += (x - mean_diss(i, j)) * (x - mean_diss(i, j));
+      }
     }
-    out.row(i) =
-        stan::math::multi_normal_prec_rng(mu, prec, Rng::Instance().get())
-            .transpose();
+    // Progress bar
+    //++bar;
+    //bar.display();
   }
-  return out;
+  //bar.done();
+
+  // Find iteration with the least error
+  std::ptrdiff_t ibest;
+  unsigned int min_err = errors.minCoeff(&ibest);
+  Eigen::VectorXd out = alloc_chain.row(ibest).transpose();
+  std::string out_string;
+  EigenVector out_proto;
+  to_proto(out, &out_proto);
+  out_proto.SerializeToString(&out_string);
+
+  return (py::bytes)out_string;
+
 }
 
-PYBIND11_MODULE(pp_mix_cpp, m) {
+
+
+PYBIND11_MODULE(pp_mix_high, m) {
   m.doc() = "aaa";  // optional module docstring
 
   m.def("_run_pp_mix", &_run_pp_mix, "aaa");
 
-  m.def("_run_rj", &_run_rj, "aaa");
+  m.def("_run_pp_mix_binary", &_run_pp_mix_binary, "aaa");
 
-  m.def("_sample_predictive_univ", &_sample_predictive_univ, "aaa");
-
-  m.def("_sample_predictive_multi", &_sample_predictive_multi, "aaa");
-
-  m.def("_simulate_strauss2D", &_simulate_strauss2D, "aaa");
-
-  m.def("_simulate_strauss_our", &_simulate_strauss_our, "aaa");
+  m.def("cluster_estimate", &cluster_estimate, "aaa");
 }

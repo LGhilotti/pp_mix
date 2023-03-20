@@ -1,20 +1,20 @@
 #include "fixed_prec.hpp"
 
 
-PrecMat FixedPrec::sample_prior()
+PrecMat Delta_FixedMulti::sample_prior()
 {
     Eigen::MatrixXd out = sigma * Eigen::MatrixXd::Identity(dim, dim);
     return PrecMat(out);
 }
 
-PrecMat FixedPrec::sample_given_data(
+PrecMat Delta_FixedMulti::sample_alloc(
     const std::vector<VectorXd> &data, const PrecMat &curr,
     const VectorXd &mean)
 {
     return sample_prior();
 }
 
-PrecMat FixedPrec::mean() const
+PrecMat Delta_FixedMulti::mean() const
 {
     Eigen::MatrixXd out = sigma * Eigen::MatrixXd::Identity(dim, dim);
     return PrecMat(out);
